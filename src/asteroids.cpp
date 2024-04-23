@@ -1,0 +1,17 @@
+#include "game.h"
+
+#undef main
+
+int main() 
+{
+    game Asteroids { };
+
+    if(!Asteroids.InitSDL())
+    {
+        std::cout << "failed to initialize game." << std::endl;
+
+        return EXIT_FAILURE;
+    }
+
+    return Asteroids.Play();
+}
