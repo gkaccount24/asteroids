@@ -60,8 +60,8 @@ public:
         {
             uint32_t SlotID = Free->Idx;
 
-            *Slots[SlotID]->Data = std::forward<t>(Value);
-            Slots[SlotID]->ID = SlotID;
+            *(Slots[SlotID]->Data) = std::forward<t>(Value);
+              Slots[SlotID]->ID = SlotID;
 
             PopFree();
 

@@ -1,37 +1,20 @@
 #ifndef SPACE_OBJECT_H
 #define SPACE_OBJECT_H
 
+#include "common.h"
+
+#include <cstdint>
 #include <utility>
-
-enum class space_object_id
-{
-    AsteroidGrey1 = 0,
-    AsteroidGrey2 = 1,
-
-    AsteroidBrown1 = 2,
-    AsteroidBrown2 = 3,
-
-    FlagLight = 4,
-    FlagDark = 5,
-
-    Projectile1 = 6,
-    Projectile2 = 7,
-
-    Starship   = 8,
-    UFO        = 9,
-
-    NotDefined = 10
-};
 
 class space_object
 {
 
 protected:
     space_object();
-    space_object(space_object_id ObjectTypeID);
-    space_object(space_object_id ObjectTypeID, int ObjectX, int ObjectY);
-    space_object(space_object_id ObjectTypeID, int ObjectX, int ObjectY, int ObjectWidth, int ObjectHeight);
-    space_object(space_object_id ObjectTypeID, int ObjectX, int ObjectY, int ObjectWidth, int ObjectHeight, double ObjectAngle);
+    space_object(uint32_t TextureID);
+    space_object(uint32_t TextureID, int ObjectX, int ObjectY);
+    space_object(uint32_t TextureID, int ObjectX, int ObjectY, int ObjectWidth, int ObjectHeight);
+    space_object(uint32_t TextureID, int ObjectX, int ObjectY, int ObjectWidth, int ObjectHeight, double ObjectAngle);
 
 public:
     virtual ~space_object();
@@ -48,20 +31,20 @@ public:
 
 public:
 
-    inline space_object_id GetTypeID() const { return TypeID; }
+    inline uint32_t GetTextureID() const { return TextureID; }
 
     inline int GetXPos() const { return XPos; }
     inline int GetYPos() const { return YPos; }
-
     inline int GetWidth() const { return Width; }
     inline int GetHeight() const { return Height; }
+    inline double GetAngle() const { return Angle; }
 
 private:
     void Copy(const space_object& Right);
     void Move(space_object&& Right);
 
 protected:
-    space_object_id TypeID;
+    uint32_t TextureID;
     int XPos;
     int YPos;
     int    Width;

@@ -1,29 +1,33 @@
 #include "space_object.h"
 
 space_object::space_object():
-    TypeID(space_object_id::NotDefined),
+    TextureID(texture_id::NotDefined),
     XPos(0), YPos(0), 
     Width(0), Height(0),
     Angle(0.0)
 { }
 
-space_object::space_object(space_object_id ObjectTypeID):
-    TypeID(ObjectTypeID),
+space_object::space_object(uint32_t ObjectTextureID):
+    TextureID(ObjectTextureID),
     XPos(0), YPos(0), 
     Width(0), Height(0),
     Angle(0.0)
 { } 
 
-space_object::space_object(space_object_id ObjectTypeID, int ObjectX, int ObjectY):
-    TypeID(ObjectTypeID),
+space_object::space_object(uint32_t ObjectTextureID, 
+                           int ObjectX, int ObjectY):
+    TextureID(ObjectTextureID),
     XPos(ObjectX),
     YPos(ObjectY),
     Width(0), Height(0),
     Angle(0.0)
 { }
 
-space_object::space_object(space_object_id ObjectTypeID, int ObjectX, int ObjectY, int ObjectWidth, int ObjectHeight):
-    TypeID(ObjectTypeID),
+space_object::space_object(uint32_t ObjectTextureID, 
+                           int ObjectX, int ObjectY, 
+                           int ObjectWidth, 
+                           int ObjectHeight):
+    TextureID(ObjectTextureID),
     XPos(ObjectX),
     YPos(ObjectY),
     Width(ObjectWidth),
@@ -31,8 +35,12 @@ space_object::space_object(space_object_id ObjectTypeID, int ObjectX, int Object
     Angle(0.0)
 { }
 
-space_object::space_object(space_object_id ObjectTypeID, int ObjectX, int ObjectY, int ObjectWidth, int ObjectHeight, double ObjectAngle):
-    TypeID(ObjectTypeID),
+space_object::space_object(uint32_t ObjectTextureID, 
+                           int ObjectX, int ObjectY, 
+                           int ObjectWidth, 
+                           int ObjectHeight, 
+                           double ObjectAngle):
+    TextureID(ObjectTextureID),
     XPos(ObjectX),
     YPos(ObjectY),
     Width(ObjectWidth),
@@ -47,7 +55,7 @@ space_object::~space_object()
 
 void space_object::Reset()
 {
-    TypeID = space_object_id::NotDefined;
+    TextureID = texture_id::NotDefined;
     XPos = 0;
     YPos = 0;
     Width = 0;
@@ -57,7 +65,7 @@ void space_object::Reset()
 
 void space_object::Copy(const space_object& Right)
 {
-    TypeID = Right.TypeID;
+    TextureID = Right.TextureID;
 
     XPos = Right.XPos;
     YPos = Right.YPos;
@@ -70,7 +78,7 @@ void space_object::Copy(const space_object& Right)
 
 void space_object::Move(space_object&& Right)
 {
-    TypeID = Right.TypeID;
+    TextureID = Right.TextureID;
 
     XPos = Right.XPos;
     YPos = Right.YPos;
@@ -80,7 +88,7 @@ void space_object::Move(space_object&& Right)
 
     Angle = Right.Angle;
 
-    Right.TypeID = space_object_id::NotDefined;
+    Right.TextureID = texture_id::NotDefined;
 
     Right.XPos = 0;
     Right.YPos = 0;

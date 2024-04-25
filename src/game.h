@@ -1,13 +1,15 @@
 #ifndef GAME_H
 #define GAME_H
 
-#include "texture.h"
-#include "gfont.h"
+#include "game_texture.h"
+#include "game_font.h"
+#include "renderer.h"
 
-#include "player.h"
 #include "slot_map.h"
+
 #include "space_object.h"
 #include "starship.h"
+#include "player.h"
 
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
@@ -41,11 +43,7 @@ public:
     int Play();
 
 private:
-
-    void LoadFont(std::string Key, std::string Path, int PtSize);
-    void LoadTexture(std::string Key, std::string Path, SDL_Renderer* Renderer);
     void LoadAssets();
-
     void ClearScreen();
     void DrawObjects();
 
@@ -55,10 +53,6 @@ private:
 
     player                 Player;
     slot_map<space_object> ObjectMap;
-
-    // OBJECT STORES
-    std::unordered_map<std::string, texture*> Textures;
-    std::unordered_map<std::string, gfont*>   Fonts;
 };
 
 #endif

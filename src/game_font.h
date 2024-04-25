@@ -1,0 +1,24 @@
+#ifndef gfont_H
+#define gfont_H
+
+#include "asset.h"
+
+#include <SDL2/SDL_ttf.h>
+#include <string>
+
+class game_font: public asset
+{
+
+public:
+    game_font(uint32_t FontID, 
+              std::string FontPath, 
+              TTF_Font* FontData, 
+              int FontSize);
+    ~game_font();
+
+private:
+    TTF_Font*   Data;
+    int         Size;
+};
+
+#endif

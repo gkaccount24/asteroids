@@ -2,8 +2,7 @@
 
 game::game():
     Window(nullptr),
-    Renderer(nullptr),
-    Player(new starship())
+    Renderer(nullptr)
 { }
 
 game::~game()
@@ -88,78 +87,6 @@ bool game::InitSDL()
     return true;
 }
 
-void game::LoadFont(std::string Key, std::string Path, int PtSize)
-{
-    if(!Key.empty() && !Path.empty() && PtSize > 0)
-    {
-        bool Found = Fonts.find(Key) != std::end(Fonts);
-
-        if(!Found)
-        {
-            if(TTF_Font* FontData = TTF_OpenFont(Path.c_str(), PtSize))
-            {
-                if(gfont* Font = new gfont(FontData, Path, PtSize))
-                {
-                    Fonts.insert(std::make_pair(Key, Font));
-                }
-                else
-                {
-                    TTF_CloseFont(FontData);
-
-                    FontData = nullptr;
-                }
-            }
-        }
-    }
-}
-
-void game::LoadTexture(std::string Key, std::string Path, SDL_Renderer* Renderer)
-{
-    if(!Key.empty() && !Path.empty())
-    {
-        bool Found = Textures.find(Key) != std::end(Textures);
-
-        if(!Found)
-        {
-            if(SDL_Surface* Surface = IMG_Load(Path.c_str()))
-            {
-                if(SDL_Texture* TextureData = SDL_CreateTextureFromSurface(Renderer, Surface))
-                {
-                    if(texture* Texture = new texture(TextureData, Path, Surface->w, Surface->h))
-                    {
-                        Textures.insert(std::make_pair(Key, Texture));
-                    }
-                    else
-                    {
-                        SDL_DestroyTexture(TextureData);
-                        TextureData = nullptr;
-                    }
-                }
-
-                SDL_FreeSurface(Surface);
-                Surface = nullptr;
-            }
-        }
-    }
-}
-
-void game::LoadAssets()
-{
-    LoadFont("PressStart2P-Regular-6", "/home/nathan/Documents/code/asteroids/assets/fonts/PressStart2P-Regular.ttf", 6);
-    LoadFont("PressStart2P-Regular-9", "/home/nathan/Documents/code/asteroids/assets/fonts/PressStart2P-Regular.ttf", 9);
-    LoadFont("PressStart2P-Regular-12", "/home/nathan/Documents/code/asteroids/assets/fonts/PressStart2P-Regular.ttf", 12);
-
-    LoadTexture("space", "/home/nathan/Documents/code/asteroids/assets/textures/space.png", Renderer);
-    LoadTexture("starship", "/home/nathan/Documents/code/asteroids/assets/textures/starship.png", Renderer);
-    LoadTexture("ufodark", "/home/nathan/Documents/code/asteroids/assets/textures/ufodark.png", Renderer);
-    LoadTexture("asteroid1_grey", "/home/nathan/Documents/code/asteroids/assets/textures/asteroid1_grey.png", Renderer);
-    LoadTexture("asteroid2_grey", "/home/nathan/Documents/code/asteroids/assets/textures/asteroid2_grey.png", Renderer);
-    LoadTexture("asteroid1_brown", "/home/nathan/Documents/code/asteroids/assets/textures/asteroid1_brown.png", Renderer);
-    LoadTexture("asteroid2_brown", "/home/nathan/Documents/code/asteroids/assets/textures/asteroid2_brown.png", Renderer);
-    LoadTexture("projectile1", "/home/nathan/Documents/code/asteroids/assets/textures/projectile1.png", Renderer);
-    LoadTexture("projectile2", "/home/nathan/Documents/code/asteroids/assets/textures/projectile2.png", Renderer);
-}
-
 void game::ClearScreen()
 {
     Uint8 RValue = 0; // Map.Background.r;
@@ -182,73 +109,14 @@ void game::DrawObjects()
         {
             space_object* Object = ObjectMap.At(Idx);
 
-            switch(Object->GetTypeID())
-            {
-                case space_object_id::AsteroidGrey1:
-                {
-                    // do stuff here
-                    break;
-                }
-                case space_object_id::AsteroidGrey2:
-                {
-                    // do stuff here
-                    break;
-                }
-                case space_object_id::AsteroidBrown1:
-                {
-                    // do stuff here
-                    break;
-                }
-                case space_object_id::AsteroidBrown2:
-                {
-                    // do stuff here
-                    break;
-                }
-                case space_object_id::FlagLight:
-                {
-                    // do stuff here
-                    break;
-                }
-                case space_object_id::FlagDark:
-                {
-                    // do stuff here
-                    break;
-                }
-                case space_object_id::Projectile1:
-                {
-                    // do stuff here
-                    break;
-                }
-                case space_object_id::Projectile2:
-                {
-                    // do stuff here
-                    break;
-                }
-                case space_object_id::Starship:
-                {
-                    // do stuff here
-                    break;
-                }
-                case space_object_id::UFO:
-                {
-                    // do stuff here
-                    break;
-                }
-            }
         }
     }
 }
 
 int game::Play()
 {
-    ObjectMap.Insert(starship());
-    ObjectMap.Insert(starship());
-    ObjectMap.Insert(starship());
-
-    ObjectMap.Remove(2);
-
-    ObjectMap.Insert(starship());
-    ObjectMap.Insert(starship());
+    ObjectMap.Insert(starship(100, 100, 128, 128));
+    ObjectMap.Insert(starship(300, 300, 128, 128));
 
     bool Playing = true;
 
@@ -267,7 +135,6 @@ int game::Play()
         }
 
         ClearScreen();
-
         DrawObjects();
 
         SDL_RenderPresent(Renderer);

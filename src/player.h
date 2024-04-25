@@ -7,11 +7,8 @@ class player
 {
 public:
     player();
-    player(starship* PlayerStarship);
     ~player();
 
-private:
-    starship* Starship;
 };
 
 #endif
