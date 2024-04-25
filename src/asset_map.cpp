@@ -2,10 +2,17 @@
 
 #define DEFAULT_MAP_CAPACITY 16
 
-asset_map::asset_map() 
-{
-    Assets.resize(DEFAULT_MAP_CAPACITY);
+/* HASHING FUNCTION */
 
+uint32_t Hash(uint32_t Value, uint32_t Capacity)
+{
+    return Value % Capacity;
+}
+
+asset_map::asset_map():
+    Capacity(DEFAULT_MAP_CAPACITY)
+{
+    Assets.resize(Capacity);
 }
 
 asset_map::~asset_map() 
@@ -25,23 +32,28 @@ asset_map::~asset_map()
 void asset_map::Add(uint32_t AssetID, asset* Asset) 
 {
     uint32_t BucketCount = Assets.size();
+    uint32_t HashCode = Hash(AssetID, Capacity);
 
-    if(AssetID < BucketCount)
+    if(Assets[HashCode]->AssetCount == 0)
     {
-        if(Assets[AssetID]->AssetCount == 0)
-        {
-            Assets[AssetID]->Asset = Asset;
-            Assets[AssetID]->AssetCount++;
-        }
+        Assets[HashCode]->Asset = Asset;
+        Assets[HashCode]->AssetCount++;
     }
 }
 
 void asset_map::Remove(uint32_t AssetID) 
 {
+    uint32_t BucketCount = Assets.size();
+    uint32_t HashCode = Hash(AssetID, Capacity);
 
+    if(Assets[HashCode]->AssetCount > 0)
+    {
+
+    }
 }
 
 asset* asset_map::Get(uint32_t AssetID) 
 { 
+    uint32_t HashCode = Hash(AssetID, Capacity);
     return nullptr; 
 }

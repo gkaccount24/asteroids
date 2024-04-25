@@ -27,8 +27,11 @@ public:
     asset* Get(uint32_t AssetID);
 
 private:
-    std::vector<map_node*> Assets;
+    inline float GetLoadFactor() const { return Assets.size() / Capacity; }
 
+private:
+    std::vector<map_node*> Assets;
+    uint32_t               Capacity;
 };
 
 #endif
