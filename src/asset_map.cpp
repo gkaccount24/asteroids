@@ -97,9 +97,9 @@ void asset_map::Add(uint32_t AssetID, asset* Asset)
         while(Node->Next)
             Node = Node->Next;
 
-        // map_node* Next = new map_node { nullptr, 0, nullptr };
-        // Next->Asset = Asset;
-        // Node->Next = Next;
+        map_node* Next = new map_node { nullptr, 0, nullptr };
+        Next->Asset = Asset;
+        Node->Next = Next;
 
         HashNode->AssetCount++;
         TotalAssetCount++;
