@@ -162,7 +162,32 @@ void asset_map::Remove(uint32_t AssetID)
 asset* asset_map::Get(uint32_t AssetID) 
 { 
     uint32_t HashCode = Hash(AssetID) % Assets.size();
+
     map_node* HashNode = Assets[HashCode];
 
-    return HashNode->Asset; 
+    asset* Asset = nullptr;
+
+    if(HashNode->AssetCount > 0)
+    {
+        if(HashNode->Asset && HashNode->Asset->GetAssetID() == AssetID)
+        {
+            Asset = HashNode->Asset;
+        }
+        else
+        {
+            map_node* Node = HashNode->Next;
+
+            while(Node)
+            {
+                if(Node->Asset && Node->Asset->GetAssetID() == AssetID)
+                {
+                    Asset = Node->Asset;
+
+                    break;
+                }
+            }
+        }
+    }
+
+    return Asset;
 }
