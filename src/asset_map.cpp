@@ -3,7 +3,7 @@
 #define DEFAULT_MAP_CAPACITY 16
 
 /* HASHING MACRO */
-#define Hash(Number) std::hash<uint32_t> { }(Number)
+#define Hash(Number) std::hash<uint32_t> { }((Number))
 
 asset_map::asset_map():
     TotalAssetCount(0)
@@ -13,15 +13,21 @@ asset_map::asset_map():
 
 asset_map::~asset_map() 
 {
-    uint32_t BucketCount = Assets.size();
+    uint32_t HashNodeCount = Assets.size();
 
-    for(uint32_t Idx = 0; Idx < BucketCount; Idx++)
+    for(uint32_t Idx = 0; Idx < HashNodeCount; Idx++)
     {
-        delete Assets[Idx]->Asset;
-        Assets[Idx]->Asset = nullptr;
+        map_node* HashNode = Assets[Idx];
 
-        delete Assets[Idx];
-        Assets[Idx] = nullptr;
+        while(HashNode)
+        {
+            asset*& Asset = HashNode->Asset;
+
+            DeleteAsset(Asset);
+        }
+
+        // delete Assets[Idx];
+        // Assets[Idx] = nullptr;
     }
 }
 
@@ -75,34 +81,38 @@ void asset_map::Rehash(uint32_t NextTableSize)
 
 void asset_map::Add(uint32_t AssetID, asset* Asset) 
 {
-    // fewer amount of collisions
-    // occur when the load factor is lower
-    if(GetLoadFactor() > 0.5f)
+    if(Asset)
     {
-        Rehash(GetNextTableSize());
-    }
+        // fewer amount of collisions
+        // occur when the load factor is lower
+        if(GetLoadFactor() > 0.5f)
+        {
+            Rehash(GetNextTableSize());
+        }
 
-    uint32_t HashCode = Hash(AssetID) % Assets.size();
-    map_node* HashNode = Assets[HashCode];
+        uint32_t HashCode = Hash(AssetID) % Assets.size();
+        map_node* HashNode = Assets[HashCode];
 
-    if(HashNode->AssetCount == 0)
-    {
-        HashNode->Asset = Asset;
-        HashNode->AssetCount++;
-    }
-    else if(HashNode->AssetCount > 0)
-    {
-        map_node* Node = Assets[HashCode];
+        if(HashNode->AssetCount == 0)
+        {
+            HashNode->Asset = Asset;
+            HashNode->AssetCount++;
+        }
+        else if(HashNode->AssetCount > 0)
+        {
+            map_node* Node = Assets[HashCode];
 
-        while(Node->Next)
-            Node = Node->Next;
+            while(Node->Next)
+                Node = Node->Next;
 
-        map_node* Next = new map_node { nullptr, 0, nullptr };
-        Next->Asset = Asset;
-        Node->Next = Next;
+            map_node* Next = new map_node { nullptr, 0, nullptr };
 
-        HashNode->AssetCount++;
-        TotalAssetCount++;
+            Next->Asset = Asset;
+            Node->Next = Next;
+
+            HashNode->AssetCount++;
+            TotalAssetCount++;
+        }
     }
 }
 
@@ -120,26 +130,23 @@ void asset_map::Remove(uint32_t AssetID)
     if(HashNode->AssetCount > 0)
     {
         map_node* Node = Assets[HashCode];
-        uint32_t RemoveCount = 0;
 
         while(Node)
         {
             asset*& Asset = Node->Asset;
 
-            if(Asset && Asset->GetAssetID() == AssetID)
+            if(Asset->GetAssetID() == AssetID)
             {
                 DeleteAsset(Asset);
 
+                HashNode->AssetCount--;
                 TotalAssetCount--;
-                RemoveCount++; 
 
                 break;
             }
 
             Node = Node->Next;
         }
-
-        HashNode->AssetCount -= RemoveCount;
     }
 }
 
