@@ -19,15 +19,22 @@ asset_map::~asset_map()
     {
         map_node* HashNode = Assets[Idx];
 
-        while(HashNode)
+        if(HashNode->AssetCount > 0)
         {
-            asset*& Asset = HashNode->Asset;
+            map_node* Node = Assets[Idx];
 
-            DeleteAsset(Asset);
+            while(Node)
+            {
+                if(Node->Asset)
+                {
+                    asset*& Asset = HashNode->Asset;
+
+                    DeleteAsset(Asset);
+                }
+
+                Node = Node->Next;
+            }
         }
-
-        // delete Assets[Idx];
-        // Assets[Idx] = nullptr;
     }
 }
 
@@ -87,7 +94,9 @@ void asset_map::Add(uint32_t AssetID, asset* Asset)
         // occur when the load factor is lower
         if(GetLoadFactor() > 0.5f)
         {
-            Rehash(GetNextTableSize());
+            uint32_t NextTableSize = GetNextTableSize();
+
+            Rehash(NextTableSize);
         }
 
         uint32_t HashCode = Hash(AssetID) % Assets.size();
@@ -135,7 +144,7 @@ void asset_map::Remove(uint32_t AssetID)
         {
             asset*& Asset = Node->Asset;
 
-            if(Asset->GetAssetID() == AssetID)
+            if(Asset && Asset->GetAssetID() == AssetID)
             {
                 DeleteAsset(Asset);
 
