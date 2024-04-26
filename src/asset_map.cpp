@@ -6,7 +6,7 @@
 #define Hash(Number) std::hash<uint32_t> { }(Number)
 
 asset_map::asset_map():
-    Capacity(DEFAULT_MAP_CAPACITY)
+    TotalAssetCount(0)
 {
     Initialize();
 }
@@ -27,9 +27,9 @@ asset_map::~asset_map()
 
 void asset_map::Initialize()
 {
-    Assets.resize(Capacity);
+    Assets.resize(DEFAULT_MAP_CAPACITY);
 
-    for(uint32_t Idx = 0; Idx < Capacity; Idx++)
+    for(uint32_t Idx = 0; Idx < DEFAULT_MAP_CAPACITY; Idx++)
     {
         map_node* Node = new map_node { nullptr, 0, nullptr };
 
@@ -37,15 +37,41 @@ void asset_map::Initialize()
     }
 }
 
+void asset_map::Rehash(uint32_t NextTableSize)
+{
+    std::vector<map_node*> OldAssets = std::move(Assets);
+
+    uint32_t HashNodeCount = OldAssets.size();
+
+    Assets.clear();
+
+    for(uint32_t Idx = 0; Idx < HashNodeCount; Idx++)
+    {
+        map_node* HashNode = OldAssets[Idx];
+
+        if(HashNode->AssetCount > 0)
+        {
+            map_node* Node = OldAssets[Idx];
+
+            while(Node)
+            {
+                // if(Node->Asset)
+
+            }
+        }
+    }
+}
+
 void asset_map::Add(uint32_t AssetID, asset* Asset) 
 {
-    if(GetLoadFactor() > 0.75f)
+    // fewer amount of collisions
+    // occur when the load factor is lower
+    if(GetLoadFactor() > 0.5f)
     {
-        // expand table
-        // rehash
+        Rehash(GetNextTableSize());
     }
 
-    uint32_t HashCode = Hash(AssetID) % Capacity;
+    uint32_t HashCode = Hash(AssetID) % Assets.size();
     map_node* HashNode = Assets[HashCode];
 
     if(HashNode->AssetCount == 0)
@@ -60,10 +86,9 @@ void asset_map::Add(uint32_t AssetID, asset* Asset)
         while(Node->Next)
             Node = Node->Next;
 
-        map_node* Next = new map_node { nullptr, 0, nullptr };
-
-        Next->Asset = Asset;
-        Node->Next = Next;
+        // map_node* Next = new map_node { nullptr, 0, nullptr };
+        // Next->Asset = Asset;
+        // Node->Next = Next;
 
         HashNode->AssetCount++;
         TotalAssetCount++;
@@ -78,7 +103,7 @@ void asset_map::DeleteAsset(asset*& Asset)
 
 void asset_map::Remove(uint32_t AssetID) 
 {
-    uint32_t HashCode = Hash(AssetID) % Capacity;
+    uint32_t HashCode = Hash(AssetID) % Assets.size();
     map_node* HashNode = Assets[HashCode];
 
     if(HashNode->AssetCount > 0)
@@ -109,10 +134,8 @@ void asset_map::Remove(uint32_t AssetID)
 
 asset* asset_map::Get(uint32_t AssetID) 
 { 
-    uint32_t HashCode = Hash(AssetID) % Capacity;
+    uint32_t HashCode = Hash(AssetID) % Assets.size();
     map_node* HashNode = Assets[HashCode];
-
-
 
     return nullptr; 
 }

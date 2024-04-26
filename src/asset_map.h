@@ -30,13 +30,15 @@ private:
     void Initialize();
     void DeleteAsset(asset*& Asset);
 
-private:
-    inline float GetLoadFactor() const { return Assets.size() / Capacity; }
+    uint32_t GetNextTableSize() const;
+    void Rehash(uint32_t NextTableSize);
 
+private:
+    inline float GetLoadFactor() const { return TotalAssetCount / Assets.size(); }
+    inline uint32_t GetNextTableSize() const { return Assets.size() * 2; }
 private:
     std::vector<map_node*> Assets;
     uint32_t               TotalAssetCount;
-    uint32_t               Capacity;
 };
 
 #endif
