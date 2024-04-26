@@ -148,5 +148,5 @@ asset* asset_map::Get(uint32_t AssetID)
     uint32_t HashCode = Hash(AssetID) % Assets.size();
     map_node* HashNode = Assets[HashCode];
 
-    return nullptr; 
+    return HashNode->Asset; 
 }
