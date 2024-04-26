@@ -27,10 +27,15 @@ public:
     asset* Get(uint32_t AssetID);
 
 private:
+    void Initialize();
+    void DeleteAsset(asset*& Asset);
+
+private:
     inline float GetLoadFactor() const { return Assets.size() / Capacity; }
 
 private:
     std::vector<map_node*> Assets;
+    uint32_t               TotalAssetCount;
     uint32_t               Capacity;
 };
 
