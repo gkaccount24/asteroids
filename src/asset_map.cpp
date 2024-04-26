@@ -27,9 +27,14 @@ asset_map::~asset_map()
 
 void asset_map::Initialize()
 {
-    Assets.resize(DEFAULT_MAP_CAPACITY);
+    Resize(DEFAULT_MAP_CAPACITY);
+}
 
-    for(uint32_t Idx = 0; Idx < DEFAULT_MAP_CAPACITY; Idx++)
+void asset_map::Resize(uint32_t NextTableSize)
+{
+    Assets.resize(NextTableSize);
+
+    for(uint32_t Idx = 0; Idx < NextTableSize; Idx++)
     {
         map_node* Node = new map_node { nullptr, 0, nullptr };
 
@@ -45,6 +50,8 @@ void asset_map::Rehash(uint32_t NextTableSize)
 
     Assets.clear();
 
+    Resize(NextTableSize);
+
     for(uint32_t Idx = 0; Idx < HashNodeCount; Idx++)
     {
         map_node* HashNode = OldAssets[Idx];
@@ -55,8 +62,12 @@ void asset_map::Rehash(uint32_t NextTableSize)
 
             while(Node)
             {
-                // if(Node->Asset)
+                if(Node->Asset)
+                {
+                    Add(Node->Asset->GetAssetID(), Node->Asset);
+                }
 
+                Node = Node->Next;
             }
         }
     }

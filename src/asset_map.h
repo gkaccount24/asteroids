@@ -32,6 +32,7 @@ private:
 
     uint32_t GetNextTableSize() const;
     void Rehash(uint32_t NextTableSize);
+    void Resize(uint32_t NextTableSize);
 
 private:
     inline float GetLoadFactor() const { return TotalAssetCount / Assets.size(); }
