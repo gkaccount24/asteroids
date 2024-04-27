@@ -1,7 +1,7 @@
 #include "space_object.h"
 
 space_object::space_object():
-    TextureID(texture_id::NotDefined),
+    TextureID(0),
     XPos(0), YPos(0), 
     Width(0), Height(0),
     Angle(0.0)
@@ -55,7 +55,7 @@ space_object::~space_object()
 
 void space_object::Reset()
 {
-    TextureID = texture_id::NotDefined;
+    TextureID = 0;
     XPos = 0;
     YPos = 0;
     Width = 0;
@@ -88,7 +88,7 @@ void space_object::Move(space_object&& Right)
 
     Angle = Right.Angle;
 
-    Right.TextureID = texture_id::NotDefined;
+    Right.TextureID = 0;
 
     Right.XPos = 0;
     Right.YPos = 0;

@@ -51,7 +51,7 @@ private:
     renderer Renderer;
     player Player;
 
-    asset_map              AssetMap;
+    asset_map AssetMap;
     slot_map<space_object> ObjectMap;
 };
 

@@ -89,6 +89,17 @@ void asset_map::Rehash(uint32_t NextTableSize)
             }
         }
     }
+
+    for(uint32_t Idx = 0; Idx < HashNodeCount; Idx++)
+    {
+        map_node* Node = OldAssets[Idx];
+
+        while(Node)
+        {
+            delete Node;
+            Node = nullptr;
+        }
+    }
 }
 
 void asset_map::Add(uint32_t AssetID, asset* Asset) 
@@ -207,7 +218,7 @@ asset* asset_map::operator[](uint32_t AssetID)
 
     while(Node)
     {
-        asset*& Asset = Node->Asset;
+        asset* Asset = Node->Asset;
 
         if(Asset->GetAssetID() == AssetID)
         {

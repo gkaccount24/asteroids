@@ -101,7 +101,7 @@ void game::LoadAssets()
 
 void game::DestroyAssets()
 {
-
+    AssetMap.Destroy();
 }
 
 void game::DrawObjects()
