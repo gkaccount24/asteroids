@@ -102,8 +102,6 @@ void game::LoadAssets()
 void game::DestroyAssets()
 {
 
-    AssetMap
-
 }
 
 void game::DrawObjects()

@@ -2,6 +2,7 @@
 #define ASSET_MAP_H
 
 #include "asset.h"
+#include "common.h"
 
 #include <string>
 #include <vector>
@@ -30,6 +31,8 @@ public:
     void Remove(uint32_t AssetID);
     asset* Get(uint32_t AssetID);
 
+    void Destroy();
+
     /* OPERATOR OVERLOADS */
 public:
     asset* operator[](uint32_t Index);
@@ -43,6 +46,7 @@ private:
 
 public:
     inline uint32_t GetTotalAssetCount() const { return TotalAssetCount; }
+    inline uint32_t GetCapacity() const { return Assets.size(); }
 
 private:
     inline float GetLoadFactor() const { return TotalAssetCount / Assets.size(); }
@@ -50,7 +54,7 @@ private:
 
 private:
     std::vector<map_node*> Assets;
-    uint32_t               TotalAssetCount;
+    uint32_t TotalAssetCount;
 };
 
 #endif

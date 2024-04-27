@@ -13,6 +13,16 @@ asset_map::asset_map():
 
 asset_map::~asset_map() 
 {
+    Destroy();
+}
+
+void asset_map::Initialize()
+{
+    Resize(DEFAULT_MAP_CAPACITY);
+}
+
+void asset_map::Destroy()
+{
     uint32_t HashNodeCount = Assets.size();
 
     for(uint32_t Idx = 0; Idx < HashNodeCount; Idx++)
@@ -36,11 +46,6 @@ asset_map::~asset_map()
             }
         }
     }
-}
-
-void asset_map::Initialize()
-{
-    Resize(DEFAULT_MAP_CAPACITY);
 }
 
 void asset_map::Resize(uint32_t NextTableSize)
