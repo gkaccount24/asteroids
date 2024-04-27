@@ -71,14 +71,12 @@ void renderer::DrawTexture(game_texture* Texture, space_object* Object)
 
 void renderer::DrawTexture(SDL_Texture* Texture, space_object* Object)
 {
-    double Angle = Object->GetAngle();
+    double Angle = Object->Angle;
     
     SDL_Rect Dest 
     {
-        Object->GetXPos(),
-        Object->GetYPos(),
-        Object->GetWidth(),
-        Object->GetHeight()
+        Object->XPos,  Object->YPos,
+        Object->Width, Object->Height
     };
 
     SDL_RenderCopyEx(Renderer, Texture, nullptr, 

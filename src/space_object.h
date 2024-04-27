@@ -32,16 +32,6 @@ public:
     space_object& operator=(const space_object& Right);
     space_object& operator=(space_object&& Right);
 
-public:
-
-    inline uint32_t GetTextureID() const { return TextureID; }
-
-    inline int GetXPos() const { return XPos; }
-    inline int GetYPos() const { return YPos; }
-    inline int GetWidth() const { return Width; }
-    inline int GetHeight() const { return Height; }
-    inline double GetAngle() const { return Angle; }
-
 private:
     void Copy(const space_object& Right);
     void Move(space_object&& Right);

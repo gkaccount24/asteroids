@@ -114,7 +114,7 @@ void game::DrawObjects()
         for(uint32_t Idx = 0; Idx < ObjectCount; Idx++)
         {
             space_object* Object = ObjectMap.Get(TEXTURE_ID_OFFSET + Idx);
-            game_texture* Texture = (game_texture*) AssetMap.Get(Object->GetTextureID());
+            game_texture* Texture = (game_texture*) AssetMap.Get(Object->TextureID);
 
             Renderer.DrawTexture(Texture, Object);
         }
@@ -160,7 +160,7 @@ void game::MakePlayer()
     }
     
     Player           = new player();
-    Player->Starship = MakeShip(0, 0, 64, 64);
+    Player->Starship = MakeShip(0, 0, 64, 64, true);
 }
 
 int game::Play()

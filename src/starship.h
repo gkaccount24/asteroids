@@ -17,6 +17,9 @@ public:
     starship(int ObjectX, int ObjectY, int ObjectWidth, int ObjectHeight, double ObjectAngle);
 
 public:
+    virtual ~starship();
+
+public:
     starship(const starship& Right);
     starship(starship&& Right);
 
@@ -24,10 +27,6 @@ public:
     starship& operator=(starship&& Right) = delete;
 
 public:
-    virtual ~starship();
-
-private:
-
     int Shield;
 
 };
