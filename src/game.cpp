@@ -1,18 +1,12 @@
 #include "game.h"
 
 game::game():
-    Window(nullptr),
-    Renderer(nullptr)
+    Window(nullptr)
 { }
 
 game::~game()
 {
-    if(Renderer)
-    {
-        SDL_DestroyRenderer(Renderer);
-
-        Renderer = nullptr;
-    }
+    Renderer.Destroy();
 
     if(Window)
     {
@@ -74,9 +68,7 @@ bool game::InitSDL()
         return false;
     }
 
-    Renderer = SDL_CreateRenderer(Window, -1, SDL_RENDERER_ACCELERATED);
-
-    if(!Renderer)
+    if(!Renderer.Create(Window))
     {
         std::cout << "Error Message: " << SDL_GetError() << std::endl;
         std::cout << "failed to make game renderer."     << std::endl;
@@ -87,16 +79,31 @@ bool game::InitSDL()
     return true;
 }
 
-void game::ClearScreen()
+void game::LoadAssets()
 {
-    Uint8 RValue = 0; // Map.Background.r;
-    Uint8 GValue = 0; // Map.Background.g;
-    Uint8 BValue = 0; // Map.Background.b;
+    asset_loader Loader(Renderer);
 
-    Uint8 Opacity = SDL_ALPHA_OPAQUE;
+    Loader.LoadFont(font_id::PressStart2P_Regular_9, AssetMap, "/home/nathan/Documents/code/asteroids/assets/fonts/PressStart2P-Regular.ttf", 9);
+    Loader.LoadFont(font_id::PressStart2P_Regular_12, AssetMap, "/home/nathan/Documents/code/asteroids/assets/fonts/PressStart2P-Regular.ttf", 12);
+    Loader.LoadFont(font_id::PressStart2P_Regular_24, AssetMap, "/home/nathan/Documents/code/asteroids/assets/fonts/PressStart2P-Regular.ttf", 24);
 
-    SDL_SetRenderDrawColor(Renderer, RValue, GValue, BValue, Opacity);
-    SDL_RenderClear(Renderer);
+    Loader.LoadTexture(texture_id::AsteroidGrey1, AssetMap, "/home/nathan/Documents/code/asteroids/assets/textures/asteroid1_grey.png");
+    Loader.LoadTexture(texture_id::AsteroidGrey2, AssetMap, "/home/nathan/Documents/code/asteroids/assets/textures/asteroid2_grey.png");
+    Loader.LoadTexture(texture_id::AsteroidBrown1, AssetMap, "/home/nathan/Documents/code/asteroids/assets/textures/asteroid1_brown.png");
+    Loader.LoadTexture(texture_id::AsteroidBrown2, AssetMap, "/home/nathan/Documents/code/asteroids/assets/textures/asteroid2_brown.png");
+    Loader.LoadTexture(texture_id::FlagLight, AssetMap, "/home/nathan/Documents/code/asteroids/assets/textures/flag.png");
+    Loader.LoadTexture(texture_id::FlagDark, AssetMap, "/home/nathan/Documents/code/asteroids/assets/textures/flagdark.png");
+    Loader.LoadTexture(texture_id::Projectile1, AssetMap, "/home/nathan/Documents/code/asteroids/assets/textures/projectile1.png");
+    Loader.LoadTexture(texture_id::Projectile2, AssetMap, "/home/nathan/Documents/code/asteroids/assets/textures/projectile2.png");
+    Loader.LoadTexture(texture_id::Starship, AssetMap, "/home/nathan/Documents/code/asteroids/assets/textures/starship.png");
+    Loader.LoadTexture(texture_id::UFO, AssetMap, "/home/nathan/Documents/code/asteroids/assets/textures/ufodark.png");
+}
+
+void game::DestroyAssets()
+{
+
+    AssetMap
+
 }
 
 void game::DrawObjects()
@@ -115,6 +122,8 @@ void game::DrawObjects()
 
 int game::Play()
 {
+    LoadAssets();
+
     ObjectMap.Insert(starship(100, 100, 128, 128));
     ObjectMap.Insert(starship(300, 300, 128, 128));
 
@@ -134,10 +143,11 @@ int game::Play()
             }
         }
 
-        ClearScreen();
+        Renderer.ClearScreen();
+
         DrawObjects();
 
-        SDL_RenderPresent(Renderer);
+        Renderer.SwapBuffers();
     }
 
     return EXIT_SUCCESS;

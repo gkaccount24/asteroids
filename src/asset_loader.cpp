@@ -21,20 +21,23 @@ bool asset_loader::LoadTexture(uint32_t TextureID, asset_map& AssetMap, std::str
 
             TextureData = Renderer.CreateTexture(Surface);
 
-            if(TextureData)
+            if(!TextureData)
             {
-                game_texture* Texture = new game_texture(TextureID, 
-                                                         TexturePath, 
-                                                         TextureData, 
-                                                         Surface->w, 
-                                                         Surface->h);
-                AssetMap.Add(TextureID, Texture);                
+                std::cout << "failed to load texture: " << TexturePath << std::endl;;
+                std::cout << "IMG_GetError(): " << IMG_GetError() << std::endl;
 
-                return true;
+                return false;
             }
+
+            game_texture* Texture = new game_texture(TextureID, TexturePath, 
+                                                     TextureData, Surface->w, 
+                                                     Surface->h);
+            AssetMap.Add(TextureID, Texture);                
 
             SDL_FreeSurface(Surface);
             Surface = nullptr;
+
+            return true;
         }
     }
 
@@ -49,16 +52,19 @@ bool asset_loader::LoadFont(uint32_t FontID, asset_map& AssetMap, std::string Fo
 
         FontData = TTF_OpenFont(FontPath.c_str(), FontSize);
 
-        if(FontData)
+        if(!FontData)
         {
-            game_font* Font = new game_font(FontID, 
-                                            FontPath, 
-                                            FontData, 
-                                            FontSize);
-            AssetMap.Add(FontID, Font);
+            std::cout << "failed to load font: " << FontPath << std::endl;;
+            std::cout << "TTF_GetError(): " << TTF_GetError() << std::endl;
 
-            return true;
+            return false;
         }
+
+        game_font* Font = new game_font(FontID, FontPath, 
+                                        FontData, FontSize);
+        AssetMap.Add(FontID, Font);
+
+        return true;
     }
 
     return false;

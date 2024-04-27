@@ -4,9 +4,8 @@
 #include "game_texture.h"
 #include "game_font.h"
 #include "renderer.h"
-
+#include "asset_loader.h"
 #include "slot_map.h"
-
 #include "space_object.h"
 #include "starship.h"
 #include "player.h"
@@ -38,20 +37,21 @@ public:
     ~game();
 
 public:
-
     bool InitSDL();
     int Play();
 
 private:
     void LoadAssets();
-    void ClearScreen();
+    void DestroyAssets();
+
     void DrawObjects();
 
 private:
-    SDL_Window*   Window;
-    SDL_Renderer* Renderer;
+    SDL_Window* Window;
+    renderer Renderer;
+    player Player;
 
-    player                 Player;
+    asset_map              AssetMap;
     slot_map<space_object> ObjectMap;
 };
 

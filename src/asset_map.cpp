@@ -106,8 +106,10 @@ void asset_map::Add(uint32_t AssetID, asset* Asset)
         {
             HashNode->Asset = Asset;
             HashNode->AssetCount++;
+
+            TotalAssetCount++;
         }
-        else if(HashNode->AssetCount > 0)
+        else if(HashNode->AssetCount >= 1)
         {
             map_node* Node = Assets[HashCode];
 
@@ -190,4 +192,25 @@ asset* asset_map::Get(uint32_t AssetID)
     }
 
     return Asset;
+}
+
+asset* asset_map::operator[](uint32_t AssetID)
+{
+    uint32_t HashCode = Hash(AssetID) % Assets.size();
+
+    map_node* Node = Assets[HashCode];
+
+    while(Node)
+    {
+        asset*& Asset = Node->Asset;
+
+        if(Asset->GetAssetID() == AssetID)
+        {
+            return Asset;
+        }
+
+        Node = Node->Next;
+    }
+
+    return nullptr;
 }

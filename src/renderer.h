@@ -18,12 +18,20 @@ public:
     ~renderer();
 
 public:
+    bool Create(SDL_Window* Window);
+    void Destroy();
     SDL_Texture* CreateTexture(SDL_Surface* Surface);
+
+public:
+    void ClearScreen();
+    void SwapBuffers();
+
     void DrawObject(SDL_Texture* Texture, space_object* Object);
     void DrawText(TTF_Font* Font, std::string Text);
 
 private:
     SDL_Renderer* Renderer;
+
 };
 
 #endif

@@ -7,6 +7,7 @@
 #include "game_font.h"
 #include "renderer.h"
 
+#include <iostream>
 #include <string>
 
 class asset_loader
@@ -15,6 +16,10 @@ class asset_loader
 public:
     asset_loader(renderer& Renderer);
     ~asset_loader();
+
+private:
+    asset_loader(const asset_loader& Loader) = delete;
+    asset_loader(asset_loader&& Loader) = delete;
 
 public:
     bool LoadTexture(uint32_t TextureID, asset_map& AssetMap, std::string TexturePath);

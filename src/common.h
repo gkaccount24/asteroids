@@ -3,7 +3,9 @@
 
 enum font_id 
 {
-    PressStart2P_Regular = 200
+    PressStart2P_Regular_9  = 200,
+    PressStart2P_Regular_12 = 201,
+    PressStart2P_Regular_24 = 202
 };
 
 enum texture_id
