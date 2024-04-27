@@ -1,8 +1,8 @@
 #ifndef RENDERER_H
 #define RENDERER_H
 
-#include "asset_map.h"
 #include "space_object.h"
+#include "game_texture.h"
 
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
@@ -19,14 +19,15 @@ public:
 
 public:
     bool Create(SDL_Window* Window);
-    void Destroy();
     SDL_Texture* CreateTexture(SDL_Surface* Surface);
+    void Destroy();
 
 public:
     void ClearScreen();
     void SwapBuffers();
 
-    void DrawTexture(SDL_Texture* Texture, SDL_Rect Dest, double Angle);
+    void DrawTexture(game_texture* Texture, space_object* Object);
+    void DrawTexture(SDL_Texture* Texture, space_object* Object);
     void DrawText(TTF_Font* Font, std::string Text);
 
 private:

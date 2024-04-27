@@ -28,8 +28,8 @@ set(SRC_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/node.h
     ${CMAKE_CURRENT_SOURCE_DIR}/node.cpp 
 
-    ${CMAKE_CURRENT_SOURCE_DIR}/slot_map.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/slot_map.cpp 
+    ${CMAKE_CURRENT_SOURCE_DIR}/object_map.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/object_map.cpp 
 
     ${CMAKE_CURRENT_SOURCE_DIR}/space_object.h
     ${CMAKE_CURRENT_SOURCE_DIR}/space_object.cpp 

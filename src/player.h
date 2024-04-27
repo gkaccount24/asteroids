@@ -5,9 +5,13 @@
 
 class player
 {
+
 public:
     player();
     ~player();
+
+public:
+    starship* Starship;
 
 };
 

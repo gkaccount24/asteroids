@@ -14,10 +14,6 @@ public:
     virtual ~asset();
 
 public:
-    inline uint32_t GetAssetID() const { return ID; }
-    inline std::string GetAssetPath() const { return Path; }
-
-private:
     uint32_t    ID;
     std::string Path;
 };

@@ -82,7 +82,7 @@ void asset_map::Rehash(uint32_t NextTableSize)
             {
                 if(Node->Asset)
                 {
-                    Add(Node->Asset->GetAssetID(), Node->Asset);
+                    Add(Node->Asset->ID, Node->Asset);
                 }
 
                 Node = Node->Next;
@@ -162,7 +162,7 @@ void asset_map::Remove(uint32_t AssetID)
         {
             asset*& Asset = Node->Asset;
 
-            if(Asset && Asset->GetAssetID() == AssetID)
+            if(Asset && Asset->ID == AssetID)
             {
                 DeleteAsset(Asset);
 
@@ -187,7 +187,7 @@ asset* asset_map::Get(uint32_t AssetID)
 
     if(HashNode->AssetCount > 0)
     {
-        if(HashNode->Asset && HashNode->Asset->GetAssetID() == AssetID)
+        if(HashNode->Asset && HashNode->Asset->ID == AssetID)
         {
             Asset = HashNode->Asset;
         }
@@ -197,7 +197,7 @@ asset* asset_map::Get(uint32_t AssetID)
 
             while(Node)
             {
-                if(Node->Asset && Node->Asset->GetAssetID() == AssetID)
+                if(Node->Asset && Node->Asset->ID == AssetID)
                 {
                     Asset = Node->Asset;
 
@@ -220,7 +220,7 @@ asset* asset_map::operator[](uint32_t AssetID)
     {
         asset* Asset = Node->Asset;
 
-        if(Asset->GetAssetID() == AssetID)
+        if(Asset->ID == AssetID)
         {
             return Asset;
         }

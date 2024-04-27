@@ -5,7 +5,7 @@
 #include "game_font.h"
 #include "renderer.h"
 #include "asset_loader.h"
-#include "slot_map.h"
+#include "object_map.h"
 #include "space_object.h"
 #include "starship.h"
 #include "player.h"
@@ -43,16 +43,25 @@ public:
 private:
     void LoadAssets();
     void Destroy();
-
     void DrawObjects();
+
+    void MakePlayer();
+
+    starship* MakeShip(int XPos, int YPos, 
+                       int Width, int Height, 
+                       bool Save = false);
+
+private:
+    uint32_t SaveObject(space_object* Object);
 
 private:
     SDL_Window* Window;
     renderer Renderer;
-    player Player;
+    
+    player* Player;
 
     asset_map AssetMap;
-    slot_map<space_object> ObjectMap;
+    object_map ObjectMap;
 };
 
 #endif

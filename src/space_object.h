@@ -26,10 +26,6 @@ public:
     void Reset();
 
 public:
-
-    virtual void Draw(renderer& Renderer) const = 0;
-
-public:
     space_object(const space_object& Right);
     space_object(space_object&& Right);
 
@@ -50,15 +46,14 @@ private:
     void Copy(const space_object& Right);
     void Move(space_object&& Right);
 
-protected:
+public:
+    uint32_t ID;
     uint32_t TextureID;
     int XPos;
     int YPos;
     int    Width;
     int    Height;
     double Angle;
-
-    game_texture* Texture;
 };
 
 #endif

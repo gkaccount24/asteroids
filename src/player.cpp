@@ -1,4 +1,15 @@
 #include "player.h"
 
-player::player() { }
-player::~player() { }
+player::player():
+    Starship(nullptr) 
+{ }
+
+player::~player() 
+{
+    if(Starship)
+    {
+        delete Starship;
+
+        Starship = nullptr;
+    }
+}

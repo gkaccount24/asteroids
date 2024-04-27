@@ -107,16 +107,60 @@ void game::Destroy()
 
 void game::DrawObjects()
 {
-    if(!ObjectMap.IsEmpty())
+    if(!ObjectMap.Empty())
     {
         uint32_t ObjectCount = ObjectMap.Size();
 
         for(uint32_t Idx = 0; Idx < ObjectCount; Idx++)
         {
-            space_object* Object = ObjectMap.At(Idx);
+            space_object* Object = ObjectMap.Get(TEXTURE_ID_OFFSET + Idx);
+            game_texture* Texture = (game_texture*) AssetMap.Get(Object->GetTextureID());
 
+            Renderer.DrawTexture(Texture, Object);
         }
     }
+}
+
+uint32_t game::SaveObject(space_object* Object)
+{
+    uint32_t ObjectID = 0;
+
+    ObjectID = ObjectMap.Add(Object);
+
+    return ObjectID;
+}
+
+starship* game::MakeShip(int XPos, int YPos, 
+                         int Width, int Height, 
+                         bool Save)
+{
+    starship* Ship = new starship(XPos, YPos, 
+                                  Width, Height, 
+                                  0.0);
+
+    if(Save)
+    {
+        uint32_t ObjectID = 0;
+
+        ObjectID = SaveObject(Ship);
+
+        Ship->ID = ObjectID;
+    }
+
+    return Ship;
+}
+
+void game::MakePlayer()
+{
+    if(Player)
+    {
+        delete Player;
+
+        Player = nullptr;
+    }
+    
+    Player           = new player();
+    Player->Starship = MakeShip(0, 0, 64, 64);
 }
 
 int game::Play()
@@ -127,13 +171,7 @@ int game::Play()
 
     SDL_GetWindowSize(Window, &WindowWidth, nullptr);
 
-    for(uint32_t RowIdx = 0; RowIdx < 3; RowIdx++)
-    {
-        for(uint32_t ColIdx = 0; ColIdx < (WindowWidth / 128); ColIdx++)
-        {
-            ObjectMap.Insert(starship((ColIdx + 1) * 128, 128, 128, 128));
-        }
-    }
+    MakePlayer();
 
     bool Playing = true;
 

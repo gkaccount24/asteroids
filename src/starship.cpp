@@ -46,8 +46,3 @@ starship::starship(starship&& Right):
 
     Right.Shield = 0;
 }
-
-void starship::Draw(renderer& Renderer) const
-{
-    Renderer.DrawTexture(Texture->GetTextureData(), Texture->GetTextureRect(), Angle);
-}

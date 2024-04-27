@@ -26,9 +26,6 @@ public:
 public:
     virtual ~starship();
 
-public:
-    virtual void Draw(renderer& Renderer) const;
-
 private:
 
     int Shield;

@@ -14,9 +14,10 @@ public:
               std::string FontPath, 
               TTF_Font* FontData, 
               int FontSize);
-    ~game_font();
 
-private:
+    virtual ~game_font();
+
+public:
     TTF_Font*   Data;
     int         Size;
 };
