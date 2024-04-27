@@ -17,6 +17,7 @@
 #include <iostream>
 #include <unordered_map>
 #include <string>
+#include <math.h>
 
 /* GENERIC HELPER MACROS */
 #define TRUE 1
@@ -27,6 +28,10 @@
 
 /* HELPER MACROS FOR SDL FUNCTION RETURN CODES */
 #define IsGood(Result)((Result) == 0)
+
+enum {
+
+};
 
 class game
 {
@@ -43,9 +48,18 @@ public:
 private:
     void LoadAssets();
     void Destroy();
-    void DrawObjects();
 
-    void MakePlayer();
+    float GetDistance(int XPosA, int YPosA, int XPosB, int YPosB);
+
+    void Update(double DeltaTime);
+    void UpdatePlayer(double DeltaTime);
+
+    void DrawObjects();
+    void DrawPlayer();
+
+    void DestroyPlayer();
+    void MakePlayer(int XPos, int YPos, 
+                    int Width, int Height);
 
     starship* MakeShip(int XPos, int YPos, 
                        int Width, int Height, 
@@ -62,6 +76,14 @@ private:
 
     asset_map AssetMap;
     object_map ObjectMap;
+
+    int GameKeyCount;
+    const Uint8* GameKeys;
+
+    int MouseX;
+    int MouseY;
+
+    bool Playing;
 };
 
 #endif

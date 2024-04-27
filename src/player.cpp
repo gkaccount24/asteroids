@@ -5,11 +5,4 @@ player::player():
 { }
 
 player::~player() 
-{
-    if(Starship)
-    {
-        delete Starship;
-
-        Starship = nullptr;
-    }
-}
+{ }

@@ -1,8 +1,18 @@
 #include "game.h"
 
+static float MaxPlayerVelocity;
+static float PlayerVelocity;
+
+#define DEFAULT_PLAYER_VELOCITY 1.0f
+#define DEFAULT_MAX_PLAYER_VELOCITY 2.0f
+
 game::game():
-    Window(nullptr)
-{ }
+    Window(nullptr),
+    Player(nullptr)
+{
+    MaxPlayerVelocity = DEFAULT_PLAYER_VELOCITY;
+    PlayerVelocity = DEFAULT_MAX_PLAYER_VELOCITY;
+}
 
 game::~game()
 {
@@ -101,8 +111,24 @@ void game::LoadAssets()
 
 void game::Destroy()
 {
+    DestroyPlayer();
+
     ObjectMap.Destroy();
     AssetMap.Destroy();
+}
+
+void game::DrawPlayer()
+{
+    if(Player)
+    {
+        if(Player->Starship)
+        {
+            uint32_t TextureID = Player->Starship->TextureID;
+            game_texture* Texture = (game_texture*) AssetMap.Get(TextureID);
+
+            Renderer.DrawTexture(Texture, Player->Starship);
+        }
+    }
 }
 
 void game::DrawObjects()
@@ -113,10 +139,8 @@ void game::DrawObjects()
 
         for(uint32_t Idx = 0; Idx < ObjectCount; Idx++)
         {
-            space_object* Object = ObjectMap.Get(TEXTURE_ID_OFFSET + Idx);
-            game_texture* Texture = (game_texture*) AssetMap.Get(Object->TextureID);
 
-            Renderer.DrawTexture(Texture, Object);
+            // Renderer.DrawTexture(Texture, Object);
         }
     }
 }
@@ -150,7 +174,7 @@ starship* game::MakeShip(int XPos, int YPos,
     return Ship;
 }
 
-void game::MakePlayer()
+void game::DestroyPlayer()
 {
     if(Player)
     {
@@ -158,40 +182,123 @@ void game::MakePlayer()
 
         Player = nullptr;
     }
+}
+
+void game::MakePlayer(int XPos, int YPos, int Width, int Height)
+{
+    DestroyPlayer();
     
     Player           = new player();
-    Player->Starship = MakeShip(0, 0, 64, 64, true);
+    Player->Starship = MakeShip(XPos, YPos, 
+                                Width, Height, 
+                                true);
+}
+
+float game::GetDistance(int XPosA, int YPosA, int XPosB, int YPosB)
+{
+    double XComponent = std::pow(XPosB - XPosA, 2);
+    double YComponent = std::pow(YPosB - YPosA, 2);
+
+    return std::sqrt(XComponent + YComponent);
+}
+
+void game::Update(double DeltaTime = 1.0)
+{
+    SDL_Event Evt { };
+
+    while(SDL_PollEvent(&Evt))
+    {
+        if(Evt.type == SDL_QUIT)
+        {
+            std::cout << "received quit event" << std::endl;
+
+            Playing = false;
+        }
+        else if(Evt.type == SDL_KEYDOWN)
+        {
+            switch(Evt.key.keysym.sym)
+            {
+                case SDLK_LEFT:
+                {
+                    Player->Starship->XPos -= PlayerVelocity;
+
+                } break;
+
+                case SDLK_RIGHT:
+                {
+                    Player->Starship->XPos += PlayerVelocity;
+
+                } break;
+
+                case SDLK_DOWN:
+                {
+                    Player->Starship->YPos += PlayerVelocity;
+
+                } break;
+
+                case SDLK_UP:
+                {
+                    Player->Starship->YPos -= PlayerVelocity * DeltaTime;
+
+                } break;
+            }
+        }
+    }
+
+    GameKeys = SDL_GetKeyboardState(nullptr);
+
+    UpdatePlayer(DeltaTime);
+}
+
+void game::UpdatePlayer(double DeltaTime = 1.0)
+{
+    bool LeftKeyPressed = GameKeys[SDL_SCANCODE_LEFT] > 0;
+    bool RightKeyPressed = GameKeys[SDL_SCANCODE_RIGHT] > 0;
+    bool UpKeyPressed = GameKeys[SDL_SCANCODE_UP] > 0;
+    bool DownKeyPressed = GameKeys[SDL_SCANCODE_DOWN] > 0;
+
+    PlayerVelocity += PlayerVelocity * DeltaTime;
+
+    if(PlayerVelocity > MaxPlayerVelocity)
+    {
+        PlayerVelocity = MaxPlayerVelocity;
+    }
+
+    if(LeftKeyPressed)
+    {
+        Player->Starship->XPos -= PlayerVelocity;
+    }
+    else if(RightKeyPressed)
+    {
+        Player->Starship->XPos += PlayerVelocity;
+    }
+
+    if(UpKeyPressed)
+    {
+        Player->Starship->YPos -= PlayerVelocity;
+    }
+    else if(DownKeyPressed)
+    {
+        Player->Starship->YPos += PlayerVelocity;
+    }
 }
 
 int game::Play()
 {
     LoadAssets();
 
-    int WindowWidth = 0;
+    MakePlayer(0, 0, 64, 64);
 
-    SDL_GetWindowSize(Window, &WindowWidth, nullptr);
-
-    MakePlayer();
-
-    bool Playing = true;
+    Playing = true;
 
     while(Playing)
     {
-        SDL_Event Evt { };
-
-        while(SDL_PollEvent(&Evt))
-        {
-            if(Evt.type == SDL_QUIT)
-            {
-                std::cout << "received quit event" << std::endl;
-
-                Playing = false;
-            }
-        }
+        Update();
 
         Renderer.ClearScreen();
 
         DrawObjects();
+        DrawPlayer();
 
         Renderer.SwapBuffers();
     }

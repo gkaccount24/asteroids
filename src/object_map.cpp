@@ -41,7 +41,7 @@ space_object* object_map::Get(uint32_t Idx)
 
     if(!Slots.empty() && Idx < Slots.size())
     {
-        if(Slots[Idx]->ID > 0)
+        if(Slots[Idx] && Slots[Idx]->ID > 0)
         {
             Data = Slots[Idx]->Data;
         }
@@ -163,7 +163,9 @@ void object_map::PopFree()
 
 void object_map::AddToFree(uint32_t Idx)
 {
-    if(node* Node = new node { nullptr, 0 })
+    node* Node = new node { nullptr, 0 };
+
+    if(Node)
     {
         Node->Idx = Idx;
         Node->Next = Free;
