@@ -26,7 +26,7 @@ public:
     void ClearScreen();
     void SwapBuffers();
 
-    void DrawObject(SDL_Texture* Texture, space_object* Object);
+    void DrawTexture(SDL_Texture* Texture, SDL_Rect Dest, double Angle);
     void DrawText(TTF_Font* Font, std::string Text);
 
 private:

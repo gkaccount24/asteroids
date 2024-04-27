@@ -2,7 +2,10 @@
 #define STARSHIP_H
 
 #include "space_object.h"
+#include "game_texture.h"
 #include "common.h"
+
+class renderer;
 
 class starship: public space_object
 {
@@ -22,6 +25,9 @@ public:
 
 public:
     virtual ~starship();
+
+public:
+    virtual void Draw(renderer& Renderer) const;
 
 private:
 

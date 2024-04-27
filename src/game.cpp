@@ -99,8 +99,9 @@ void game::LoadAssets()
     Loader.LoadTexture(texture_id::UFO, AssetMap, "/home/nathan/Documents/code/asteroids/assets/textures/ufodark.png");
 }
 
-void game::DestroyAssets()
+void game::Destroy()
 {
+    ObjectMap.Destroy();
     AssetMap.Destroy();
 }
 
@@ -122,8 +123,17 @@ int game::Play()
 {
     LoadAssets();
 
-    ObjectMap.Insert(starship(100, 100, 128, 128));
-    ObjectMap.Insert(starship(300, 300, 128, 128));
+    int WindowWidth = 0;
+
+    SDL_GetWindowSize(Window, &WindowWidth, nullptr);
+
+    for(uint32_t RowIdx = 0; RowIdx < 3; RowIdx++)
+    {
+        for(uint32_t ColIdx = 0; ColIdx < (WindowWidth / 128); ColIdx++)
+        {
+            ObjectMap.Insert(starship((ColIdx + 1) * 128, 128, 128, 128));
+        }
+    }
 
     bool Playing = true;
 
@@ -147,6 +157,8 @@ int game::Play()
 
         Renderer.SwapBuffers();
     }
+
+    Destroy();
 
     return EXIT_SUCCESS;
 }

@@ -1,10 +1,13 @@
 #ifndef SPACE_OBJECT_H
 #define SPACE_OBJECT_H
 
+#include "game_texture.h"
 #include "common.h"
 
 #include <cstdint>
 #include <utility>
+
+class renderer;
 
 class space_object
 {
@@ -21,6 +24,10 @@ public:
 
 public:
     void Reset();
+
+public:
+
+    virtual void Draw(renderer& Renderer) const = 0;
 
 public:
     space_object(const space_object& Right);
@@ -50,6 +57,8 @@ protected:
     int    Width;
     int    Height;
     double Angle;
+
+    game_texture* Texture;
 };
 
 #endif

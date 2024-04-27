@@ -17,10 +17,15 @@ public:
                  int Width, int Height);
     ~game_texture();
 
+public:
+    inline SDL_Texture* GetTextureData() const { return Data; }
+    inline SDL_Rect GetTextureRect() const { return Rect; }
+
 private:
     SDL_Texture* Data;
-    int          Width;
-    int          Height;
+    SDL_Rect Rect;
+    int Width;
+    int Height;
 };
 
 #endif

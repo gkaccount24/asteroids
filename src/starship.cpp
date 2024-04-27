@@ -1,5 +1,7 @@
 #include "starship.h"
 
+#include "renderer.h"
+
 #define STARSHIP_SHIELD 100
 
 starship::starship():
@@ -43,4 +45,9 @@ starship::starship(starship&& Right):
     Shield = Right.Shield;
 
     Right.Shield = 0;
+}
+
+void starship::Draw(renderer& Renderer) const
+{
+    Renderer.DrawTexture(Texture->GetTextureData(), Texture->GetTextureRect(), Angle);
 }

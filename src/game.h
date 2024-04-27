@@ -42,7 +42,7 @@ public:
 
 private:
     void LoadAssets();
-    void DestroyAssets();
+    void Destroy();
 
     void DrawObjects();
 
