@@ -1,22 +1,22 @@
 #ifndef GAME_H
 #define GAME_H
 
-#include "game_texture.h"
-#include "game_font.h"
-#include "renderer.h"
-#include "asset_loader.h"
-#include "object_map.h"
-#include "space_object.h"
+#include "../collections/object_map.h"
+#include "game_object.h"
 #include "starship.h"
 #include "player.h"
+
+#include "asset_loader.h"
+#include "../graphics/renderer.h"
+#include "../graphics/game_texture.h"
+#include "../graphics/game_font.h"
 
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 #include <SDL2/SDL_ttf.h>
 
 #include <iostream>
-#include <unordered_map>
-#include <string>
+#include <chrono>
 #include <math.h>
 
 /* GENERIC HELPER MACROS */
@@ -28,10 +28,6 @@
 
 /* HELPER MACROS FOR SDL FUNCTION RETURN CODES */
 #define IsGood(Result)((Result) == 0)
-
-enum {
-
-};
 
 class game
 {
@@ -51,8 +47,8 @@ private:
 
     float GetDistance(int XPosA, int YPosA, int XPosB, int YPosB);
 
-    void Update(double DeltaTime);
-    void UpdatePlayer(double DeltaTime);
+    void Update(float Dt);
+    void UpdatePlayer(float Dt);
 
     void DrawObjects();
     void DrawPlayer();
@@ -65,8 +61,14 @@ private:
                        int Width, int Height, 
                        bool Save = false);
 
+    starship* MakeShip(int XPos, int YPos, 
+                       int Width, int Height, 
+                       float BaseVelocity,
+                       float MaxVelocity,
+                       bool Save = false);
+
 private:
-    uint32_t SaveObject(space_object* Object);
+    uint32_t SaveObject(game_object* Object);
 
 private:
     SDL_Window* Window;

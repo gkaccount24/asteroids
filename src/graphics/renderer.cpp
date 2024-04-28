@@ -64,19 +64,21 @@ void renderer::SwapBuffers()
     SDL_RenderPresent(Renderer);
 }
 
-void renderer::DrawTexture(game_texture* Texture, space_object* Object)
+void renderer::DrawTexture(game_texture* Texture, game_object* Object)
 {
     DrawTexture(Texture->Data, Object);
 }
 
-void renderer::DrawTexture(SDL_Texture* Texture, space_object* Object)
+void renderer::DrawTexture(SDL_Texture* Texture, game_object* Object)
 {
     double Angle = Object->Angle;
     
     SDL_Rect Dest 
     {
-        Object->XPos,  Object->YPos,
-        Object->Width, Object->Height
+        Object->XPos, 
+        Object->YPos,
+        Object->Width, 
+        Object->Height
     };
 
     SDL_RenderCopyEx(Renderer, Texture, nullptr, 

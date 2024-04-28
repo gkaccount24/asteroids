@@ -35,9 +35,9 @@ uint32_t object_map::Capacity() const
     return SlotCapacity; 
 }
 
-space_object* object_map::Get(uint32_t Idx) 
+game_object* object_map::Get(uint32_t Idx) 
 {
-    space_object* Data = nullptr;
+    game_object* Data = nullptr;
 
     if(!Slots.empty() && Idx < Slots.size())
     {
@@ -50,7 +50,7 @@ space_object* object_map::Get(uint32_t Idx)
     return Data;
 }
 
-uint32_t object_map::Add(space_object* Value)
+uint32_t object_map::Add(game_object* Value)
 {
     if(Value)
     {

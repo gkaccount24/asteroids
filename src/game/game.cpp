@@ -145,7 +145,7 @@ void game::DrawObjects()
     }
 }
 
-uint32_t game::SaveObject(space_object* Object)
+uint32_t game::SaveObject(game_object* Object)
 {
     uint32_t ObjectID = 0;
 
@@ -156,12 +156,14 @@ uint32_t game::SaveObject(space_object* Object)
 
 starship* game::MakeShip(int XPos, int YPos, 
                          int Width, int Height, 
+                         float BaseVel,
+                         float MaxVel,
                          bool Save)
 {
     starship* Ship = new starship(XPos, YPos, 
                                   Width, Height, 
-                                  0.0);
-
+                                  0.0f, BaseVel, 
+                                  MaxVel);
     if(Save)
     {
         uint32_t ObjectID = 0;
@@ -172,6 +174,20 @@ starship* game::MakeShip(int XPos, int YPos,
     }
 
     return Ship;
+}
+
+starship* game::MakeShip(int XPos, int YPos, 
+                         int Width, int Height, 
+                         bool Save)
+{
+    float DefaultBaseVel = 1000.0f;
+    float DefaultMaxVel = 10000.0f;
+
+    return MakeShip(XPos, YPos, 
+                    Width, Height, 
+                    DefaultBaseVel, 
+                    DefaultMaxVel, 
+                    Save);
 }
 
 void game::DestroyPlayer()
@@ -202,8 +218,10 @@ float game::GetDistance(int XPosA, int YPosA, int XPosB, int YPosB)
     return std::sqrt(XComponent + YComponent);
 }
 
-void game::Update(double DeltaTime = 1.0)
+void game::Update(float Dt)
 {
+    // std::cout << "dt: " << Dt << std::endl;
+
     SDL_Event Evt { };
 
     while(SDL_PollEvent(&Evt))
@@ -214,31 +232,32 @@ void game::Update(double DeltaTime = 1.0)
 
             Playing = false;
         }
+        else if(Evt.type == SDL_KEYUP)
+        {
+            switch(Evt.key.keysym.sym)
+            {
+                case SDLK_LEFT:
+                case SDLK_RIGHT:
+                case SDLK_DOWN:
+                case SDLK_UP:
+                {
+                    // set playing moving state
+                    Player->Starship->Moving = false;
+
+                } break;
+            }
+        }
         else if(Evt.type == SDL_KEYDOWN)
         {
             switch(Evt.key.keysym.sym)
             {
                 case SDLK_LEFT:
-                {
-                    Player->Starship->XPos -= PlayerVelocity;
-
-                } break;
-
                 case SDLK_RIGHT:
-                {
-                    Player->Starship->XPos += PlayerVelocity;
-
-                } break;
-
                 case SDLK_DOWN:
-                {
-                    Player->Starship->YPos += PlayerVelocity;
-
-                } break;
-
                 case SDLK_UP:
                 {
-                    Player->Starship->YPos -= PlayerVelocity * DeltaTime;
+                    // set playing moving state
+                    Player->Starship->Moving = true;
 
                 } break;
             }
@@ -247,39 +266,59 @@ void game::Update(double DeltaTime = 1.0)
 
     GameKeys = SDL_GetKeyboardState(nullptr);
 
-    UpdatePlayer(DeltaTime);
+    UpdatePlayer(Dt);
 }
 
-void game::UpdatePlayer(double DeltaTime = 1.0)
+void game::UpdatePlayer(float Dt)
 {
     bool LeftKeyPressed = GameKeys[SDL_SCANCODE_LEFT] > 0;
     bool RightKeyPressed = GameKeys[SDL_SCANCODE_RIGHT] > 0;
     bool UpKeyPressed = GameKeys[SDL_SCANCODE_UP] > 0;
     bool DownKeyPressed = GameKeys[SDL_SCANCODE_DOWN] > 0;
 
-    PlayerVelocity += PlayerVelocity * DeltaTime;
+    float Radians = 1.0f * (3.14159 / 180.0f);
 
-    if(PlayerVelocity > MaxPlayerVelocity)
+    if(Player->Starship->Moving)
     {
-        PlayerVelocity = MaxPlayerVelocity;
-    }
+        if(LeftKeyPressed)
+        {
+            Player->Starship->RotateLeft(Radians);
 
-    if(LeftKeyPressed)
-    {
-        Player->Starship->XPos -= PlayerVelocity;
-    }
-    else if(RightKeyPressed)
-    {
-        Player->Starship->XPos += PlayerVelocity;
-    }
+            std::cout << "angle: " << Player->Starship->Angle << std::endl;
+        }
+        else if(RightKeyPressed)
+        { 
+            Player->Starship->RotateRight(Radians);
 
-    if(UpKeyPressed)
-    {
-        Player->Starship->YPos -= PlayerVelocity;
-    }
-    else if(DownKeyPressed)
-    {
-        Player->Starship->YPos += PlayerVelocity;
+            std::cout << "angle: " << Player->Starship->Angle << std::endl;
+        }
+
+        if(UpKeyPressed)
+        {
+            Player->Starship->Accelerate(Dt);
+
+            Player->Starship->XPos = Player->Starship->XPos + sinf(Player->Starship->Angle) * 100.0f * Dt;
+            Player->Starship->YPos = Player->Starship->YPos + cosf(Player->Starship->Angle) * -100.0f * Dt;
+
+            std::cout << "x pos: " << Player->Starship->XPos << std::endl;
+            std::cout << "y pos: " << Player->Starship->YPos << std::endl;
+
+            // Player->Starship->XPos = Player->Starship->XPos + sinf(Player->Starship->Angle) * Player->Starship->CurrentVel;
+            // Player->Starship->YPos = Player->Starship->YPos - cosf(Player->Starship->Angle) * Player->Starship->CurrentVel;
+        }
+        else if(DownKeyPressed)
+        {
+            Player->Starship->Accelerate(Dt);
+
+            Player->Starship->XPos = Player->Starship->XPos + sinf(Player->Starship->Angle) * 100.0f * Dt;
+            Player->Starship->YPos = Player->Starship->YPos + cosf(Player->Starship->Angle) * 100.0f * Dt;
+
+            std::cout << "x pos: " << Player->Starship->XPos << std::endl;
+            std::cout << "y pos: " << Player->Starship->YPos << std::endl;
+
+            // Player->Starship->XPos = Player->Starship->XPos + sinf(Player->Starship->Angle) * Player->Starship->CurrentVel;
+            // Player->Starship->YPos = Player->Starship->YPos + cosf(Player->Starship->Angle) * Player->Starship->CurrentVel;
+        }
     }
 }
 
@@ -291,9 +330,28 @@ int game::Play()
 
     Playing = true;
 
+    auto DtNow = std::chrono::system_clock::now();
+    auto DtLast = DtNow;
+
+    std::chrono::duration<float> Dt;
+
     while(Playing)
     {
-        Update();
+        // We assign the current timestamp
+        // to DtNow, and then using this information
+        // we can find how much time elapsed between frames
+        // because DtNow is Now and DtLast is the timestamp for the
+        // start of the last frame
+        // therefore DtNow - DtLast is delta time, or the time between frames
+
+        DtNow = std::chrono::system_clock::now(); // start of frame
+        Dt = DtNow - DtLast; // time elapsed between start of this frame and the last
+
+        // now that we've calculated Dt, we can save the start of this frame
+        // by assigning DtNow to DtLast
+        DtLast = DtNow; // start of last frame gets assigned
+
+        Update(Dt.count());
 
         Renderer.ClearScreen();
 

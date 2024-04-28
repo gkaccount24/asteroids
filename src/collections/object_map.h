@@ -1,8 +1,8 @@
 #ifndef object_map_H
 #define object_map_H
 
+#include "../game/game_object.h"
 #include "node.h"
-#include "space_object.h"
 
 #include <vector>
 #include <cstdint>
@@ -11,8 +11,8 @@ class object_map
 {
     struct slot
     {
-        uint32_t      ID;
-        space_object* Data;
+        uint32_t     ID;
+        game_object* Data;
     };
 
 public:
@@ -27,8 +27,8 @@ public:
 
 public:
     void Remove(uint32_t Idx);
-    space_object* Get(uint32_t Idx);
-    uint32_t Add(space_object* Value);
+    game_object* Get(uint32_t Idx);
+    uint32_t Add(game_object* Value);
 
     void Destroy();
     void Clear() ;

@@ -48,8 +48,6 @@ if(NOT SDL)
     endif()
 endif()
 
-
-
 add_subdirectory(src)
 
 add_executable(asteroids ${SRC_FILES})

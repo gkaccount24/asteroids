@@ -1,7 +1,7 @@
 #ifndef RENDERER_H
 #define RENDERER_H
 
-#include "space_object.h"
+#include "../game/game_object.h"
 #include "game_texture.h"
 
 #include <SDL2/SDL.h>
@@ -26,8 +26,8 @@ public:
     void ClearScreen();
     void SwapBuffers();
 
-    void DrawTexture(game_texture* Texture, space_object* Object);
-    void DrawTexture(SDL_Texture* Texture, space_object* Object);
+    void DrawTexture(game_texture* Texture, game_object* Object);
+    void DrawTexture(SDL_Texture* Texture, game_object* Object);
     void DrawText(TTF_Font* Font, std::string Text);
 
 private:

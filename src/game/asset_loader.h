@@ -1,11 +1,12 @@
 #ifndef asset_loader_H
 #define asset_loader_H
 
-#include "asset_map.h"
-#include "asset.h"
-#include "game_texture.h"
-#include "game_font.h"
-#include "renderer.h"
+#include "../collections/asset_map.h"
+#include "../game/asset.h"
+
+#include "../graphics/game_texture.h"
+#include "../graphics/game_font.h"
+#include "../graphics/renderer.h"
 
 #include <iostream>
 #include <string>

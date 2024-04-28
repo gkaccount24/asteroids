@@ -1,8 +1,8 @@
 #ifndef ASSET_MAP_H
 #define ASSET_MAP_H
 
-#include "asset.h"
-#include "common.h"
+#include "../game/asset.h"
+#include "../game/common.h"
 
 #include <string>
 #include <vector>
