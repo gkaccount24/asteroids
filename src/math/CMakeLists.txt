@@ -1,0 +1,7 @@
+set(MATH_SRC
+    ${CMAKE_CURRENT_SOURCE_DIR}/constants.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/vec2.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/vec2.cpp
+
+    PARENT_SCOPE
+)

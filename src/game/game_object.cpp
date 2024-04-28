@@ -64,18 +64,18 @@ void game_object::Reset()
 }
 
 void game_object::Accelerate(float Dt) { } 
+void game_object::Move(float Cx, float Cy) { }
 
-void game_object::Move(float Cx, float Cy) 
+void game_object::Rotate(float Value)
 {
+    Angle = Angle - Value;
 
-}
-
-void game_object::RotateLeft(float Value)
-{
-    Angle -= Value;
-}
-
-void game_object::RotateRight(float Value)
-{
-    Angle += Value;
+    if(Angle <= 0.0f)
+    {
+        Angle = 360.0f;
+    }
+    else if(Angle >= 360.0f)
+    {
+        Angle = 0.0f;
+    }
 }

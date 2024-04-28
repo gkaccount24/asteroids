@@ -276,48 +276,34 @@ void game::UpdatePlayer(float Dt)
     bool UpKeyPressed = GameKeys[SDL_SCANCODE_UP] > 0;
     bool DownKeyPressed = GameKeys[SDL_SCANCODE_DOWN] > 0;
 
-    float Radians = 1.0f * (3.14159 / 180.0f);
+    float RotValue = 1.0f * ( 3.14159f / 180.0f );
 
     if(Player->Starship->Moving)
     {
         if(LeftKeyPressed)
         {
-            Player->Starship->RotateLeft(Radians);
+            Player->Starship->Rotate(RotValue);
 
             std::cout << "angle: " << Player->Starship->Angle << std::endl;
         }
         else if(RightKeyPressed)
         { 
-            Player->Starship->RotateRight(Radians);
+            Player->Starship->Rotate(-RotValue);
 
             std::cout << "angle: " << Player->Starship->Angle << std::endl;
         }
 
         if(UpKeyPressed)
         {
-            Player->Starship->Accelerate(Dt);
+            // scale the angle vector by the velocity scalar
+            // and then add it to the xpos
+            // and finally smooth it with delta time
 
-            Player->Starship->XPos = Player->Starship->XPos + sinf(Player->Starship->Angle) * 100.0f * Dt;
-            Player->Starship->YPos = Player->Starship->YPos + cosf(Player->Starship->Angle) * -100.0f * Dt;
-
-            std::cout << "x pos: " << Player->Starship->XPos << std::endl;
-            std::cout << "y pos: " << Player->Starship->YPos << std::endl;
-
-            // Player->Starship->XPos = Player->Starship->XPos + sinf(Player->Starship->Angle) * Player->Starship->CurrentVel;
-            // Player->Starship->YPos = Player->Starship->YPos - cosf(Player->Starship->Angle) * Player->Starship->CurrentVel;
-        }
-        else if(DownKeyPressed)
-        {
-            Player->Starship->Accelerate(Dt);
-
-            Player->Starship->XPos = Player->Starship->XPos + sinf(Player->Starship->Angle) * 100.0f * Dt;
-            Player->Starship->YPos = Player->Starship->YPos + cosf(Player->Starship->Angle) * 100.0f * Dt;
+            Player->Starship->XPos += 100.0f * cosf(Player->Starship->Angle * (3.14159 / 180.0f)) * Dt;
+            Player->Starship->YPos += 100.0f * sinf(Player->Starship->Angle * (3.14159 / 180.0f)) * Dt;
 
             std::cout << "x pos: " << Player->Starship->XPos << std::endl;
             std::cout << "y pos: " << Player->Starship->YPos << std::endl;
-
-            // Player->Starship->XPos = Player->Starship->XPos + sinf(Player->Starship->Angle) * Player->Starship->CurrentVel;
-            // Player->Starship->YPos = Player->Starship->YPos + cosf(Player->Starship->Angle) * Player->Starship->CurrentVel;
         }
     }
 }

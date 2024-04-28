@@ -37,9 +37,7 @@ public:
 
     void Accelerate(float Dt);
     void Move(float Cx, float Cy);
-
-    void RotateLeft(float Value);
-    void RotateRight(float Value);
+    void Rotate(float Value);
 
 private:
     game_object(const game_object& Right) = delete;
