@@ -20,9 +20,4 @@ void player::UseShip(ship* PlayerShip)
 
         Ship = PlayerShip;
     }
-    else
-    {
-        // logging, attempting to assign
-        // null ship to player ship
-    }
 }

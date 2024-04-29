@@ -31,6 +31,8 @@
 
 enum class game_state_id
 {
+    UNITIALIZED,
+    INITIALIZED,
     PLAYING,
     PAUSED,
     STOPPED
@@ -55,6 +57,7 @@ private:
 
     /* INITIALIZATION AND 
        DESTRUCTION METHODS */
+    void Init();
     void Destroy();
 
     /* EVENT MGMT METHODS */
@@ -89,7 +92,6 @@ private:
                    bool Save = false);
     
     /* GAME STATE MGMT METHODS */
-    void SetPlayState();
     void SetGameState(game_state_id NextState);
 
     /* OBJECT MGMT METHODS */

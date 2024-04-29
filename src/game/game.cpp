@@ -3,7 +3,10 @@
 game::game():
     Window(nullptr),
     Renderer(nullptr)
-{ }
+{
+
+    SetGameState(game_state_id::UNITIALIZED);
+}
 
 game::~game()
 {
@@ -172,6 +175,11 @@ void game::LoadAssets()
 
 /* INITIALIZATION AND 
    DESTRUCTION METHODS */
+void game::Init()
+{
+    MakePlayer();
+}
+
 void game::Destroy()
 {
     DestroyPlayer();
@@ -230,6 +238,11 @@ void game::MakePlayer()
                                     BaseSpeed, 
                                     MaxSpeed, 
                                     false);
+        if(!PlayerShip)
+        {
+            // logging, failed to alloc 
+            // memory for player ship object
+        }
 
         Player->UseShip(PlayerShip);
     }
@@ -245,19 +258,11 @@ ship* game::MakeShip(uint32_t AssetID,
     ship* Ship = ship::Make(AssetID, ShipX, ShipY,
                             ShipW, ShipH, BaseSpeed, 
                             MaxSpeed);
-    if(Save)
+    if(Ship)
     {
-        if(Ship)
-        {
-            uint32_t WorldID = SaveObject(Ship);
+        uint32_t WorldID = SaveObject(Ship);
 
-            Ship->SetWorldID(WorldID);
-        }
-        else
-        {
-            // write to logger
-            // failed to save ship object
-        }
+        Ship->SetWorldID(WorldID);
     }
 
     return Ship;
@@ -266,7 +271,11 @@ ship* game::MakeShip(uint32_t AssetID,
 /* GAME STATE MGMT METHODS */
 void game::SetGameState(game_state_id NextState)
 {
-    if(State == game_state_id::STOPPED)
+    if(State == game_state_id::UNITIALIZED)
+    {
+
+    }
+    else if(State == game_state_id::STOPPED)
     {
         if(NextState == game_state_id::PLAYING)
         {
@@ -371,7 +380,6 @@ void game::UpdateTimer()
     // because DtNow is Now and DtLast is the timestamp for the
     // start of the last frame
     // therefore DtNow - DtLast is delta time, or the time between frames
-
     DtNow  = std::chrono::system_clock::now(); // start of frame
     Dt     = DtNow - DtLast; // time elapsed between start of this frame and the last
 
