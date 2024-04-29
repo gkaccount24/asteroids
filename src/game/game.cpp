@@ -307,12 +307,19 @@ void game::RenderTexture(game_texture* Texture, game_object* Object)
 
 void game::ClearScreen()
 {
+    Uint8 RValue = 0; // Map.Background.r;
+    Uint8 GValue = 0; // Map.Background.g;
+    Uint8 BValue = 0; // Map.Background.b;
 
+    Uint8 Opacity = SDL_ALPHA_OPAQUE;
+
+    SDL_SetRenderDrawColor(Renderer, RValue, GValue, BValue, Opacity);
+    SDL_RenderClear(Renderer);
 }
 
 void game::SwapBuffers()
 {
-
+    SDL_RenderPresent(Renderer);
 }
 
 /* MAIN GAME LOOP */

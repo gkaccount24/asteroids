@@ -1,6 +1,4 @@
 set(GRAPHICS_SRC
-    ${CMAKE_CURRENT_SOURCE_DIR}/renderer.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/renderer.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/game_font.h
     ${CMAKE_CURRENT_SOURCE_DIR}/game_font.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/game_texture.h
