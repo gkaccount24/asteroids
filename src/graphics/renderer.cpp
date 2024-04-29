@@ -38,15 +38,6 @@ void renderer::Destroy()
     }
 }
 
-SDL_Texture* renderer::CreateTexture(SDL_Surface* Surface)
-{
-    SDL_Texture* Texture = nullptr;
-
-    Texture = SDL_CreateTextureFromSurface(Renderer, Surface);
-
-    return Texture;
-}
-
 void renderer::ClearScreen()
 {
     Uint8 RValue = 0; // Map.Background.r;

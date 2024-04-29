@@ -60,15 +60,22 @@ private:
 
     /* PER FRAME MGMT METHODS */
     void UpdateTimer();
-
-    /* PER FRAME UPDATE METHODS */
     void Update(float Dt);
+
+    /* RENDERING METHODS */
+    SDL_Texture* CreateTexture(SDL_Surface* Surface);
+    void RenderTexture(SDL_Texture* Texture, game_object* Object);
+    void RenderTexture(game_texture* Texture, game_object* Object);
+    // void RenderText(TTF_Font* Font, std::string Text);
+
+    void ClearScreen();
+    void SwapBuffers();
 
     /* DRAWING METHODS */
     void DrawObjects();
     void DrawPlayer();
 
-    /* CREATIONAL METHODS */
+    /* CREATIONAL & DELETE METHODS */
     void DestroyPlayer();
     void MakePlayer();
 
@@ -79,7 +86,8 @@ private:
     
     /* GAME STATE MGMT METHODS */
     void SetGameState(game_state_id NextState);
-private:
+
+    /* OBJECT MGMT METHODS */
     uint32_t SaveObject(game_object* Object);
 
 private:

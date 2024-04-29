@@ -1,22 +1,18 @@
 #include "game.h"
 
-static float MaxPlayerVelocity;
-static float PlayerVelocity;
-
-#define DEFAULT_PLAYER_VELOCITY 1.0f
-#define DEFAULT_MAX_PLAYER_VELOCITY 2.0f
-
 game::game():
     Window(nullptr),
-    Player(nullptr)
-{
-    MaxPlayerVelocity = DEFAULT_PLAYER_VELOCITY;
-    PlayerVelocity = DEFAULT_MAX_PLAYER_VELOCITY;
-}
+    Renderer(nullptr)
+{ }
 
 game::~game()
 {
-    Renderer.Destroy();
+    if(Renderer)
+    {
+        SDL_DestroyWindow(Renderer);
+
+        Renderer = nullptr;
+    }
 
     if(Window)
     {
@@ -78,7 +74,9 @@ bool game::InitSDL()
         return false;
     }
 
-    if(!Renderer.Create(Window))
+    Renderer = SDL_CreateRenderer(Window, -1, SDL_RENDERER_ACCELERATED);
+
+    if(!Renderer)
     {
         std::cout << "Error Message: " << SDL_GetError() << std::endl;
         std::cout << "failed to make game renderer."     << std::endl;
@@ -88,6 +86,8 @@ bool game::InitSDL()
 
     return true;
 }
+
+/* ASSET LOADING / MGMT METHODS */
 
 bool game::LoadTexture(uint32_t AssetID, std::string AssetPath)
 {
@@ -105,7 +105,7 @@ bool game::LoadTexture(uint32_t AssetID, std::string AssetPath)
 
             if(!TextureData)
             {
-                std::cout << "failed to load texture: " << TexturePath << std::endl;;
+                std::cout << "failed to load texture: " << AssetPath << std::endl;;
                 std::cout << "IMG_GetError(): " << IMG_GetError() << std::endl;
 
                 return false;
@@ -136,13 +136,13 @@ bool game::LoadFont(uint32_t AssetID, std::string AssetPath, int FontSize)
 
         if(!FontData)
         {
-            std::cout << "failed to load font: " << FontPath << std::endl;;
+            std::cout << "failed to load font: " << AssetPath << std::endl;;
             std::cout << "TTF_GetError(): " << TTF_GetError() << std::endl;
 
             return false;
         }
 
-        game_font* Font = new game_font(FontID, FontPath, 
+        game_font* Font = new game_font(FontID, AssetPath, 
                                         FontData, FontSize);
         AssetMap.Add(FontID, Font);
 
@@ -170,6 +170,8 @@ void game::LoadAssets()
     LoadTexture(texture_id::UFO, "/home/nathan/Documents/code/asteroids/assets/textures/ufodark.png");
 }
 
+/* INITIALIZATION AND 
+   DESTRUCTION METHODS */
 void game::Destroy()
 {
     DestroyPlayer();
@@ -178,6 +180,7 @@ void game::Destroy()
     AssetMap.Destroy();
 }
 
+/* DRAWING METHODS */
 void game::DrawPlayer()
 {
     if(Player)
@@ -194,11 +197,20 @@ void game::DrawPlayer()
 void game::DrawObjects()
 { }
 
-uint32_t game::SaveObject(game_object* Object)
+/* CREATIONAL & DELETE METHODS */
+void game::DestroyPlayer()
 {
-    uint32_t WorldID = ObjectMap.Add(Object);
+    if(Player)
+    {
+        delete Player;
 
-    return WorldID;
+        Player = nullptr;
+    }
+}
+
+void game::MakePlayer()
+{
+    DestroyPlayer();
 }
 
 ship* game::MakeShip(uint32_t AssetID, 
@@ -220,41 +232,15 @@ ship* game::MakeShip(uint32_t AssetID,
     return Ship;
 }
 
-void game::DestroyPlayer()
+/* OBJECT MGMT METHODS */
+uint32_t game::SaveObject(game_object* Object)
 {
-    if(Player)
-    {
-        delete Player;
+    uint32_t WorldID = ObjectMap.Add(Object);
 
-        Player = nullptr;
-    }
+    return WorldID;
 }
 
-void game::MakePlayer()
-{
-    DestroyPlayer();
-}
-
-void game::Update(float Dt)
-{
-    GameKeys = SDL_GetKeyboardState(nullptr);
-
-    bool LeftKeyPressed  = GameKeys[SDL_SCANCODE_LEFT]  > 0;
-    bool RightKeyPressed = GameKeys[SDL_SCANCODE_RIGHT] > 0;
-    bool UpKeyPressed    = GameKeys[SDL_SCANCODE_UP]    > 0;
-    bool DownKeyPressed  = GameKeys[SDL_SCANCODE_DOWN]  > 0;
-
-    if(LeftKeyPressed)       { }
-    else if(RightKeyPressed) { }
-
-    if(UpKeyPressed) { }
-}
-
-void game::UpdatePlayer(float Dt)
-{
- 
-}
-
+/* PER FRAME UPDATE METHODS */
 void game::UpdateTimer()
 {
     // We assign the current timestamp
@@ -272,6 +258,64 @@ void game::UpdateTimer()
     DtLast = DtNow; // start of last frame gets assigned
 }
 
+void game::Update(float Dt)
+{
+    GameKeys = SDL_GetKeyboardState(nullptr);
+
+    bool LeftKeyPressed  = GameKeys[SDL_SCANCODE_LEFT]  > 0;
+    bool RightKeyPressed = GameKeys[SDL_SCANCODE_RIGHT] > 0;
+    bool UpKeyPressed    = GameKeys[SDL_SCANCODE_UP]    > 0;
+    bool DownKeyPressed  = GameKeys[SDL_SCANCODE_DOWN]  > 0;
+
+    if(LeftKeyPressed)       { }
+    else if(RightKeyPressed) { }
+
+    if(UpKeyPressed) { }
+}
+
+/* RENDERING METHODS */
+SDL_Texture* game::CreateTexture(SDL_Surface* Surface)
+{
+    SDL_Texture* Texture = nullptr;
+
+    Texture = SDL_CreateTextureFromSurface(Renderer, Surface);
+
+    return Texture;
+}
+
+void game::RenderTexture(SDL_Texture* Texture, game_object* Object)
+{
+    double Angle = Object->Angle;
+    
+    SDL_Rect Dest 
+    {
+        Object->XPos, 
+        Object->YPos,
+        Object->Width, 
+        Object->Height
+    };
+
+    SDL_RenderCopyEx(Renderer, Texture, nullptr, 
+                     &Dest, Angle, nullptr, 
+                     SDL_FLIP_NONE);
+}
+
+void game::RenderTexture(game_texture* Texture, game_object* Object)
+{
+    RenderTexture(Texture->Data, Object);
+}
+
+void game::ClearScreen()
+{
+
+}
+
+void game::SwapBuffers()
+{
+
+}
+
+/* MAIN GAME LOOP */
 int game::Play()
 {
     LoadAssets();
@@ -326,12 +370,8 @@ int game::Play()
 
         Update(Dt.count());
 
-        Renderer.ClearScreen();
-
-        DrawObjects();
-        DrawPlayer();
-
-        Renderer.SwapBuffers();
+        // DrawObjects();
+        // DrawPlayer();
     }
 
     Destroy();
