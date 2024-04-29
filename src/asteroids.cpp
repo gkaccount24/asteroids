@@ -15,5 +15,7 @@ int main()
         return EXIT_FAILURE;
     }
 
+    Asteroids.Init();
+
     return Asteroids.Play();
 }

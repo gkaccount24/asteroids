@@ -5,11 +5,11 @@ game::game():
     Renderer(nullptr),
     Player(nullptr),
     GameKeyCount(0),
-    GameKeys(nullptr)
-{
+    GameKeys(nullptr),
+
     // initialize game state, not yet playable
-    SetGameState(game_state_id::UNITIALIZED);
-}
+    State(game_state_id::UNITIALIZED)
+{ }
 
 game::~game()
 {
@@ -116,8 +116,10 @@ bool game::LoadTexture(uint32_t AssetID, std::string AssetPath)
                 return false;
             }
 
-            game_texture* Texture = new game_texture(AssetID, AssetPath,
-                                                     TextureData, Surface->w, 
+            game_texture* Texture = new game_texture(AssetID, 
+                                                     AssetPath,
+                                                     TextureData, 
+                                                     Surface->w, 
                                                      Surface->h);
             AssetMap.Add(AssetID, Texture);                
 
@@ -147,8 +149,10 @@ bool game::LoadFont(uint32_t AssetID, std::string AssetPath, int FontSize)
             return false;
         }
 
-        game_font* Font = new game_font(AssetID, AssetPath, 
-                                        FontData, FontSize);
+        game_font* Font = new game_font(AssetID, 
+                                        AssetPath, 
+                                        FontData, 
+                                        FontSize);
         AssetMap.Add(AssetID, Font);
 
         return true;
@@ -179,7 +183,12 @@ void game::LoadAssets()
    DESTRUCTION METHODS */
 void game::Init()
 {
+    LoadAssets();
+
     MakePlayer();
+
+    // make game playable
+    SetGameState(game_state_id::INITIALIZED);
 }
 
 void game::Destroy()
@@ -191,14 +200,16 @@ void game::Destroy()
 }
 
 /* DRAWING METHODS */
+void game::DrawShip(ship* Ship)
+{
+    game_texture* Texture = (game_texture*) AssetMap.Get(Ship->GetAssetID());
+
+    RenderTexture(Texture, Ship);
+}
+
 void game::DrawPlayer()
 {
-    if(Player)
-    {
-        // uint32_t TextureID    = Player->Starship->TextureID;
-        // game_texture* Texture = (game_texture*) AssetMap.Get(TextureID);
-        // Renderer.DrawTexture(Texture, Player->Starship);
-    }
+    DrawShip(Player->GetShip());
 }
 
 void game::DrawObjects()
@@ -217,7 +228,9 @@ void game::DestroyPlayer()
 
 void game::MakePlayer()
 {
-    player* Player = new player();
+    DestroyPlayer();
+
+    Player = new player();
 
     if(!Player)
     {
@@ -260,7 +273,7 @@ ship* game::MakeShip(uint32_t AssetID,
     ship* Ship = ship::Make(AssetID, ShipX, ShipY,
                             ShipW, ShipH, BaseSpeed, 
                             MaxSpeed);
-    if(Ship)
+    if(Save)
     {
         uint32_t WorldID = SaveObject(Ship);
 
@@ -286,7 +299,7 @@ void game::SetGameState(game_state_id NextState)
     }
     else if(State == game_state_id::INITIALIZED)
     {
-        if(State == game_state_id::PLAYING)
+        if(NextState == game_state_id::PLAYING)
         {
             State = NextState;
 
@@ -411,9 +424,19 @@ void game::Update(float Dt)
     bool UpKeyPressed    = GameKeys[SDL_SCANCODE_UP]    > 0;
     bool DownKeyPressed  = GameKeys[SDL_SCANCODE_DOWN]  > 0;
 
-    // if(LeftKeyPressed) { }
-    // else if(RightKeyPressed) { }
-    // if(UpKeyPressed) { }
+    if(LeftKeyPressed) 
+    {
+        Player->GetShip()->Rotate(TO_RADIANS(1.0f));
+    }
+    else if(RightKeyPressed) 
+    {
+        Player->GetShip()->Rotate(TO_RADIANS(-1.0f));
+    }
+
+    if(UpKeyPressed)
+    {
+        Player->GetShip()->Move(Dt);
+    }
 }
 
 /* RENDERING METHODS */
@@ -458,6 +481,13 @@ void game::SwapBuffers()
 /* MAIN GAME LOOP */
 int game::Play()
 {
+    if(!Initialized)
+    {
+        // logging, notify user
+        // failed to play, not yet initialized
+        return EXIT_FAILURE;
+    }
+
     SetGameState(game_state_id::PLAYING);
 
     UpdateTimer();
@@ -467,12 +497,14 @@ int game::Play()
         UpdateTimer();
         HandleEvents();
 
+        ClearScreen();
+
         if(!Paused)
         {
             Update(Dt.count());
 
-            // DrawObjects();
-            // DrawPlayer();
+            DrawPlayer();
+            SwapBuffers();
         }
     }
 

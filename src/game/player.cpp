@@ -5,7 +5,9 @@ player::player():
 { }
 
 player::~player() 
-{ }
+{
+    Name.clear();
+}
 
 void player::UseShip(ship* PlayerShip)
 {

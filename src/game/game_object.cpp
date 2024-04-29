@@ -36,7 +36,7 @@ void game_object::SetWorldID(uint32_t ObjectWorldID)
     WorldID = ObjectWorldID;
 }
 
-void game_object::SetTextureID(uint32_t ObjectAssetID)
+void game_object::SetAssetID(uint32_t ObjectAssetID)
 {
     if(ObjectAssetID == 0)
     {

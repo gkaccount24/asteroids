@@ -34,7 +34,7 @@ public: /* STATIC CREATIONAL METHODS */
             return nullptr;
         }
 
-        Ship->SetTextureID(AssetID);
+        Ship->SetAssetID(AssetID);
         Ship->SetPosition(ShipX, ShipY);
         Ship->SetSize(ShipW, ShipH);
         Ship->SetVelocityParams(BaseSpeed,

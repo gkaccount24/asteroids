@@ -27,7 +27,7 @@ public:
     void Move(float Dt);
 
     void SetWorldID(uint32_t ObjectWorldID);
-    void SetTextureID(uint32_t ObjectTextureID);
+    void SetAssetID(uint32_t ObjectTextureID);
     void SetSize(int ObjectW, int ObjectH);
     void SetPosition(float ObjectX, float ObjectY);
     void SetVelocityParams(float ObjectBaseVel,
@@ -42,6 +42,10 @@ public: /* GETTERS */
     inline int Y()              const { return Geometry.Y;    }
     inline int W()              const { return Geometry.W;    }
     inline int H()              const { return Geometry.H;    }
+
+public: /* ID GETTERS */
+    inline uint32_t GetAssetID() const { return AssetID; }
+    inline uint32_t GetWorldID() const { return WorldID; }
 
 private:
     uint32_t WorldID;

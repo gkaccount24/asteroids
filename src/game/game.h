@@ -47,6 +47,7 @@ public:
 
 public:
     bool InitSDL();
+    void Init();
     int Play();
 
 private:
@@ -57,7 +58,6 @@ private:
 
     /* INITIALIZATION AND 
        DESTRUCTION METHODS */
-    void Init();
     void Destroy();
 
     /* EVENT MGMT METHODS */
@@ -78,6 +78,7 @@ private:
     void SwapBuffers();
 
     /* DRAWING METHODS */
+    void DrawShip(ship* Ship);
     void DrawObjects();
     void DrawPlayer();
 

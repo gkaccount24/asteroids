@@ -17,6 +17,10 @@ public:
     void UseShip(ship* PlayerShip);
     void Destroy();
 
+public: /* GETTERS */
+    inline ship*       GetShip() const { return Ship;         }
+    inline const char* GetName() const { return Name.c_str(); }
+
 private:
     ship*       Ship;
     std::string Name;
