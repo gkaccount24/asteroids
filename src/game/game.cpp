@@ -284,6 +284,52 @@ uint32_t game::SaveObject(game_object* Object)
     return WorldID;
 }
 
+/* EVENT MGMT METHODS */
+void game::HandleEvents()
+{
+    SDL_Event Evt { };
+
+    while(SDL_PollEvent(&Evt))
+    {
+        if(Evt.type == SDL_QUIT)
+        {
+            std::cout << "received quit event" << std::endl;
+
+            Playing = false;
+        }
+        else if(Evt.type == SDL_KEYUP)
+        {
+            switch(Evt.key.keysym.sym)
+            {
+                case SDLK_LEFT:
+                case SDLK_RIGHT:
+                case SDLK_DOWN:
+                case SDLK_UP:
+                {
+                    // set playing moving state
+                    // Player->Starship->Moving;
+
+                } break;
+            }
+        }
+        else if(Evt.type == SDL_KEYDOWN)
+        {
+            switch(Evt.key.keysym.sym)
+            {
+                case SDLK_LEFT:
+                case SDLK_RIGHT:
+                case SDLK_DOWN:
+                case SDLK_UP:
+                {
+                    // set playing moving state
+                    // Player->Starship->Moving;
+
+                } break;
+            }
+        }
+    }
+}
+
 /* PER FRAME UPDATE METHODS */
 void game::UpdateTimer()
 {
@@ -302,16 +348,21 @@ void game::UpdateTimer()
     DtLast = DtNow; // start of last frame gets assigned
 }
 
+void game::UpdateKeyState()
+{
+    GameKeys = SDL_GetKeyboardState(&GameKeyCount);
+}
+
 void game::Update(float Dt)
 {
-    GameKeys = SDL_GetKeyboardState(nullptr);
+    UpdateKeyState();
 
     bool LeftKeyPressed  = GameKeys[SDL_SCANCODE_LEFT]  > 0;
     bool RightKeyPressed = GameKeys[SDL_SCANCODE_RIGHT] > 0;
     bool UpKeyPressed    = GameKeys[SDL_SCANCODE_UP]    > 0;
     bool DownKeyPressed  = GameKeys[SDL_SCANCODE_DOWN]  > 0;
 
-    if(LeftKeyPressed)       { }
+    if(LeftKeyPressed) { }
     else if(RightKeyPressed) { }
 
     if(UpKeyPressed) { }
@@ -374,48 +425,7 @@ int game::Play()
     while(Playing)
     {
         UpdateTimer();
-
-        SDL_Event Evt { };
-
-        while(SDL_PollEvent(&Evt))
-        {
-            if(Evt.type == SDL_QUIT)
-            {
-                std::cout << "received quit event" << std::endl;
-
-                Playing = false;
-            }
-            else if(Evt.type == SDL_KEYUP)
-            {
-                switch(Evt.key.keysym.sym)
-                {
-                    case SDLK_LEFT:
-                    case SDLK_RIGHT:
-                    case SDLK_DOWN:
-                    case SDLK_UP:
-                    {
-                        // set playing moving state
-                        // Player->Starship->Moving;
-
-                    } break;
-                }
-            }
-            else if(Evt.type == SDL_KEYDOWN)
-            {
-                switch(Evt.key.keysym.sym)
-                {
-                    case SDLK_LEFT:
-                    case SDLK_RIGHT:
-                    case SDLK_DOWN:
-                    case SDLK_UP:
-                    {
-                        // set playing moving state
-                        // Player->Starship->Moving;
-
-                    } break;
-                }
-            }
-        }
+        HandleEvents();
 
         Update(Dt.count());
 

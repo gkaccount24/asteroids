@@ -57,8 +57,12 @@ private:
        DESTRUCTION METHODS */
     void Destroy();
 
+    /* EVENT MGMT METHODS */
+    void HandleEvents();
+
     /* PER FRAME MGMT METHODS */
     void UpdateTimer();
+    void UpdateKeyState();
     void Update(float Dt);
 
     /* RENDERING METHODS */
