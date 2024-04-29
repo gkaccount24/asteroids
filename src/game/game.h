@@ -63,7 +63,6 @@ private:
 
     /* PER FRAME UPDATE METHODS */
     void Update(float Dt);
-    void UpdatePlayer(float Dt);
 
     /* DRAWING METHODS */
     void DrawObjects();
@@ -87,8 +86,10 @@ private:
     /* GRAPHICS POINTERS
        FOR SDL WINDOW & 
        RENDERER */
-    SDL_Window* Window;
-    renderer    Renderer;
+    SDL_Window*   Window;
+    SDL_Renderer* Renderer;
+
+    // renderer    Renderer;
 
     /* GAME COLLECTIONS FOR 
        ASSETS & OBJECTS */

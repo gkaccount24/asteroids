@@ -154,20 +154,20 @@ bool game::LoadFont(uint32_t AssetID, std::string AssetPath, int FontSize)
 
 void game::LoadAssets()
 {
-    LoadFont(font_id::PressStart2P_Regular_9, AssetMap, "/home/nathan/Documents/code/asteroids/assets/fonts/PressStart2P-Regular.ttf", 9);
-    LoadFont(font_id::PressStart2P_Regular_12, AssetMap, "/home/nathan/Documents/code/asteroids/assets/fonts/PressStart2P-Regular.ttf", 12);
-    LoadFont(font_id::PressStart2P_Regular_24, AssetMap, "/home/nathan/Documents/code/asteroids/assets/fonts/PressStart2P-Regular.ttf", 24);
+    LoadFont(font_id::PressStart2P_Regular_9, "/home/nathan/Documents/code/asteroids/assets/fonts/PressStart2P-Regular.ttf", 9);
+    LoadFont(font_id::PressStart2P_Regular_12, "/home/nathan/Documents/code/asteroids/assets/fonts/PressStart2P-Regular.ttf", 12);
+    LoadFont(font_id::PressStart2P_Regular_24, "/home/nathan/Documents/code/asteroids/assets/fonts/PressStart2P-Regular.ttf", 24);
 
-    LoadTexture(texture_id::AsteroidGrey1, AssetMap, "/home/nathan/Documents/code/asteroids/assets/textures/asteroid1_grey.png");
-    LoadTexture(texture_id::AsteroidGrey2, AssetMap, "/home/nathan/Documents/code/asteroids/assets/textures/asteroid2_grey.png");
-    LoadTexture(texture_id::AsteroidBrown1, AssetMap, "/home/nathan/Documents/code/asteroids/assets/textures/asteroid1_brown.png");
-    LoadTexture(texture_id::AsteroidBrown2, AssetMap, "/home/nathan/Documents/code/asteroids/assets/textures/asteroid2_brown.png");
-    LoadTexture(texture_id::FlagLight, AssetMap, "/home/nathan/Documents/code/asteroids/assets/textures/flag.png");
-    LoadTexture(texture_id::FlagDark, AssetMap, "/home/nathan/Documents/code/asteroids/assets/textures/flagdark.png");
-    LoadTexture(texture_id::Projectile1, AssetMap, "/home/nathan/Documents/code/asteroids/assets/textures/projectile1.png");
-    LoadTexture(texture_id::Projectile2, AssetMap, "/home/nathan/Documents/code/asteroids/assets/textures/projectile2.png");
-    LoadTexture(texture_id::Starship, AssetMap, "/home/nathan/Documents/code/asteroids/assets/textures/starship.png");
-    LoadTexture(texture_id::UFO, AssetMap, "/home/nathan/Documents/code/asteroids/assets/textures/ufodark.png");
+    LoadTexture(texture_id::AsteroidGrey1, "/home/nathan/Documents/code/asteroids/assets/textures/asteroid1_grey.png");
+    LoadTexture(texture_id::AsteroidGrey2, "/home/nathan/Documents/code/asteroids/assets/textures/asteroid2_grey.png");
+    LoadTexture(texture_id::AsteroidBrown1, "/home/nathan/Documents/code/asteroids/assets/textures/asteroid1_brown.png");
+    LoadTexture(texture_id::AsteroidBrown2, "/home/nathan/Documents/code/asteroids/assets/textures/asteroid2_brown.png");
+    LoadTexture(texture_id::FlagLight, "/home/nathan/Documents/code/asteroids/assets/textures/flag.png");
+    LoadTexture(texture_id::FlagDark, "/home/nathan/Documents/code/asteroids/assets/textures/flagdark.png");
+    LoadTexture(texture_id::Projectile1, "/home/nathan/Documents/code/asteroids/assets/textures/projectile1.png");
+    LoadTexture(texture_id::Projectile2, "/home/nathan/Documents/code/asteroids/assets/textures/projectile2.png");
+    LoadTexture(texture_id::Starship, "/home/nathan/Documents/code/asteroids/assets/textures/starship.png");
+    LoadTexture(texture_id::UFO, "/home/nathan/Documents/code/asteroids/assets/textures/ufodark.png");
 }
 
 void game::Destroy()
@@ -237,41 +237,22 @@ void game::MakePlayer()
 
 void game::Update(float Dt)
 {
-    
-
     GameKeys = SDL_GetKeyboardState(nullptr);
 
-    UpdatePlayer(Dt);
+    bool LeftKeyPressed  = GameKeys[SDL_SCANCODE_LEFT]  > 0;
+    bool RightKeyPressed = GameKeys[SDL_SCANCODE_RIGHT] > 0;
+    bool UpKeyPressed    = GameKeys[SDL_SCANCODE_UP]    > 0;
+    bool DownKeyPressed  = GameKeys[SDL_SCANCODE_DOWN]  > 0;
+
+    if(LeftKeyPressed)       { }
+    else if(RightKeyPressed) { }
+
+    if(UpKeyPressed) { }
 }
 
 void game::UpdatePlayer(float Dt)
 {
-    bool LeftKeyPressed = GameKeys[SDL_SCANCODE_LEFT] > 0;
-    bool RightKeyPressed = GameKeys[SDL_SCANCODE_RIGHT] > 0;
-    bool UpKeyPressed = GameKeys[SDL_SCANCODE_UP] > 0;
-    bool DownKeyPressed = GameKeys[SDL_SCANCODE_DOWN] > 0;
-
-    if(LeftKeyPressed) { }
-    // {
-    //     // Player->Starship->Rotate(RotValue);
-    // }
-    else if(RightKeyPressed) { }
-    // { 
-    //     // Player->Starship->Rotate(-RotValue);
-    // }
-
-    if(UpKeyPressed)
-    {
-        // scale the angle vector by the velocity scalar
-        // and then add it to the xpos
-        // and finally smooth it with delta time
-
-        // Player->Starship->XPos += 100.0f * cosf(Player->Starship->Angle * (3.14159 / 180.0f)) * Dt;
-        // Player->Starship->YPos += 100.0f * sinf(Player->Starship->Angle * (3.14159 / 180.0f)) * Dt;
-
-        // std::cout << "x pos: " << Player->Starship->XPos << std::endl;
-        // std::cout << "y pos: " << Player->Starship->YPos << std::endl;
-    }
+ 
 }
 
 void game::UpdateTimer()
