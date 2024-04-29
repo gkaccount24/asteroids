@@ -233,7 +233,47 @@ ship* game::MakeShip(uint32_t AssetID,
 /* GAME STATE MGMT METHODS */
 void game::SetGameState(game_state_id NextState)
 {
+    if(State == game_state_id::STOPPED)
+    {
+        if(NextState == game_state_id::PLAYING)
+        {
+            State = NextState;
 
+            Playing = true;
+        }
+    }
+    else if(State == game_state_id::PAUSED)
+    {
+        if(NextState == game_state_id::PLAYING)
+        {
+            State = NextState;
+
+            Paused = false;
+        }
+        else if(NextState == game_state_id::STOPPED)
+        {
+            State = NextState;
+
+            Paused = false;
+            Playing = false;
+        }
+    }
+    else if(State == game_state_id::PLAYING)
+    {
+        if(NextState == game_state_id::PAUSED)
+        {
+            State = NextState;
+
+            Paused = true;
+        }
+        else if(NextState == game_state_id::STOPPED)
+        {
+            State = NextState;
+
+            Paused = false;
+            Playing = false;
+        }
+    }
 }
 
 /* OBJECT MGMT METHODS */
@@ -293,10 +333,8 @@ void game::RenderTexture(SDL_Texture* Texture, game_object* Object)
     
     SDL_Rect Dest 
     {
-        Object->X(), 
-        Object->Y(),
-        Object->W(), 
-        Object->H()
+        Object->X(), Object->Y(),
+        Object->W(), Object->H()
     };
 
     SDL_RenderCopyEx(Renderer, Texture, nullptr, 
@@ -329,11 +367,9 @@ void game::SwapBuffers()
 /* MAIN GAME LOOP */
 int game::Play()
 {
-    LoadAssets();
+    SetGameState(game_state_id::PLAYING);
 
     UpdateTimer();
-
-    Playing = true;
 
     while(Playing)
     {

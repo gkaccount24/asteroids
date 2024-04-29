@@ -40,7 +40,6 @@ class game
 {
 
 public:
-
     game();
     ~game();
 
@@ -86,6 +85,7 @@ private:
                    bool Save = false);
     
     /* GAME STATE MGMT METHODS */
+    void SetPlayState();
     void SetGameState(game_state_id NextState);
 
     /* OBJECT MGMT METHODS */
@@ -106,6 +106,7 @@ private:
     /* GAME STATE RELATED DATA MEMBERS */
     game_state_id State;
     bool          Playing;
+    bool          Paused;
 
     /* MAIN PLAYER OBJECT PTR to MEMORY */
     player* Player;
