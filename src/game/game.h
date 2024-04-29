@@ -49,10 +49,17 @@ public:
     int Play();
 
 private:
+    /* ASSET LOADING / MGMT METHODS */
+    bool LoadTexture(uint32_t AssetID, std::string TexturePath);
+    bool LoadFont(uint32_t FontID, std::string FontPath, int FontSize);
+    void LoadAssets();
+
     /* INITIALIZATION AND 
        DESTRUCTION METHODS */
-    void LoadAssets();
     void Destroy();
+
+    /* PER FRAME MGMT METHODS */
+    void UpdateTimer();
 
     /* PER FRAME UPDATE METHODS */
     void Update(float Dt);
@@ -77,21 +84,29 @@ private:
     uint32_t SaveObject(game_object* Object);
 
 private:
+    /* GRAPHICS POINTERS
+       FOR SDL WINDOW & 
+       RENDERER */
     SDL_Window* Window;
-    renderer Renderer;
-    
-    player* Player;
+    renderer    Renderer;
 
-    asset_map AssetMap;
+    /* GAME COLLECTIONS FOR 
+       ASSETS & OBJECTS */
+    asset_map  AssetMap;
     object_map ObjectMap;
 
-    int GameKeyCount;
+    /* MAIN PLAYER OBJECT PTR to MEMORY */
+    player* Player;
+
+    /* GLOBAL KEYSTATE STUFF
+       UPDATES PER FRAME */
+    int          GameKeyCount;
     const Uint8* GameKeys;
 
-    int MouseX;
-    int MouseY;
-
-    bool Playing;
+    /* GLOBAL TIMER DATA MEMBERS */
+    std::chrono::time_point<std::chrono::system_clock> DtNow;
+    std::chrono::time_point<std::chrono::system_clock> DtLast;
+    std::chrono::duration<float>                       Dt;
 };
 
 #endif

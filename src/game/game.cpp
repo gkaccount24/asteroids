@@ -89,24 +89,85 @@ bool game::InitSDL()
     return true;
 }
 
+bool game::LoadTexture(uint32_t AssetID, std::string AssetPath)
+{
+    if(!TexturePath.empty())
+    {
+        SDL_Surface* Surface = nullptr;
+
+        Surface = IMG_Load(TexturePath.c_str());
+
+        if(Surface)
+        {
+            SDL_Texture* TextureData = nullptr;
+
+            TextureData = Renderer.CreateTexture(Surface);
+
+            if(!TextureData)
+            {
+                std::cout << "failed to load texture: " << TexturePath << std::endl;;
+                std::cout << "IMG_GetError(): " << IMG_GetError() << std::endl;
+
+                return false;
+            }
+
+            game_texture* Texture = new game_texture(TextureID, TexturePath, 
+                                                     TextureData, Surface->w, 
+                                                     Surface->h);
+            AssetMap.Add(TextureID, Texture);                
+
+            SDL_FreeSurface(Surface);
+            Surface = nullptr;
+
+            return true;
+        }
+    }
+
+    return false;
+}
+
+bool game::LoadFont(uint32_t AssetID, std::string AssetPath, int FontSize)
+{
+    if(!FontPath.empty() && FontSize > 0)
+    {
+        TTF_Font* FontData = nullptr;
+
+        FontData = TTF_OpenFont(FontPath.c_str(), FontSize);
+
+        if(!FontData)
+        {
+            std::cout << "failed to load font: " << FontPath << std::endl;;
+            std::cout << "TTF_GetError(): " << TTF_GetError() << std::endl;
+
+            return false;
+        }
+
+        game_font* Font = new game_font(FontID, FontPath, 
+                                        FontData, FontSize);
+        AssetMap.Add(FontID, Font);
+
+        return true;
+    }
+
+    return false;
+}
+
 void game::LoadAssets()
 {
-    asset_loader Loader(Renderer);
+    LoadFont(font_id::PressStart2P_Regular_9, AssetMap, "/home/nathan/Documents/code/asteroids/assets/fonts/PressStart2P-Regular.ttf", 9);
+    LoadFont(font_id::PressStart2P_Regular_12, AssetMap, "/home/nathan/Documents/code/asteroids/assets/fonts/PressStart2P-Regular.ttf", 12);
+    LoadFont(font_id::PressStart2P_Regular_24, AssetMap, "/home/nathan/Documents/code/asteroids/assets/fonts/PressStart2P-Regular.ttf", 24);
 
-    Loader.LoadFont(font_id::PressStart2P_Regular_9, AssetMap, "/home/nathan/Documents/code/asteroids/assets/fonts/PressStart2P-Regular.ttf", 9);
-    Loader.LoadFont(font_id::PressStart2P_Regular_12, AssetMap, "/home/nathan/Documents/code/asteroids/assets/fonts/PressStart2P-Regular.ttf", 12);
-    Loader.LoadFont(font_id::PressStart2P_Regular_24, AssetMap, "/home/nathan/Documents/code/asteroids/assets/fonts/PressStart2P-Regular.ttf", 24);
-
-    Loader.LoadTexture(texture_id::AsteroidGrey1, AssetMap, "/home/nathan/Documents/code/asteroids/assets/textures/asteroid1_grey.png");
-    Loader.LoadTexture(texture_id::AsteroidGrey2, AssetMap, "/home/nathan/Documents/code/asteroids/assets/textures/asteroid2_grey.png");
-    Loader.LoadTexture(texture_id::AsteroidBrown1, AssetMap, "/home/nathan/Documents/code/asteroids/assets/textures/asteroid1_brown.png");
-    Loader.LoadTexture(texture_id::AsteroidBrown2, AssetMap, "/home/nathan/Documents/code/asteroids/assets/textures/asteroid2_brown.png");
-    Loader.LoadTexture(texture_id::FlagLight, AssetMap, "/home/nathan/Documents/code/asteroids/assets/textures/flag.png");
-    Loader.LoadTexture(texture_id::FlagDark, AssetMap, "/home/nathan/Documents/code/asteroids/assets/textures/flagdark.png");
-    Loader.LoadTexture(texture_id::Projectile1, AssetMap, "/home/nathan/Documents/code/asteroids/assets/textures/projectile1.png");
-    Loader.LoadTexture(texture_id::Projectile2, AssetMap, "/home/nathan/Documents/code/asteroids/assets/textures/projectile2.png");
-    Loader.LoadTexture(texture_id::Starship, AssetMap, "/home/nathan/Documents/code/asteroids/assets/textures/starship.png");
-    Loader.LoadTexture(texture_id::UFO, AssetMap, "/home/nathan/Documents/code/asteroids/assets/textures/ufodark.png");
+    LoadTexture(texture_id::AsteroidGrey1, AssetMap, "/home/nathan/Documents/code/asteroids/assets/textures/asteroid1_grey.png");
+    LoadTexture(texture_id::AsteroidGrey2, AssetMap, "/home/nathan/Documents/code/asteroids/assets/textures/asteroid2_grey.png");
+    LoadTexture(texture_id::AsteroidBrown1, AssetMap, "/home/nathan/Documents/code/asteroids/assets/textures/asteroid1_brown.png");
+    LoadTexture(texture_id::AsteroidBrown2, AssetMap, "/home/nathan/Documents/code/asteroids/assets/textures/asteroid2_brown.png");
+    LoadTexture(texture_id::FlagLight, AssetMap, "/home/nathan/Documents/code/asteroids/assets/textures/flag.png");
+    LoadTexture(texture_id::FlagDark, AssetMap, "/home/nathan/Documents/code/asteroids/assets/textures/flagdark.png");
+    LoadTexture(texture_id::Projectile1, AssetMap, "/home/nathan/Documents/code/asteroids/assets/textures/projectile1.png");
+    LoadTexture(texture_id::Projectile2, AssetMap, "/home/nathan/Documents/code/asteroids/assets/textures/projectile2.png");
+    LoadTexture(texture_id::Starship, AssetMap, "/home/nathan/Documents/code/asteroids/assets/textures/starship.png");
+    LoadTexture(texture_id::UFO, AssetMap, "/home/nathan/Documents/code/asteroids/assets/textures/ufodark.png");
 }
 
 void game::Destroy()
@@ -123,27 +184,15 @@ void game::DrawPlayer()
     {
         if(Player->Starship)
         {
-            uint32_t TextureID = Player->Starship->TextureID;
-            game_texture* Texture = (game_texture*) AssetMap.Get(TextureID);
-
-            Renderer.DrawTexture(Texture, Player->Starship);
+            // uint32_t TextureID    = Player->Starship->TextureID;
+            // game_texture* Texture = (game_texture*) AssetMap.Get(TextureID);
+            // Renderer.DrawTexture(Texture, Player->Starship);
         }
     }
 }
 
 void game::DrawObjects()
-{
-    if(!ObjectMap.Empty())
-    {
-        uint32_t ObjectCount = ObjectMap.Size();
-
-        for(uint32_t Idx = 0; Idx < ObjectCount; Idx++)
-        {
-
-            // Renderer.DrawTexture(Texture, Object);
-        }
-    }
-}
+{ }
 
 uint32_t game::SaveObject(game_object* Object)
 {
@@ -188,49 +237,7 @@ void game::MakePlayer()
 
 void game::Update(float Dt)
 {
-    // std::cout << "dt: " << Dt << std::endl;
-
-    SDL_Event Evt { };
-
-    while(SDL_PollEvent(&Evt))
-    {
-        if(Evt.type == SDL_QUIT)
-        {
-            std::cout << "received quit event" << std::endl;
-
-            Playing = false;
-        }
-        else if(Evt.type == SDL_KEYUP)
-        {
-            switch(Evt.key.keysym.sym)
-            {
-                case SDLK_LEFT:
-                case SDLK_RIGHT:
-                case SDLK_DOWN:
-                case SDLK_UP:
-                {
-                    // set playing moving state
-                    // Player->Starship->Moving;
-
-                } break;
-            }
-        }
-        else if(Evt.type == SDL_KEYDOWN)
-        {
-            switch(Evt.key.keysym.sym)
-            {
-                case SDLK_LEFT:
-                case SDLK_RIGHT:
-                case SDLK_DOWN:
-                case SDLK_UP:
-                {
-                    // set playing moving state
-                    // Player->Starship->Moving;
-
-                } break;
-            }
-        }
-    }
+    
 
     GameKeys = SDL_GetKeyboardState(nullptr);
 
@@ -267,32 +274,74 @@ void game::UpdatePlayer(float Dt)
     }
 }
 
+void game::UpdateTimer()
+{
+    // We assign the current timestamp
+    // to DtNow, and then using this information
+    // we can find how much time elapsed between frames
+    // because DtNow is Now and DtLast is the timestamp for the
+    // start of the last frame
+    // therefore DtNow - DtLast is delta time, or the time between frames
+
+    DtNow  = std::chrono::system_clock::now(); // start of frame
+    Dt     = DtNow - DtLast; // time elapsed between start of this frame and the last
+
+    // now that we've calculated Dt, we can save the start of this frame
+    // by assigning DtNow to DtLast
+    DtLast = DtNow; // start of last frame gets assigned
+}
+
 int game::Play()
 {
     LoadAssets();
 
-    // SetGameState(PLAYING);
-
-    auto DtNow = std::chrono::system_clock::now();
-    auto DtLast = DtNow;
-
-    std::chrono::duration<float> Dt;
+    UpdateTimer();
 
     while(Playing)
     {
-        // We assign the current timestamp
-        // to DtNow, and then using this information
-        // we can find how much time elapsed between frames
-        // because DtNow is Now and DtLast is the timestamp for the
-        // start of the last frame
-        // therefore DtNow - DtLast is delta time, or the time between frames
+        UpdateTimer();
 
-        DtNow = std::chrono::system_clock::now(); // start of frame
-        Dt = DtNow - DtLast; // time elapsed between start of this frame and the last
+        SDL_Event Evt { };
 
-        // now that we've calculated Dt, we can save the start of this frame
-        // by assigning DtNow to DtLast
-        DtLast = DtNow; // start of last frame gets assigned
+        while(SDL_PollEvent(&Evt))
+        {
+            if(Evt.type == SDL_QUIT)
+            {
+                std::cout << "received quit event" << std::endl;
+
+                Playing = false;
+            }
+            else if(Evt.type == SDL_KEYUP)
+            {
+                switch(Evt.key.keysym.sym)
+                {
+                    case SDLK_LEFT:
+                    case SDLK_RIGHT:
+                    case SDLK_DOWN:
+                    case SDLK_UP:
+                    {
+                        // set playing moving state
+                        // Player->Starship->Moving;
+
+                    } break;
+                }
+            }
+            else if(Evt.type == SDL_KEYDOWN)
+            {
+                switch(Evt.key.keysym.sym)
+                {
+                    case SDLK_LEFT:
+                    case SDLK_RIGHT:
+                    case SDLK_DOWN:
+                    case SDLK_UP:
+                    {
+                        // set playing moving state
+                        // Player->Starship->Moving;
+
+                    } break;
+                }
+            }
+        }
 
         Update(Dt.count());
 
