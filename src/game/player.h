@@ -3,6 +3,9 @@
 
 #include "ship.h"
 
+#include <string>
+#include <cstdint>
+
 class player
 {
 
@@ -15,7 +18,8 @@ public:
     void Destroy();
 
 private:
-    ship* Ship;
+    ship*       Ship;
+    std::string Name;
 };
 
 #endif

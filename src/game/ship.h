@@ -18,7 +18,6 @@ public: /* CONSTRUCTOR AND DESTRUCTORS */
     virtual ~ship();
 
 public: /* STATIC CREATIONAL METHODS */
-
     static ship* Make(uint32_t AssetID, 
                       int ShipX, int ShipY,
                       int ShipW, int ShipH,

@@ -207,7 +207,32 @@ void game::DestroyPlayer()
 
 void game::MakePlayer()
 {
-    DestroyPlayer();
+    player* Player = new player();
+
+    if(!Player)
+    {
+        // logging, failed to alloc 
+        // memory for player object
+    }
+    else
+    {
+        uint32_t AssetID = texture_id::Starship;
+        int ShipX        = 0;
+        int ShipY        = 0;
+        int ShipW        = 128;
+        int ShipH        = 128;
+        float BaseSpeed  = 100.0f;
+        float MaxSpeed   = 200.0f;
+
+        ship* PlayerShip = MakeShip(AssetID, 
+                                    ShipX, ShipY, 
+                                    ShipW, ShipH, 
+                                    BaseSpeed, 
+                                    MaxSpeed, 
+                                    false);
+
+        Player->UseShip(PlayerShip);
+    }
 }
 
 ship* game::MakeShip(uint32_t AssetID, 
@@ -220,11 +245,19 @@ ship* game::MakeShip(uint32_t AssetID,
     ship* Ship = ship::Make(AssetID, ShipX, ShipY,
                             ShipW, ShipH, BaseSpeed, 
                             MaxSpeed);
-    if(Ship && Save)
+    if(Save)
     {
-        uint32_t WorldID = SaveObject(Ship);
+        if(Ship)
+        {
+            uint32_t WorldID = SaveObject(Ship);
 
-        Ship->SetWorldID(WorldID);
+            Ship->SetWorldID(WorldID);
+        }
+        else
+        {
+            // write to logger
+            // failed to save ship object
+        }
     }
 
     return Ship;
@@ -240,6 +273,7 @@ void game::SetGameState(game_state_id NextState)
             State = NextState;
 
             Playing = true;
+            Paused = false;
         }
     }
     else if(State == game_state_id::PAUSED)
@@ -293,9 +327,7 @@ void game::HandleEvents()
     {
         if(Evt.type == SDL_QUIT)
         {
-            std::cout << "received quit event" << std::endl;
-
-            Playing = false;
+            SetGameState(game_state_id::STOPPED);
         }
         else if(Evt.type == SDL_KEYUP)
         {
@@ -362,18 +394,15 @@ void game::Update(float Dt)
     bool UpKeyPressed    = GameKeys[SDL_SCANCODE_UP]    > 0;
     bool DownKeyPressed  = GameKeys[SDL_SCANCODE_DOWN]  > 0;
 
-    if(LeftKeyPressed) { }
-    else if(RightKeyPressed) { }
-
-    if(UpKeyPressed) { }
+    // if(LeftKeyPressed) { }
+    // else if(RightKeyPressed) { }
+    // if(UpKeyPressed) { }
 }
 
 /* RENDERING METHODS */
 SDL_Texture* game::CreateTexture(SDL_Surface* Surface)
 {
-    SDL_Texture* Texture = nullptr;
-
-    Texture = SDL_CreateTextureFromSurface(Renderer, Surface);
+    SDL_Texture* Texture = SDL_CreateTextureFromSurface(Renderer, Surface);
 
     return Texture;
 }
@@ -400,13 +429,7 @@ void game::RenderTexture(game_texture* Texture, game_object* Object)
 
 void game::ClearScreen()
 {
-    Uint8 RValue = 0; // Map.Background.r;
-    Uint8 GValue = 0; // Map.Background.g;
-    Uint8 BValue = 0; // Map.Background.b;
-
-    Uint8 Opacity = SDL_ALPHA_OPAQUE;
-
-    SDL_SetRenderDrawColor(Renderer, RValue, GValue, BValue, Opacity);
+    SDL_SetRenderDrawColor(Renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
     SDL_RenderClear(Renderer);
 }
 
@@ -427,10 +450,13 @@ int game::Play()
         UpdateTimer();
         HandleEvents();
 
-        Update(Dt.count());
+        if(!Paused)
+        {
+            Update(Dt.count());
 
-        // DrawObjects();
-        // DrawPlayer();
+            // DrawObjects();
+            // DrawPlayer();
+        }
     }
 
     Destroy();
