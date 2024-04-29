@@ -2,20 +2,12 @@
 
 game::game():
     Window(nullptr),
-    Renderer(nullptr)
+    Renderer(nullptr),
+    Player(nullptr),
+    GameKeyCount(0),
+    GameKeys(nullptr)
 {
-    // SDL_Window*   Window;
-    // SDL_Renderer* Renderer;
-    // asset_map AssetMap;
-    // object_map ObjectMap;
-    // game_state_id State;
-    // bool          Initialized;
-    // bool          Playing;
-    // bool          Paused;
-    // player* Player;
-    // int          GameKeyCount;
-    // const Uint8* GameKeys;
-
+    // initialize game state, not yet playable
     SetGameState(game_state_id::UNITIALIZED);
 }
 
