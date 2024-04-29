@@ -111,6 +111,7 @@ private:
 
     /* GAME STATE RELATED DATA MEMBERS */
     game_state_id State;
+    bool          Initialized;
     bool          Playing;
     bool          Paused;
 

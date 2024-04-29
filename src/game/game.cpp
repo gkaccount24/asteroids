@@ -4,6 +4,17 @@ game::game():
     Window(nullptr),
     Renderer(nullptr)
 {
+    // SDL_Window*   Window;
+    // SDL_Renderer* Renderer;
+    // asset_map AssetMap;
+    // object_map ObjectMap;
+    // game_state_id State;
+    // bool          Initialized;
+    // bool          Playing;
+    // bool          Paused;
+    // player* Player;
+    // int          GameKeyCount;
+    // const Uint8* GameKeys;
 
     SetGameState(game_state_id::UNITIALIZED);
 }
@@ -91,7 +102,6 @@ bool game::InitSDL()
 }
 
 /* ASSET LOADING / MGMT METHODS */
-
 bool game::LoadTexture(uint32_t AssetID, std::string AssetPath)
 {
     if(!AssetPath.empty())
@@ -273,11 +283,18 @@ void game::SetGameState(game_state_id NextState)
 {
     if(State == game_state_id::UNITIALIZED)
     {
+        if(NextState == game_state_id::INITIALIZED)
+        {
+            State = NextState;
 
+            Initialized = true;
+            Playing = false;
+            Paused = false;
+        }
     }
-    else if(State == game_state_id::STOPPED)
+    else if(State == game_state_id::INITIALIZED)
     {
-        if(NextState == game_state_id::PLAYING)
+        if(State == game_state_id::PLAYING)
         {
             State = NextState;
 
