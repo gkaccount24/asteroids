@@ -50,5 +50,5 @@ endif()
 
 add_subdirectory(src)
 
-add_executable(asteroids ${SRC_FILES})
+add_executable(asteroids ${SRC})
 target_link_libraries(asteroids PRIVATE ${SDL} ${SDLttf} ${SDLimg})

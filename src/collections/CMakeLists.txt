@@ -1,10 +1,6 @@
-set(COLLECTIONS_SRC
-    ${CMAKE_CURRENT_SOURCE_DIR}/node.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/node.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/asset_map.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/asset_map.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/object_map.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/object_map.cpp
-
+set(SRC ${SRC} 
+    ${CMAKE_CURRENT_SOURCE_DIR}/node.h ${CMAKE_CURRENT_SOURCE_DIR}/node.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/asset_map.h ${CMAKE_CURRENT_SOURCE_DIR}/asset_map.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/object_map.h ${CMAKE_CURRENT_SOURCE_DIR}/object_map.cpp
     PARENT_SCOPE
 )

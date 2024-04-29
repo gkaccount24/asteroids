@@ -1,4 +1,4 @@
-set(GAME_SRC
+set(SRC ${SRC}
     ${CMAKE_CURRENT_SOURCE_DIR}/common.h
     ${CMAKE_CURRENT_SOURCE_DIR}/asset.h
     ${CMAKE_CURRENT_SOURCE_DIR}/asset.cpp
@@ -14,6 +14,5 @@ set(GAME_SRC
     ${CMAKE_CURRENT_SOURCE_DIR}/game_texture.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/game.h
     ${CMAKE_CURRENT_SOURCE_DIR}/game.cpp
-
     PARENT_SCOPE
 )
