@@ -30,4 +30,32 @@ enum texture_id
 
 #define TEXTURE_ID_OFFSET 100
 
+#define MATH_PI 3.14159
+#define TO_RADIANS(Degrees) ((Degrees) * (MATH_PI / 180.0f))
+
+struct vec2d
+{
+    int X;
+    int Y;
+};
+
+struct size 
+{
+    int W;
+    int H;
+};
+
+struct geometry
+{
+    int X; int Y;
+    int W; int H;
+};
+
+struct speed
+{
+    float Base;
+    float Current;
+    float Max;
+};
+
 #endif

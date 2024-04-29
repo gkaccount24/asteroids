@@ -29,6 +29,13 @@
 /* HELPER MACROS FOR SDL FUNCTION RETURN CODES */
 #define IsGood(Result)((Result) == 0)
 
+enum class game_state_id
+{
+    PLAYING,
+    PAUSED,
+    STOPPED
+};
+
 class game
 {
 
@@ -42,31 +49,30 @@ public:
     int Play();
 
 private:
+    /* INITIALIZATION AND 
+       DESTRUCTION METHODS */
     void LoadAssets();
     void Destroy();
 
-    float GetDistance(int XPosA, int YPosA, int XPosB, int YPosB);
-
+    /* PER FRAME UPDATE METHODS */
     void Update(float Dt);
     void UpdatePlayer(float Dt);
 
+    /* DRAWING METHODS */
     void DrawObjects();
     void DrawPlayer();
 
+    /* CREATIONAL METHODS */
     void DestroyPlayer();
-    void MakePlayer(int XPos, int YPos, 
-                    int Width, int Height);
+    void MakePlayer();
 
-    starship* MakeShip(int XPos, int YPos, 
-                       int Width, int Height, 
-                       bool Save = false);
-
-    starship* MakeShip(int XPos, int YPos, 
-                       int Width, int Height, 
-                       float BaseVelocity,
-                       float MaxVelocity,
-                       bool Save = false);
-
+    ship* MakeShip(geometry ShipGeometry,
+                   float ShipBaseSpeed, 
+                   float ShipMaxSpeed, 
+                   bool Save = false);
+    
+    /* GAME STATE MGMT METHODS */
+    void SetGameState(game_state_id NextState);
 private:
     uint32_t SaveObject(game_object* Object);
 

@@ -147,47 +147,28 @@ void game::DrawObjects()
 
 uint32_t game::SaveObject(game_object* Object)
 {
-    uint32_t ObjectID = 0;
+    uint32_t WorldID = ObjectMap.Add(Object);
 
-    ObjectID = ObjectMap.Add(Object);
-
-    return ObjectID;
+    return WorldID;
 }
 
-starship* game::MakeShip(int XPos, int YPos, 
-                         int Width, int Height, 
-                         float BaseVel,
-                         float MaxVel,
-                         bool Save)
+ship* game::MakeShip(uint32_t AssetID, 
+                     int ShipX, int ShipY,
+                     int ShipW, int ShipH,
+                     float BaseSpeed,
+                     float MaxSpeed)
 {
-    starship* Ship = new starship(XPos, YPos, 
-                                  Width, Height, 
-                                  0.0f, BaseVel, 
-                                  MaxVel);
-    if(Save)
+    ship* Ship = ship::Make(AssetID, ShipX, ShipY,
+                            ShipW, ShipH, BaseSpeed, 
+                            MaxSpeed);
+    if(Ship && Save)
     {
-        uint32_t ObjectID = 0;
+        uint32_t WorldID = SaveObject(Ship);
 
-        ObjectID = SaveObject(Ship);
-
-        Ship->ID = ObjectID;
+        Ship->SetWorldID(WorldID);
     }
 
     return Ship;
-}
-
-starship* game::MakeShip(int XPos, int YPos, 
-                         int Width, int Height, 
-                         bool Save)
-{
-    float DefaultBaseVel = 1000.0f;
-    float DefaultMaxVel = 10000.0f;
-
-    return MakeShip(XPos, YPos, 
-                    Width, Height, 
-                    DefaultBaseVel, 
-                    DefaultMaxVel, 
-                    Save);
 }
 
 void game::DestroyPlayer()
@@ -200,22 +181,9 @@ void game::DestroyPlayer()
     }
 }
 
-void game::MakePlayer(int XPos, int YPos, int Width, int Height)
+void game::MakePlayer()
 {
     DestroyPlayer();
-    
-    Player           = new player();
-    Player->Starship = MakeShip(XPos, YPos, 
-                                Width, Height, 
-                                true);
-}
-
-float game::GetDistance(int XPosA, int YPosA, int XPosB, int YPosB)
-{
-    double XComponent = std::pow(XPosB - XPosA, 2);
-    double YComponent = std::pow(YPosB - YPosA, 2);
-
-    return std::sqrt(XComponent + YComponent);
 }
 
 void game::Update(float Dt)
@@ -242,7 +210,7 @@ void game::Update(float Dt)
                 case SDLK_UP:
                 {
                     // set playing moving state
-                    Player->Starship->Moving = false;
+                    // Player->Starship->Moving;
 
                 } break;
             }
@@ -257,7 +225,7 @@ void game::Update(float Dt)
                 case SDLK_UP:
                 {
                     // set playing moving state
-                    Player->Starship->Moving = true;
+                    // Player->Starship->Moving;
 
                 } break;
             }
@@ -276,35 +244,26 @@ void game::UpdatePlayer(float Dt)
     bool UpKeyPressed = GameKeys[SDL_SCANCODE_UP] > 0;
     bool DownKeyPressed = GameKeys[SDL_SCANCODE_DOWN] > 0;
 
-    float RotValue = 1.0f * ( 3.14159f / 180.0f );
+    if(LeftKeyPressed) { }
+    // {
+    //     // Player->Starship->Rotate(RotValue);
+    // }
+    else if(RightKeyPressed) { }
+    // { 
+    //     // Player->Starship->Rotate(-RotValue);
+    // }
 
-    if(Player->Starship->Moving)
+    if(UpKeyPressed)
     {
-        if(LeftKeyPressed)
-        {
-            Player->Starship->Rotate(RotValue);
+        // scale the angle vector by the velocity scalar
+        // and then add it to the xpos
+        // and finally smooth it with delta time
 
-            std::cout << "angle: " << Player->Starship->Angle << std::endl;
-        }
-        else if(RightKeyPressed)
-        { 
-            Player->Starship->Rotate(-RotValue);
+        // Player->Starship->XPos += 100.0f * cosf(Player->Starship->Angle * (3.14159 / 180.0f)) * Dt;
+        // Player->Starship->YPos += 100.0f * sinf(Player->Starship->Angle * (3.14159 / 180.0f)) * Dt;
 
-            std::cout << "angle: " << Player->Starship->Angle << std::endl;
-        }
-
-        if(UpKeyPressed)
-        {
-            // scale the angle vector by the velocity scalar
-            // and then add it to the xpos
-            // and finally smooth it with delta time
-
-            Player->Starship->XPos += 100.0f * cosf(Player->Starship->Angle * (3.14159 / 180.0f)) * Dt;
-            Player->Starship->YPos += 100.0f * sinf(Player->Starship->Angle * (3.14159 / 180.0f)) * Dt;
-
-            std::cout << "x pos: " << Player->Starship->XPos << std::endl;
-            std::cout << "y pos: " << Player->Starship->YPos << std::endl;
-        }
+        // std::cout << "x pos: " << Player->Starship->XPos << std::endl;
+        // std::cout << "y pos: " << Player->Starship->YPos << std::endl;
     }
 }
 
@@ -312,9 +271,7 @@ int game::Play()
 {
     LoadAssets();
 
-    MakePlayer(0, 0, 64, 64);
-
-    Playing = true;
+    // SetGameState(PLAYING);
 
     auto DtNow = std::chrono::system_clock::now();
     auto DtLast = DtNow;

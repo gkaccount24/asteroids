@@ -1,18 +1,7 @@
 #ifndef PLAYER_H
 #define PLAYER_H
 
-#include "starship.h"
-
-enum player_state_id
-{
-    IDLE,
-    MOVING,
-};
-
-class player_state 
-{
-
-};
+#include "ship.h"
 
 class player
 {
@@ -22,11 +11,11 @@ public:
     ~player();
 
 public:
+    void UseShip(ship* PlayerShip);
     void Destroy();
 
-public:
-    starship* Starship;
-
+private:
+    ship* Ship;
 };
 
 #endif
