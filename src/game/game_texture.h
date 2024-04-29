@@ -1,7 +1,7 @@
 #ifndef game_texture_H
 #define game_texture_H
 
-#include "../game/asset.h"
+#include "asset.h"
 
 #include <SDL2/SDL.h>
 #include <string>

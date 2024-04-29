@@ -1,7 +1,7 @@
 #ifndef GAME_OBJECT_H
 #define GAME_OBJECT_H
 
-#include "../graphics/game_texture.h"
+#include "game_texture.h"
 #include "common.h"
 
 #include <cstdint>
@@ -37,8 +37,11 @@ public:
 public: /* GETTERS */
     inline float CurrentSpeed() const { return Speed.Current; }
     inline float MaxSpeed()     const { return Speed.Max;     }
+    inline float Rotation()     const { return Angle;         }
     inline int X()              const { return Geometry.X;    }
     inline int Y()              const { return Geometry.Y;    }
+    inline int W()              const { return Geometry.W;    }
+    inline int H()              const { return Geometry.H;    }
 
 private:
     uint32_t WorldID;

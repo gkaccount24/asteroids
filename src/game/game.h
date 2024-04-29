@@ -1,15 +1,15 @@
 #ifndef GAME_H
 #define GAME_H
 
+#include "../collections/asset_map.h"
 #include "../collections/object_map.h"
-#include "game_object.h"
-#include "starship.h"
-#include "player.h"
 
-#include "asset_loader.h"
-#include "../graphics/renderer.h"
-#include "../graphics/game_texture.h"
-#include "../graphics/game_font.h"
+#include "game_texture.h"
+#include "game_font.h"
+
+#include "ship.h"
+#include "game_object.h"
+#include "player.h"
 
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
@@ -78,10 +78,11 @@ private:
     /* CREATIONAL & DELETE METHODS */
     void DestroyPlayer();
     void MakePlayer();
-
-    ship* MakeShip(geometry ShipGeometry,
-                   float ShipBaseSpeed, 
-                   float ShipMaxSpeed, 
+    ship* MakeShip(uint32_t AssetID, 
+                   int ShipX, int ShipY,
+                   int ShipW, int ShipH,
+                   float BaseSpeed,
+                   float MaxSpeed, 
                    bool Save = false);
     
     /* GAME STATE MGMT METHODS */
@@ -97,12 +98,14 @@ private:
     SDL_Window*   Window;
     SDL_Renderer* Renderer;
 
-    // renderer    Renderer;
-
     /* GAME COLLECTIONS FOR 
        ASSETS & OBJECTS */
-    asset_map  AssetMap;
+    asset_map AssetMap;
     object_map ObjectMap;
+
+    /* GAME STATE RELATED DATA MEMBERS */
+    game_state_id State;
+    bool          Playing;
 
     /* MAIN PLAYER OBJECT PTR to MEMORY */
     player* Player;

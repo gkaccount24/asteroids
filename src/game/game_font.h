@@ -1,7 +1,7 @@
 #ifndef gfont_H
 #define gfont_H
 
-#include "../game/asset.h"
+#include "asset.h"
 
 #include <SDL2/SDL_ttf.h>
 #include <string>

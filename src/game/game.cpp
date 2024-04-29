@@ -9,7 +9,7 @@ game::~game()
 {
     if(Renderer)
     {
-        SDL_DestroyWindow(Renderer);
+        SDL_DestroyRenderer(Renderer);
 
         Renderer = nullptr;
     }
@@ -91,17 +91,17 @@ bool game::InitSDL()
 
 bool game::LoadTexture(uint32_t AssetID, std::string AssetPath)
 {
-    if(!TexturePath.empty())
+    if(!AssetPath.empty())
     {
         SDL_Surface* Surface = nullptr;
 
-        Surface = IMG_Load(TexturePath.c_str());
+        Surface = IMG_Load(AssetPath.c_str());
 
         if(Surface)
         {
             SDL_Texture* TextureData = nullptr;
 
-            TextureData = Renderer.CreateTexture(Surface);
+            TextureData = CreateTexture(Surface);
 
             if(!TextureData)
             {
@@ -111,10 +111,10 @@ bool game::LoadTexture(uint32_t AssetID, std::string AssetPath)
                 return false;
             }
 
-            game_texture* Texture = new game_texture(TextureID, TexturePath, 
+            game_texture* Texture = new game_texture(AssetID, AssetPath,
                                                      TextureData, Surface->w, 
                                                      Surface->h);
-            AssetMap.Add(TextureID, Texture);                
+            AssetMap.Add(AssetID, Texture);                
 
             SDL_FreeSurface(Surface);
             Surface = nullptr;
@@ -128,11 +128,11 @@ bool game::LoadTexture(uint32_t AssetID, std::string AssetPath)
 
 bool game::LoadFont(uint32_t AssetID, std::string AssetPath, int FontSize)
 {
-    if(!FontPath.empty() && FontSize > 0)
+    if(!AssetPath.empty() && FontSize > 0)
     {
         TTF_Font* FontData = nullptr;
 
-        FontData = TTF_OpenFont(FontPath.c_str(), FontSize);
+        FontData = TTF_OpenFont(AssetPath.c_str(), FontSize);
 
         if(!FontData)
         {
@@ -142,9 +142,9 @@ bool game::LoadFont(uint32_t AssetID, std::string AssetPath, int FontSize)
             return false;
         }
 
-        game_font* Font = new game_font(FontID, AssetPath, 
+        game_font* Font = new game_font(AssetID, AssetPath, 
                                         FontData, FontSize);
-        AssetMap.Add(FontID, Font);
+        AssetMap.Add(AssetID, Font);
 
         return true;
     }
@@ -185,12 +185,9 @@ void game::DrawPlayer()
 {
     if(Player)
     {
-        if(Player->Starship)
-        {
-            // uint32_t TextureID    = Player->Starship->TextureID;
-            // game_texture* Texture = (game_texture*) AssetMap.Get(TextureID);
-            // Renderer.DrawTexture(Texture, Player->Starship);
-        }
+        // uint32_t TextureID    = Player->Starship->TextureID;
+        // game_texture* Texture = (game_texture*) AssetMap.Get(TextureID);
+        // Renderer.DrawTexture(Texture, Player->Starship);
     }
 }
 
@@ -217,7 +214,8 @@ ship* game::MakeShip(uint32_t AssetID,
                      int ShipX, int ShipY,
                      int ShipW, int ShipH,
                      float BaseSpeed,
-                     float MaxSpeed)
+                     float MaxSpeed,
+                     bool Save)
 {
     ship* Ship = ship::Make(AssetID, ShipX, ShipY,
                             ShipW, ShipH, BaseSpeed, 
@@ -230,6 +228,12 @@ ship* game::MakeShip(uint32_t AssetID,
     }
 
     return Ship;
+}
+
+/* GAME STATE MGMT METHODS */
+void game::SetGameState(game_state_id NextState)
+{
+
 }
 
 /* OBJECT MGMT METHODS */
@@ -285,14 +289,14 @@ SDL_Texture* game::CreateTexture(SDL_Surface* Surface)
 
 void game::RenderTexture(SDL_Texture* Texture, game_object* Object)
 {
-    double Angle = Object->Angle;
+    float Angle = Object->Rotation();
     
     SDL_Rect Dest 
     {
-        Object->XPos, 
-        Object->YPos,
-        Object->Width, 
-        Object->Height
+        Object->X(), 
+        Object->Y(),
+        Object->W(), 
+        Object->H()
     };
 
     SDL_RenderCopyEx(Renderer, Texture, nullptr, 
@@ -328,6 +332,8 @@ int game::Play()
     LoadAssets();
 
     UpdateTimer();
+
+    Playing = true;
 
     while(Playing)
     {
