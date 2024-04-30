@@ -197,6 +197,22 @@ bool game::HasErrorState() const
 
 /* INITIALIZATION AND 
    DESTRUCTION METHODS */
+
+void game::SetGameState(game_state_id NextState)
+{
+    switch(State)
+    {
+        case game_state_id::CONSTRUCTED:
+        {
+            if(NextState == game_state_id::SHOWING_MENU)
+            {
+                State = NextState;
+            }
+
+        } break;
+    }
+}
+
 bool game::Init()
 {
     if(!InitGfx())
@@ -210,6 +226,8 @@ bool game::Init()
 
     MakeBackground();
     MakePlayer();
+
+    SetGameState(game_state_id::SHOWING_MENU);
 
     return true;
 }
@@ -579,12 +597,15 @@ int game::Play()
     {
         UpdateTimer();
         HandleEvents();
-
         ClearScreen();
-        
+
         DrawBackground();
 
-        if(!Paused())
+        if(ShowMenu())
+        {
+
+        }
+        else if(!Paused())
         {
             Update(Dt.count());
 

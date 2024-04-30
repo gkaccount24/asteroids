@@ -37,7 +37,8 @@ enum class game_state_id
     STOPPED,
 
     /* initial states */
-    CONSTRUCTED
+    CONSTRUCTED,
+    SHOWING_MENU
 };
 
 struct game_background
@@ -77,6 +78,8 @@ private:
     bool HasErrorState() const;
     void SetErrorState(game_error_code GameLastErrorCode, 
                        std::string GameLastErrorMessage);
+
+    void SetGameState(game_state_id NextState);
 
     /* INITIALIZATION AND 
        DESTRUCTION METHODS */
@@ -139,6 +142,7 @@ private:
     inline bool Playing() const { return State == game_state_id::PLAYING; }
     inline bool Paused() const { return State == game_state_id::PAUSED; }
     inline bool Stopped() const { return State == game_state_id::STOPPED; }
+    inline bool ShowMenu() const { return State == game_state_id::SHOWING_MENU; }
 
 private:
     /* GRAPHICS POINTERS
