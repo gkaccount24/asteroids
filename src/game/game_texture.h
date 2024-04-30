@@ -19,10 +19,14 @@ public:
     virtual ~game_texture();
 
 public:
+    inline SDL_Texture* GetData() const { return Data;   }
+    inline int W()                const { return Width;  }
+    inline int H()                const { return Height; }
 
+private:
     SDL_Texture* Data;
-    int Width;
-    int Height;
+    int          Width;
+    int          Height;
 };
 
 #endif

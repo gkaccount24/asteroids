@@ -24,8 +24,9 @@ enum texture_id
     Projectile2    = 107,
     Starship       = 108,
     UFO            = 109,
+    Space          = 110,
 
-    TextureCount = 11
+    TextureCount = 12
 };
 
 #define TEXTURE_ID_OFFSET 100
@@ -35,20 +36,14 @@ enum texture_id
 
 struct vec2d
 {
-    int X;
-    int Y;
+    float X;
+    float Y;
 };
 
 struct size 
 {
     int W;
     int H;
-};
-
-struct geometry
-{
-    int X; int Y;
-    int W; int H;
 };
 
 struct speed

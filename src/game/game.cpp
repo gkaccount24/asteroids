@@ -1,15 +1,9 @@
 #include "game.h"
 
-game::game():
-    Window(nullptr),
-    Renderer(nullptr),
-    Player(nullptr),
-    GameKeyCount(0),
-    GameKeys(nullptr),
-
-    // initialize game state, not yet playable
-    State(game_state_id::UNITIALIZED)
-{ }
+game::game()
+{
+    OnConstruct();
+}
 
 game::~game()
 {
@@ -32,16 +26,16 @@ game::~game()
     SDL_Quit();
 }
 
-bool game::InitSDL() 
+bool game::InitGfx() 
 {
-    int Result = 0;
-
-    Result = SDL_Init(SDL_INIT_VIDEO | SDL_INIT_EVENTS);
+    int Result = SDL_Init(SDL_INIT_VIDEO | SDL_INIT_EVENTS);
 
     if(!IsGood(Result))
     {
         std::cout << "Error Message: " << SDL_GetError() << std::endl;
         std::cout << "failed to initialize library: SDL" << std::endl;
+
+        SetErrorState(game_error_code::GFX_INITIALIZATION_FAILED, SDL_GetError());
 
         return false;
     }
@@ -55,6 +49,8 @@ bool game::InitSDL()
         std::cout << "Error Message: " << IMG_GetError()       << std::endl;
         std::cout << "failed to initialize library: SDL_image" << std::endl;
 
+        SetErrorState(game_error_code::GFX_INITIALIZATION_FAILED, IMG_GetError());
+
         return false;
     }
 
@@ -65,17 +61,21 @@ bool game::InitSDL()
         std::cout << "Error Message: " << TTF_GetError()     << std::endl;
         std::cout << "failed to initialize library: SDL_ttf" << std::endl;
 
+        SetErrorState(game_error_code::GFX_INITIALIZATION_FAILED, TTF_GetError());
+
         return false;
     }
 
     Window = SDL_CreateWindow("Asteroids", SDL_WINDOWPOS_UNDEFINED, 
-                                                    SDL_WINDOWPOS_UNDEFINED, 
-                                                    1024, 768, SDL_WINDOW_SHOWN);
+                                            SDL_WINDOWPOS_UNDEFINED, 
+                                            1024, 768, SDL_WINDOW_SHOWN);
     
     if(!Window)
     {
         std::cout << "Error Message: " << SDL_GetError() << std::endl;
         std::cout << "failed to make game window."       << std::endl;
+
+        SetErrorState(game_error_code::GFX_FAILED_TO_CREATE_WINDOW, SDL_GetError());
 
         return false;
     }
@@ -86,6 +86,8 @@ bool game::InitSDL()
     {
         std::cout << "Error Message: " << SDL_GetError() << std::endl;
         std::cout << "failed to make game renderer."     << std::endl;
+
+        SetErrorState(game_error_code::GFX_FAILED_TO_CREATE_RENDERER, SDL_GetError());
 
         return false;
     }
@@ -167,6 +169,7 @@ void game::LoadAssets()
     LoadFont(font_id::PressStart2P_Regular_12, "/home/nathan/Documents/code/asteroids/assets/fonts/PressStart2P-Regular.ttf", 12);
     LoadFont(font_id::PressStart2P_Regular_24, "/home/nathan/Documents/code/asteroids/assets/fonts/PressStart2P-Regular.ttf", 24);
 
+    LoadTexture(texture_id::Space, "/home/nathan/Documents/code/asteroids/assets/textures/space.png");
     LoadTexture(texture_id::AsteroidGrey1, "/home/nathan/Documents/code/asteroids/assets/textures/asteroid1_grey.png");
     LoadTexture(texture_id::AsteroidGrey2, "/home/nathan/Documents/code/asteroids/assets/textures/asteroid2_grey.png");
     LoadTexture(texture_id::AsteroidBrown1, "/home/nathan/Documents/code/asteroids/assets/textures/asteroid1_brown.png");
@@ -179,24 +182,59 @@ void game::LoadAssets()
     LoadTexture(texture_id::UFO, "/home/nathan/Documents/code/asteroids/assets/textures/ufodark.png");
 }
 
+/* ERROR STATE MGMT METHODS */
+void game::SetErrorState(game_error_code GameLastErrorCode, 
+                         std::string GameLastErrorMessage)
+{
+    LastErrorCode    = GameLastErrorCode;
+    LastErrorMessage = GameLastErrorMessage;
+}
+
+bool game::HasErrorState() const
+{
+    return LastErrorCode != game_error_code::NONE;
+}
+
 /* INITIALIZATION AND 
    DESTRUCTION METHODS */
-void game::Init()
+bool game::Init()
 {
-    LoadAssets();
+    if(!InitGfx())
+    {
+        std::cout << "gfx initialization failed..." << std::endl;
 
+        return false;
+    }
+
+    OnInit();
+
+    MakeBackground();
     MakePlayer();
 
-    // make game playable
-    SetGameState(game_state_id::INITIALIZED);
+    return true;
 }
 
 void game::Destroy()
 {
+    DestroyBackground();
     DestroyPlayer();
 
     ObjectMap.Destroy();
     AssetMap.Destroy();
+}
+
+int game::Run()
+{
+    if(!Init())
+    {
+        std::cout << "game initialization failed..." << std::endl;
+
+        return (int) LastErrorCode;
+    }
+
+    Play();
+
+    return EXIT_SUCCESS;
 }
 
 /* DRAWING METHODS */
@@ -205,6 +243,39 @@ void game::DrawShip(ship* Ship)
     game_texture* Texture = (game_texture*) AssetMap.Get(Ship->GetAssetID());
 
     RenderTexture(Texture, Ship);
+}
+
+void game::DrawBackground()
+{
+    // game_texture* Texture = Background.Texture;
+
+    // int ColCount = WindowW / Background.Width;
+    // int RowCount = WindowH / Background.Height;
+
+    // for(uint32_t RowIdx = 0; RowIdx < RowCount; RowIdx++)
+    // {
+    //     int Y = Background.Height * RowIdx;
+
+    //     for(uint32_t ColIdx = 0; ColIdx < ColCount; ColIdx++)
+    //     {
+    //         int X = Background.Width * ColIdx;
+
+    //         SDL_Rect Dest 
+    //         {
+    //             X, Y,
+
+    //             Background.Width,
+    //             Background.Height
+    //         };
+
+    //         RenderTexture(Texture->GetData(), Dest);
+    //     }
+    // }
+}
+
+void game::DrawMenu()
+{
+
 }
 
 void game::DrawPlayer()
@@ -216,6 +287,16 @@ void game::DrawObjects()
 { }
 
 /* CREATIONAL & DELETE METHODS */
+void game::DestroyBackground()
+{
+    if(Background)
+    {
+        delete Background;
+
+        Background = nullptr;
+    }
+}
+
 void game::DestroyPlayer()
 {
     if(Player)
@@ -224,6 +305,22 @@ void game::DestroyPlayer()
 
         Player = nullptr;
     }
+}
+
+void game::MakeBackground()
+{
+    DestroyBackground();
+
+    Background = new game_background();
+
+    Background->Size.W = 128;
+    Background->Size.H = 128;
+
+    Background->XOffset = 0;
+    Background->YOffset = 0;
+
+    uint32_t AssetID = texture_id::Space;
+    Background->Texture = (game_texture*) AssetMap.Get(AssetID);
 }
 
 void game::MakePlayer()
@@ -244,8 +341,8 @@ void game::MakePlayer()
         int ShipY        = 0;
         int ShipW        = 128;
         int ShipH        = 128;
-        float BaseSpeed  = 100.0f;
-        float MaxSpeed   = 200.0f;
+        float BaseSpeed  = 250.0f;
+        float MaxSpeed   = 300.0f;
 
         ship* PlayerShip = MakeShip(AssetID, 
                                     ShipX, ShipY, 
@@ -283,64 +380,6 @@ ship* game::MakeShip(uint32_t AssetID,
     return Ship;
 }
 
-/* GAME STATE MGMT METHODS */
-void game::SetGameState(game_state_id NextState)
-{
-    if(State == game_state_id::UNITIALIZED)
-    {
-        if(NextState == game_state_id::INITIALIZED)
-        {
-            State = NextState;
-
-            Initialized = true;
-            Playing = false;
-            Paused = false;
-        }
-    }
-    else if(State == game_state_id::INITIALIZED)
-    {
-        if(NextState == game_state_id::PLAYING)
-        {
-            State = NextState;
-
-            Playing = true;
-            Paused = false;
-        }
-    }
-    else if(State == game_state_id::PAUSED)
-    {
-        if(NextState == game_state_id::PLAYING)
-        {
-            State = NextState;
-
-            Paused = false;
-        }
-        else if(NextState == game_state_id::STOPPED)
-        {
-            State = NextState;
-
-            Paused = false;
-            Playing = false;
-        }
-    }
-    else if(State == game_state_id::PLAYING)
-    {
-        if(NextState == game_state_id::PAUSED)
-        {
-            State = NextState;
-
-            Paused = true;
-        }
-        else if(NextState == game_state_id::STOPPED)
-        {
-            State = NextState;
-
-            Paused = false;
-            Playing = false;
-        }
-    }
-}
-
 /* OBJECT MGMT METHODS */
 uint32_t game::SaveObject(game_object* Object)
 {
@@ -348,6 +387,45 @@ uint32_t game::SaveObject(game_object* Object)
 
     return WorldID;
 }
+
+/* EVENT HANDLING Methods */
+void game::OnConstruct()
+{
+    State = game_state_id::CONSTRUCTED;
+
+    Window = nullptr;
+    Renderer = nullptr;
+
+    WindowW = 0;
+    WindowH = 0;
+
+    Background = nullptr;
+    Player = nullptr;
+
+    GameKeyCount = 0;
+    GameKeys = nullptr;
+
+    LastErrorCode = game_error_code::NONE;
+    LastErrorMessage = "";
+
+    // std::chrono::time_point<std::chrono::system_clock> DtNow;
+    // std::chrono::time_point<std::chrono::system_clock> DtLast;
+    // std::chrono::duration<float>                       Dt;
+}
+
+void game::OnInit()
+{
+    LoadAssets();
+}
+
+void game::OnStart()
+{ }
+
+void game::OnPause()
+{ }
+
+void game::OnStop()
+{ }
 
 /* EVENT MGMT METHODS */
 void game::HandleEvents()
@@ -358,7 +436,7 @@ void game::HandleEvents()
     {
         if(Evt.type == SDL_QUIT)
         {
-            SetGameState(game_state_id::STOPPED);
+
         }
         else if(Evt.type == SDL_KEYUP)
         {
@@ -410,6 +488,13 @@ void game::UpdateTimer()
     DtLast = DtNow; // start of last frame gets assigned
 }
 
+void game::UpdateWindowSize()
+{
+    SDL_GetWindowSize(Window, 
+                      &WindowW, 
+                      &WindowH);
+}
+
 void game::UpdateKeyState()
 {
     GameKeys = SDL_GetKeyboardState(&GameKeyCount);
@@ -417,12 +502,12 @@ void game::UpdateKeyState()
 
 void game::Update(float Dt)
 {
+    UpdateWindowSize();
     UpdateKeyState();
 
     bool LeftKeyPressed  = GameKeys[SDL_SCANCODE_LEFT]  > 0;
     bool RightKeyPressed = GameKeys[SDL_SCANCODE_RIGHT] > 0;
     bool UpKeyPressed    = GameKeys[SDL_SCANCODE_UP]    > 0;
-    bool DownKeyPressed  = GameKeys[SDL_SCANCODE_DOWN]  > 0;
 
     if(LeftKeyPressed) 
     {
@@ -453,10 +538,17 @@ void game::RenderTexture(SDL_Texture* Texture, game_object* Object)
     
     SDL_Rect Dest 
     {
-        Object->X(), Object->Y(),
-        Object->W(), Object->H()
+        Object->X(),
+        Object->Y(),
+        Object->W(),
+        Object->H()
     };
 
+    RenderTexture(Texture, Dest, Angle);
+}
+
+void game::RenderTexture(SDL_Texture* Texture, SDL_Rect Dest, float Angle)
+{
     SDL_RenderCopyEx(Renderer, Texture, nullptr, 
                      &Dest, Angle, nullptr, 
                      SDL_FLIP_NONE);
@@ -464,7 +556,7 @@ void game::RenderTexture(SDL_Texture* Texture, game_object* Object)
 
 void game::RenderTexture(game_texture* Texture, game_object* Object)
 {
-    RenderTexture(Texture->Data, Object);
+    RenderTexture(Texture->GetData(), Object);
 }
 
 void game::ClearScreen()
@@ -481,25 +573,18 @@ void game::SwapBuffers()
 /* MAIN GAME LOOP */
 int game::Play()
 {
-    if(!Initialized)
-    {
-        // logging, notify user
-        // failed to play, not yet initialized
-        return EXIT_FAILURE;
-    }
-
-    SetGameState(game_state_id::PLAYING);
-
     UpdateTimer();
 
-    while(Playing)
+    while(Playing())
     {
         UpdateTimer();
         HandleEvents();
 
         ClearScreen();
+        
+        DrawBackground();
 
-        if(!Paused)
+        if(!Paused())
         {
             Update(Dt.count());
 

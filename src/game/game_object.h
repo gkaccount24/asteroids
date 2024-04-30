@@ -38,10 +38,10 @@ public: /* GETTERS */
     inline float CurrentSpeed() const { return Speed.Current; }
     inline float MaxSpeed()     const { return Speed.Max;     }
     inline float Rotation()     const { return Angle;         }
-    inline int X()              const { return Geometry.X;    }
-    inline int Y()              const { return Geometry.Y;    }
-    inline int W()              const { return Geometry.W;    }
-    inline int H()              const { return Geometry.H;    }
+    inline float X()            const { return Position.X;    }
+    inline float Y()            const { return Position.Y;    }
+    inline int W()              const { return Size.W;        }
+    inline int H()              const { return Size.H;        }
 
 public: /* ID GETTERS */
     inline uint32_t GetAssetID() const { return AssetID; }
@@ -51,8 +51,10 @@ private:
     uint32_t WorldID;
     uint32_t AssetID;
 
-    geometry Geometry;
+    vec2d    Position;
+    size     Size;
     speed    Speed;
+
     float    Angle;
 };
 

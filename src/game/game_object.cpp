@@ -1,7 +1,9 @@
 #include "game_object.h"
 
 game_object::game_object()
-{ }
+{
+    Reset();
+}
 
 game_object::~game_object()
 {
@@ -13,10 +15,10 @@ void game_object::Reset()
     WorldID = 0; // invalid world id, all id's must be non zero
     AssetID = 0; // invalid asset id, all id's must be non zero
 
-    Geometry.X = 0;
-    Geometry.Y = 0;
-    Geometry.W = 0;
-    Geometry.H = 0;
+    Position.X = 0;
+    Position.Y = 0;
+    Size.W = 0;
+    Size.H = 0;
 
     Speed.Base    = 0.0f;
     Speed.Current = 0.0f;
@@ -49,14 +51,14 @@ void game_object::SetAssetID(uint32_t ObjectAssetID)
 
 void game_object::SetSize(int ObjectW, int ObjectH)
 {
-    Geometry.W = ObjectW;
-    Geometry.H = ObjectH;
+    Size.W = ObjectW;
+    Size.H = ObjectH;
 }
 
 void game_object::SetPosition(float ObjectX, float ObjectY)
 {
-    Geometry.X = ObjectX;
-    Geometry.Y = ObjectY;
+    Position.X = ObjectX;
+    Position.Y = ObjectY;
 }
 
 void game_object::SetVelocityParams(float ObjectBaseSpeed,
@@ -91,6 +93,6 @@ void game_object::Accelerate(float Dt)
 
 void game_object::Move(float Dt) 
 {
-    Geometry.X += Speed.Current * cosf(TO_RADIANS(Angle)) * Dt;
-    Geometry.Y += Speed.Current * sinf(TO_RADIANS(Angle)) * Dt;
+    Position.X += Speed.Current * cosf(TO_RADIANS(Angle)) * Dt;
+    Position.Y += Speed.Current * sinf(TO_RADIANS(Angle)) * Dt;
 }
