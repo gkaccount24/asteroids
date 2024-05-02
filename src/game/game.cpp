@@ -655,11 +655,23 @@ SDL_Texture* game::CreateTexture(SDL_Surface* Surface)
 
 SDL_Texture* game::CreateTexture(game_font* Font, std::string Text)
 {
+    SDL_Texture* Texture = nullptr;
+
     TTF_Font* Data = Font->Data;
     SDL_Color Color = Font->Color;
 
-    SDL_Texture* Texture = TTF_RenderText_Solid(Data, Text.c_str(), Color);
+    SDL_Surface* Surface = TTF_RenderText_Solid(Data, Text.c_str(), Color);
 
+    if(!Surface)
+    {
+        // log occurrence, 
+        // report or notify user
+        return nullptr;
+    }
+
+    Texture = CreateTexture(Surface);
+
+    return Texture;
 }
 
 void game::RenderTexture(SDL_Texture* Texture, game_object* Object)

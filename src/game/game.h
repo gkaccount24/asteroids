@@ -4,6 +4,7 @@
 #include "../collections/asset_map.h"
 #include "../collections/object_map.h"
 
+#include "game_menu.h"
 #include "game_state_vars.h"
 #include "game_texture.h"
 #include "game_font.h"
