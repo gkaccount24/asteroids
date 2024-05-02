@@ -2,6 +2,7 @@
 #define GAME_MENU_H
 
 #include "game_state_vars.h"
+#include "game_texture.h"
 #include "game_font.h"
 
 #include <string>
@@ -10,6 +11,7 @@
 
 struct game_menu_option 
 {
+    game_texture* Texture;
     uint32_t      Index;
     std::string   Text;
 };

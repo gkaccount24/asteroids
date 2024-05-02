@@ -19,6 +19,7 @@ public:
 
 public:
     TTF_Font*   Data;
+    SDL_Color   Color;
     int         Size;
 };
 

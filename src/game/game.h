@@ -143,12 +143,6 @@ private:
     void OnPause();
     void OnStop();
 
-private:
-    inline bool Playing() const { return State == game_state_id::PLAYING; }
-    inline bool Paused() const { return State == game_state_id::PAUSED; }
-    inline bool Stopped() const { return State == game_state_id::STOPPED; }
-    inline bool AtStartMenu() const { return State == game_state_id:: AT_START_MENU; }
-
 private: /* STATIC MEMBER REGION */
     inline static uint32_t GlobalMenuID = 0;
 

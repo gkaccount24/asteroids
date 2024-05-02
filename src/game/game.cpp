@@ -371,6 +371,8 @@ void game::AddMenuOption(game_menu* Menu, uint32_t OptionIndex, std::string Opti
     MenuOption->OnClick = OnClickHandler;
 
     Menu->Options.push_back(MenuOption);
+
+    CreateTexture(Menu->Font, OptionText);
 }
 
 void game::MakePauseMenu()
@@ -497,8 +499,6 @@ uint32_t game::SaveObject(game_object* Object)
 /* EVENT HANDLING Methods */
 void game::OnConstruct()
 {
-    State = game_state_id::CONSTRUCTED;
-
     Window = nullptr;
     Renderer = nullptr;
 
@@ -655,6 +655,10 @@ SDL_Texture* game::CreateTexture(SDL_Surface* Surface)
 
 SDL_Texture* game::CreateTexture(game_font* Font, std::string Text)
 {
+    TTF_Font* Data = Font->Data;
+    SDL_Color Color = Font->Color;
+
+    SDL_Texture* Texture = TTF_RenderText_Solid(Data, Text.c_str(), Color);
 
 }
 
@@ -701,7 +705,7 @@ int game::Play()
 {
     UpdateTimer();
 
-    while(Playing())
+    while(true)
     {
         UpdateTimer();
         HandleEvents();
@@ -709,9 +713,9 @@ int game::Play()
 
         DrawBackground();
 
-        if(!AtStartMenu())
+        if(!true)
         {
-            if(!Paused())
+            if(!true)
             {
                 Update(Dt.count());
 
