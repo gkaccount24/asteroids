@@ -19,4 +19,8 @@ struct game_state_vars
     game_state_id State;
 };
 
+void OnGameInit(game_state_vars* StateVars);
+void OnGameLoad(game_state_vars* StateVars);
+void OnGameStart(game_state_vars* StateVars);
+
 #endif

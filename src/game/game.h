@@ -114,8 +114,8 @@ private:
     void DestroyPlayer();
 
     void DestroyMenu(game_menu*& Menu);
-    void MakeMenu(game_menu* Menu, std::pair<std::string, click_handler>* MenuOptions, uint32_t MenuOptionCount);
-    void AddMenuOption(game_menu* Menu, uint32_t OptionIndex, std::string OptionText, click_handler Handler);
+    void MakeMenu(game_menu* Menu, std::pair<std::string, on_click_handler>* MenuOptions, uint32_t MenuOptionCount);
+    void AddMenuOption(game_menu* Menu, uint32_t OptionIndex, std::string OptionText, on_click_handler Handler);
     void MakeMainMenu();
     void MakePauseMenu();
 

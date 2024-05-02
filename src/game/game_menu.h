@@ -9,18 +9,21 @@
 #include <vector>
 #include <cstdint>
 
+typedef void(*on_click_handler)(game_state_vars* StateVars);
+
 struct game_menu_option 
 {
-    game_texture* Texture;
-    uint32_t      Index;
-    std::string   Text;
+    SDL_Texture* Texture;
+    uint32_t Index;
+    std::string Text;
+    on_click_handler Handler;
 };
 
 struct game_menu
 {
-    uint32_t                       MenuID;
-    game_font*                     Font;
     std::vector<game_menu_option*> Options;
+    uint32_t MenuID;
+    game_font* Font;
 };
 
 #endif

@@ -340,7 +340,7 @@ void game::DestroyMenu(game_menu*& Menu)
     }
 }
 
-void game::MakeMenu(game_menu* Menu, std::pair<std::string, click_handler>* MenuOptions, uint32_t MenuOptionCount)
+void game::MakeMenu(game_menu* Menu, std::pair<std::string, on_click_handler>* MenuOptions, uint32_t MenuOptionCount)
 {
     for(uint32_t OptionIndex = 0; 
         OptionIndex < MenuOptionCount; 
@@ -355,17 +355,23 @@ void game::MakeMenu(game_menu* Menu, std::pair<std::string, click_handler>* Menu
     }
 }
 
-void game::AddMenuOption(game_menu* Menu, uint32_t OptionIndex, std::string OptionText, click_handler OnClickHandler)
+void game::AddMenuOption(game_menu* Menu, uint32_t OptionIndex, std::string OptionText, on_click_handler OnClickHandler)
 {
-    game_menu_option* MenuOption = new game_menu_option { };
+    SDL_Texture* Texture = nullptr;
 
-    MenuOption->Index   = OptionIndex;
-    MenuOption->Text    = std::move(OptionText);
-    MenuOption->OnClick = OnClickHandler;
+    Texture = CreateTexture(Menu->Font, OptionText);
 
-    Menu->Options.push_back(MenuOption);
+    if(Texture)
+    {
+        game_menu_option* MenuOption = new game_menu_option { };
 
-    CreateTexture(Menu->Font, OptionText);
+        MenuOption->Texture = Texture;
+        MenuOption->Index   = OptionIndex;
+        MenuOption->Text    = std::move(OptionText);
+        MenuOption->Handler = OnClickHandler;
+
+        Menu->Options.push_back(MenuOption);
+    }
 }
 
 void game::MakePauseMenu()
@@ -377,7 +383,7 @@ void game::MakePauseMenu()
 
     uint32_t MenuOptionCount = 4;
 
-    std::pair<std::string, click_handler> MenuOptions[]
+    std::pair<std::string, on_click_handler> MenuOptions[]
     {
         { "Resume", &game::OnStart },
         { "Save",   &game::OnSave  },
@@ -397,7 +403,7 @@ void game::MakeMainMenu()
 
     uint32_t MenuOptionCount = 4;
 
-    std::pair<std::string, click_handler> MenuOptions[]
+    std::pair<std::string, on_click_handler> MenuOptions[]
     {
         { "Start Game", &game::OnStart    },
         { "Load Game",  &game::OnLoad     },
