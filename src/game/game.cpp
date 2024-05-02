@@ -321,15 +321,8 @@ void game::DestroyPlayer()
     }
 }
 
-void game::DestroyMenu(game_menu* Menu)
+void game::DestroyMenu(game_menu*& Menu)
 {
-    /* I THINK IT MIGHT BE SMART 
-       TO HAVE A REFERENCE TO A POINTER 
-       HERE, BECAUSE IF WE FREE THIS 
-       MEMORY AND NOT NULLPTR IT OUT
-       WE HAVE A DaNGLING PTR ON OUR HANDS (THE POINTeR WE HAVE ON OUR GAME INSTANCE)
-       WHICH IS A MESS, BUT FOR NOW I REMOVE IT*/
-
     if(Menu)
     {
         uint32_t OptionCount = Menu->Options.size();
