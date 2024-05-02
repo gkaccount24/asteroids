@@ -200,17 +200,7 @@ bool game::HasErrorState() const
 
 void game::SetGameState(game_state_id NextState)
 {
-    switch(State)
-    {
-        case game_state_id::CONSTRUCTED:
-        {
-            if(NextState == game_state_id::SHOWING_MENU)
-            {
-                State = NextState;
-            }
-
-        } break;
-    }
+    State = NextState;
 }
 
 bool game::Init()
@@ -227,7 +217,7 @@ bool game::Init()
     MakeBackground();
     MakePlayer();
 
-    SetGameState(game_state_id::SHOWING_MENU);
+    SetGameState(game_state_id::AT_START_MENU);
 
     return true;
 }
@@ -291,9 +281,15 @@ void game::DrawBackground()
     // }
 }
 
-void game::DrawMenu()
+void game::DrawMenu(game_menu* Menu)
 {
+    uint32_t Count = Menu->Options.size();
 
+    for(uint32_t Index = 0; Index < Count; Index++)
+    {
+        Menu->Options[Index].
+
+    }
 }
 
 void game::DrawPlayer()
@@ -323,6 +319,98 @@ void game::DestroyPlayer()
 
         Player = nullptr;
     }
+}
+
+void game::DestroyMenu(game_menu* Menu)
+{
+    /* I THINK IT MIGHT BE SMART 
+       TO HAVE A REFERENCE TO A POINTER 
+       HERE, BECAUSE IF WE FREE THIS 
+       MEMORY AND NOT NULLPTR IT OUT
+       WE HAVE A DaNGLING PTR ON OUR HANDS (THE POINTeR WE HAVE ON OUR GAME INSTANCE)
+       WHICH IS A MESS, BUT FOR NOW I REMOVE IT*/
+
+    if(Menu)
+    {
+        uint32_t OptionCount = Menu->Options.size();
+
+        for(uint32_t Index = 0; Index < OptionCount; Index++)
+        {
+            delete Menu->Options[Index];
+
+            Menu->Options[Index] = nullptr;
+        }
+
+        delete Menu;
+
+        Menu = nullptr;
+    }
+}
+
+void game::MakeMenu(game_menu* Menu, std::pair<std::string, click_handler>* MenuOptions, uint32_t MenuOptionCount)
+{
+    for(uint32_t OptionIndex = 0; 
+        OptionIndex < MenuOptionCount; 
+        OptionIndex++)
+    {
+        CreateTexture(nullptr, MenuOptions[OptionIndex].first);
+
+        AddMenuOption(MainMenu, 
+                      OptionIndex, 
+                      MenuOptions[OptionIndex].first, 
+                      MenuOptions[OptionIndex].second);
+    }
+}
+
+void game::AddMenuOption(game_menu* Menu, uint32_t OptionIndex, std::string OptionText, click_handler OnClickHandler)
+{
+    game_menu_option* MenuOption = new game_menu_option { };
+
+    MenuOption->Index   = OptionIndex;
+    MenuOption->Text    = std::move(OptionText);
+    MenuOption->OnClick = OnClickHandler;
+
+    Menu->Options.push_back(MenuOption);
+}
+
+void game::MakePauseMenu()
+{
+    DestroyMenu(PauseMenu);
+
+    PauseMenu         = new game_menu();
+    PauseMenu->MenuID = ++game::GlobalMenuID;
+
+    uint32_t MenuOptionCount = 4;
+
+    std::pair<std::string, click_handler> MenuOptions[]
+    {
+        { "Resume", &game::OnStart },
+        { "Save",   &game::OnSave  },
+        { "Quit",   &game::OnQuit  },
+        { "Exit",   &game::OnExit  }
+    };
+
+    MakeMenu(PauseMenu, MenuOptions, MenuOptionCount); 
+}
+
+void game::MakeMainMenu()
+{
+    DestroyMenu(MainMenu);
+
+    MainMenu         = new game_menu();
+    MainMenu->MenuID = ++game::GlobalMenuID;
+
+    uint32_t MenuOptionCount = 4;
+
+    std::pair<std::string, click_handler> MenuOptions[]
+    {
+        { "Start Game", &game::OnStart    },
+        { "Load Game",  &game::OnLoad     },
+        { "Settings",   &game::OnSettings },
+        { "Exit",       &game::OnExit     }
+    };
+
+    MakeMenu(MainMenu, MenuOptions, MenuOptionCount); 
 }
 
 void game::MakeBackground()
@@ -435,6 +523,21 @@ void game::OnInit()
 {
     LoadAssets();
 }
+
+void game::OnSettings()
+{ }
+
+void game::OnQuit()
+{ }
+
+void game::OnSave()
+{ }
+
+void game::OnLoad()
+{ }
+
+void game::OnExit()
+{ }
 
 void game::OnStart()
 { }
@@ -550,6 +653,11 @@ SDL_Texture* game::CreateTexture(SDL_Surface* Surface)
     return Texture;
 }
 
+SDL_Texture* game::CreateTexture(game_font* Font, std::string Text)
+{
+
+}
+
 void game::RenderTexture(SDL_Texture* Texture, game_object* Object)
 {
     float Angle = Object->Rotation();
@@ -601,17 +709,25 @@ int game::Play()
 
         DrawBackground();
 
-        if(ShowMenu())
+        if(!AtStartMenu())
         {
+            if(!Paused())
+            {
+                Update(Dt.count());
 
+                DrawPlayer();
+            }
+            else
+            {
+                DrawMenu(PauseMenu);
+            }
         }
-        else if(!Paused())
+        else
         {
-            Update(Dt.count());
-
-            DrawPlayer();
-            SwapBuffers();
+            DrawMenu(MainMenu);
         }
+
+        SwapBuffers();
     }
 
     Destroy();

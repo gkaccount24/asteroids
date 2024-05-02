@@ -4,6 +4,7 @@
 #include "../collections/asset_map.h"
 #include "../collections/object_map.h"
 
+#include "game_state_vars.h"
 #include "game_texture.h"
 #include "game_font.h"
 
@@ -29,18 +30,6 @@
 /* HELPER MACROS FOR SDL FUNCTION RETURN CODES */
 #define IsGood(Result)((Result) == 0)
 
-enum class game_state_id
-{
-    /* primary playing states */
-    PLAYING,
-    PAUSED,
-    STOPPED,
-
-    /* initial states */
-    CONSTRUCTED,
-    SHOWING_MENU
-};
-
 struct game_background
 {
     game_texture* Texture;
@@ -57,6 +46,9 @@ enum class game_error_code
     FAILED_TO_LOAD_ASSET          = -103,
     NONE                          = 0
 };
+
+struct game_menu_option;
+struct game_menu;
 
 class game
 {
@@ -100,6 +92,8 @@ private:
 
     /* RENDERING METHODS */
     SDL_Texture* CreateTexture(SDL_Surface* Surface);
+    SDL_Texture* CreateTexture(game_font* Font, std::string Text);
+
     void RenderTexture(SDL_Texture* Texture, game_object* Object);
     void RenderTexture(game_texture* Texture, game_object* Object);
     void RenderTexture(SDL_Texture* Texture, SDL_Rect Dest, float Angle = 0.0f);
@@ -108,8 +102,8 @@ private:
     void SwapBuffers();
 
     /* DRAWING METHODS */
-    void DrawMenu();
     void DrawBackground();
+    void DrawMenu(game_menu* Menu);
     void DrawShip(ship* Ship);
     void DrawObjects();
     void DrawPlayer();
@@ -117,6 +111,12 @@ private:
     /* CREATIONAL & DELETE METHODS */
     void DestroyBackground();
     void DestroyPlayer();
+
+    void DestroyMenu(game_menu* Menu);
+    void MakeMenu(game_menu* Menu, std::pair<std::string, click_handler>* MenuOptions, uint32_t MenuOptionCount);
+    void AddMenuOption(game_menu* Menu, uint32_t OptionIndex, std::string OptionText, click_handler Handler);
+    void MakeMainMenu();
+    void MakePauseMenu();
 
     void MakeBackground();
     void MakePlayer();
@@ -134,6 +134,11 @@ private:
     void OnConstruct();
     void OnInit();
 
+    void OnSettings();
+    void OnSave();
+    void OnQuit();
+    void OnLoad();
+    void OnExit();
     void OnStart();
     void OnPause();
     void OnStop();
@@ -142,7 +147,10 @@ private:
     inline bool Playing() const { return State == game_state_id::PLAYING; }
     inline bool Paused() const { return State == game_state_id::PAUSED; }
     inline bool Stopped() const { return State == game_state_id::STOPPED; }
-    inline bool ShowMenu() const { return State == game_state_id::SHOWING_MENU; }
+    inline bool AtStartMenu() const { return State == game_state_id:: AT_START_MENU; }
+
+private: /* STATIC MEMBER REGION */
+    inline static uint32_t GlobalMenuID = 0;
 
 private:
     /* GRAPHICS POINTERS
@@ -162,10 +170,14 @@ private:
     object_map ObjectMap;
 
     /* GAME STATE RELATED DATA MEMBERS */
-    game_state_id State;
+    game_state_vars GameState;
 
     /* BACKGROUND DATA MEMBERS */
     game_background* Background;
+
+    /* GAME MENU DATA MEMBERS */
+    game_menu* MainMenu;
+    game_menu* PauseMenu;
 
     /* MAIN PLAYER OBJECT PTR to MEMORY */
     player* Player;
@@ -184,5 +196,7 @@ private:
     std::chrono::time_point<std::chrono::system_clock> DtLast;
     std::chrono::duration<float>                       Dt;
 };
+
+
 
 #endif
