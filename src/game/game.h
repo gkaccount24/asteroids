@@ -40,6 +40,12 @@ struct game_background
     size Size;
 };
 
+struct game_object_map
+{
+    std::unordered_map<uint32_t, game_object*> Entries;
+    std::vector<uint32_t> FreeObjectEntries;
+};
+
 struct game
 {
     SDL_Window*   Window;
@@ -49,7 +55,7 @@ struct game
     int WindowH;
 
     std::unordered_map<std::string, game_asset*> Assets;
-    std::unordered_map<uint32_t, game_object*> Object;
+    game_object_map                              ObjectMap;
 
     std::vector<game_background*> Backgrounds;
     std::vector<game_player*> Players;
@@ -60,42 +66,8 @@ struct game
     std::chrono::duration<float>                       Dt;
 };
 
-// void OnConstruct();
-// void OnInit();
-// void OnSettings();
-// void OnSave();
-// void OnQuit();
-// void OnLoad();
-// void OnExit();
-// void OnStart();
-// void OnPause();
-// void OnStop();
-
-// bool LoadTexture(game* Game, std::string Key, std::string TexturePath);
-// bool LoadFont(game* Game, std::string Key, std::string FontPath, int FontSize);
-// void LoadAssets(game* Game);
-
-// void MakePauseMenu(game* Game);
-// void MakeMainMenu(game* Game);
-// bool InitGfx(game* Game);
-
 bool InitGame(game* Game);
 void DestroyGame(game* Game);
-
-// void HandleEvents(game* Game);
-// void UpdateTimer(game* Game);
-// void UpdateWindowSize(game* Game);
-// void Update(game* Game, float Dt);
-
-// void ClearScreen();
-// void SwapBuffers();
-
-// void DrawBackground();
-// void DrawMenu(game_menu* Menu);
-// void DrawShip(ship* Ship);
-// void DrawObjects();
-// void DrawPlayer();
-
 int PlayGame(game* Game);
 int RunGame(game* Game);
 

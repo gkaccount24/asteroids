@@ -1,6 +1,7 @@
 #include "game.h"
 
-static int AssetID;
+static uint32_t AssetID;
+static uint32_t ObjectID;
 
 bool InitGfx(game* Game) 
 {
@@ -229,6 +230,36 @@ void MakeMainMenu(game* Game)
     MakeMenu(MainMenu, MenuOptions, MenuOptionCount); 
 }
 
+uint32_t AddObject(game_object_map* Map, game_object* Object)
+{
+    if(!Map->FreeObjectEntries.empty())
+    {
+        auto Entry = Map->Entries.at(Map->FreeObjectEntries.back());
+
+        Map->FreeObjectEntries.pop_back();
+
+        return Entry->first;
+    }
+    else
+    {
+        auto Entry = Map->Entries[++ObjectID] = Object;
+
+        return ObjectID;
+    }
+}
+
+void FreeObject(game_object_map* ObjectMap, game_object* Object)
+{
+
+}
+
+uint32_t SaveObject(game* Game, game_object* Object)
+{
+    uint32_t WorldID = Game->Objects.Add(Object);
+
+    return WorldID;
+}
+
 bool InitGame(game* Game)
 {
     if(!InitGfx(Game))
@@ -269,7 +300,7 @@ void DestroyGame(game* Game)
     SDL_Quit();
 }
 
-int Run(game* Game)
+int RunGame(game* Game)
 {
     if(!InitGame(Game))
     {
@@ -301,15 +332,13 @@ void AddBackground(game* Game, uint32_t TextureID, int TileW, int TileH, int XOf
     }
     else
     {
-        // Background->Texture = GetTexture(TextureID)
-
         Background->Size.W = TileW;
         Background->Size.H = TileH;
 
         Background->XOffset = XOffset;
         Background->YOffset = YOffset;
 
-        Game->Backgrounds.push_back(Background);
+        // Game->Backgrounds.push_back(Background);
     }
 }
 
@@ -318,7 +347,7 @@ void AddPlayer(game* Game, int XPos, int YPos,
                float BaseSpeed,
                float MaxSpeed)
 {
-    player* Player = new player();
+    game_player* Player = new game_player { };
 
     if(!Player)
     {
@@ -327,7 +356,6 @@ void AddPlayer(game* Game, int XPos, int YPos,
     }
     else
     {
-        uint32_t AssetID = texture_id::Starship;
         int ShipX        = 0;
         int ShipY        = 0;
         int ShipW        = 128;
@@ -335,21 +363,19 @@ void AddPlayer(game* Game, int XPos, int YPos,
         float BaseSpeed  = 250.0f;
         float MaxSpeed   = 300.0f;
 
-        ship* PlayerShip = MakeShip(AssetID, 
-                                    ShipX, ShipY, 
-                                    ShipW, ShipH, 
-                                    BaseSpeed, 
-                                    MaxSpeed, 
-                                    false);
-        if(!PlayerShip)
-        {
-            // logging, failed to alloc 
-            // memory for player ship object
-        }
+        // ship* PlayerShip = MakeShip(AssetID, ShipX, ShipY, 
+        //                             ShipW, ShipH, BaseSpeed, 
+        //                             MaxSpeed, false);
 
-        Player->UseShip(PlayerShip);
+        // if(!PlayerShip)
+        // {
+        //     // logging, failed to alloc 
+        //     // memory for player ship object
+        // }
 
-        Game->Players.push_back(Player);
+        // AddObject(Game->ObjectMap);
+        // Player->UseShip(PlayerShip);
+        // Game->Players.push_back(Player);
     }
 }
 
@@ -495,9 +521,3 @@ int Play(game* Game)
     return EXIT_SUCCESS;
 }
 
-uint32_t SaveObject(game* Game, game_object* Object)
-{
-    uint32_t WorldID = Game->ObjectMap.Add(Object);
-
-    return WorldID;
-}
