@@ -55,7 +55,7 @@ struct game
     int WindowH;
 
     std::unordered_map<std::string, game_asset*> Assets;
-    game_object_map                              ObjectMap;
+    game_object_map ObjectMap;
 
     std::vector<game_background*> Backgrounds;
     std::vector<game_player*> Players;

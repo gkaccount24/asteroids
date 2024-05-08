@@ -230,15 +230,22 @@ void MakeMainMenu(game* Game)
     MakeMenu(MainMenu, MenuOptions, MenuOptionCount); 
 }
 
+void OccupyObjectEntry()
+{
+
+}
+
 uint32_t AddObject(game_object_map* Map, game_object* Object)
 {
     if(!Map->FreeObjectEntries.empty())
     {
         auto Entry = Map->Entries.at(Map->FreeObjectEntries.back());
 
+        OccupyObjectEntry();
+
         Map->FreeObjectEntries.pop_back();
 
-        return Entry->first;
+        return Entry->WorldID;
     }
     else
     {
@@ -255,7 +262,7 @@ void FreeObject(game_object_map* ObjectMap, game_object* Object)
 
 uint32_t SaveObject(game* Game, game_object* Object)
 {
-    uint32_t WorldID = Game->Objects.Add(Object);
+    uint32_t WorldID = AddObject(&Game->ObjectMap, Object);
 
     return WorldID;
 }
@@ -356,12 +363,13 @@ void AddPlayer(game* Game, int XPos, int YPos,
     }
     else
     {
-        int ShipX        = 0;
-        int ShipY        = 0;
-        int ShipW        = 128;
-        int ShipH        = 128;
-        float BaseSpeed  = 250.0f;
-        float MaxSpeed   = 300.0f;
+        int ShipX        = XPos;
+        int ShipY        = YPos;
+        int ShipW        = Width;
+        int ShipH        = Height;
+
+        float BaseSpeed  = BaseSpeed;
+        float MaxSpeed   = MaxSpeed;
 
         // ship* PlayerShip = MakeShip(AssetID, ShipX, ShipY, 
         //                             ShipW, ShipH, BaseSpeed, 

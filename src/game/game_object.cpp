@@ -1,13 +1,9 @@
 #include "game_object.h"
 
-ship* MakeShip(game_texture* Texture,
-               int ShipX, int ShipY,
-               int ShipW, int ShipH,
-               float BaseSpeed, 
-               float MaxSpeed)
+ship* MakeShip(std::unordered_map<std::string, game_asset*>& Assets, vec2d Position, size Size, speed Speed)
 {
     game_object* Object = new game_object { };
-    ship* Ship =  nullptr;
+    ship* Ship = nullptr;
 
     if(Object)
     {
@@ -33,6 +29,11 @@ ship* MakeShip(game_texture* Texture,
 
     return Ship;
 }
+
+ufo* MakeUFO(std::unordered_map<std::string, game_asset*>& Assets, vec2d Position, size Size, speed Speed) { return nullptr; }
+asteroid* MakeAsteroid(std::unordered_map<std::string, game_asset*>& Assets, vec2d Position, size Size, speed Speed) { return nullptr; }
+projectile* MakeProjectile(std::unordered_map<std::string, game_asset*>& Assets, vec2d Position, size Size, speed Speed) { return nullptr; }
+flag* MakeFlag(std::unordered_map<std::string, game_asset*>& Assets, vec2d Position, size Size, speed Speed) { return nullptr; }
 
 void Reset(game_object* Object)
 {

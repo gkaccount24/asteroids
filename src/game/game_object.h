@@ -1,28 +1,33 @@
 #ifndef GAME_OBJECT_H
 #define GAME_OBJECT_H
 
-#include "game_texture.h"
-
+#include "game_asset.h"
 #include "common.h"
 
-#include <cstdint>
+#include <unordered_map>
 #include <utility>
+#include <cstdint>
 
 enum class game_object_type_id
 {
-    SHIP
+    SHIP,
+    UFO,
+    ASTEROID,
+    PROJECTILE,
+    FLAG
 };
 
-struct ship
-{
+struct ship       { };
+struct ufo        { };
+struct asteroid   { };
+struct projectile { };
+struct flag       { };
 
-};
-
-ship* MakeShip(game_texture* Texture,
-               int ShipX, int ShipY,
-               int ShipW, int ShipH,
-               float BaseSpeed, 
-               float MaxSpeed);
+ship* MakeShip(vec2d Position, size Size, speed Speed);
+ufo* MakeUFO(vec2d Position, size Size, speed Speed);
+asteroid* MakeAsteroid(vec2d Position, size Size, speed Speed);
+projectile* MakeProjectile(vec2d Position, size Size, speed Speed);
+flag* MakeFlag(vec2d Position, size Size, speed Speed);
 
 struct game_object
 {
@@ -36,8 +41,14 @@ struct game_object
 
     float Angle;
 
-    union {
-        ship* Ship;
+    union 
+    {
+        ship*       Ship;
+        ufo*        UFO;
+        asteroid*   Asteroid;
+        projectile* Projectile;
+        flag*       Flag;
+
     } Data;
 };
 
