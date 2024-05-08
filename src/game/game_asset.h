@@ -4,6 +4,7 @@
 #include "game_texture.h"
 #include "game_font.h"
 
+#include <unordered_map>
 #include <string>
 #include <cstdint>
 
@@ -18,6 +19,7 @@ struct game_asset
     } Data;
 };
 
-void SetAssetPath(std::string Path);
+game_texture* GetTexture(std::unordered_map<std::string, game_asset*>& Assets, std::string Key);
+game_font* GetFont(std::unordered_map<std::string, game_asset*>& Assets, std::string Key);
 
 #endif
