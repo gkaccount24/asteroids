@@ -1,32 +1,8 @@
 #include "game.h"
 
-game::game()
-{
-    OnConstruct();
-}
+static int AssetID;
 
-game::~game()
-{
-    if(Renderer)
-    {
-        SDL_DestroyRenderer(Renderer);
-
-        Renderer = nullptr;
-    }
-
-    if(Window)
-    {
-        SDL_DestroyWindow(Window);
-
-        Window = nullptr;
-    }
-
-    TTF_Quit();
-    IMG_Quit();
-    SDL_Quit();
-}
-
-bool game::InitGfx() 
+bool InitGfx(game* Game) 
 {
     int Result = SDL_Init(SDL_INIT_VIDEO | SDL_INIT_EVENTS);
 
@@ -35,7 +11,7 @@ bool game::InitGfx()
         std::cout << "Error Message: " << SDL_GetError() << std::endl;
         std::cout << "failed to initialize library: SDL" << std::endl;
 
-        SetErrorState(game_error_code::GFX_INITIALIZATION_FAILED, SDL_GetError());
+        // SetErrorState(game_error_code::GFX_INITIALIZATION_FAILED, SDL_GetError());
 
         return false;
     }
@@ -49,7 +25,7 @@ bool game::InitGfx()
         std::cout << "Error Message: " << IMG_GetError()       << std::endl;
         std::cout << "failed to initialize library: SDL_image" << std::endl;
 
-        SetErrorState(game_error_code::GFX_INITIALIZATION_FAILED, IMG_GetError());
+        // SetErrorState(game_error_code::GFX_INITIALIZATION_FAILED, IMG_GetError());
 
         return false;
     }
@@ -61,33 +37,32 @@ bool game::InitGfx()
         std::cout << "Error Message: " << TTF_GetError()     << std::endl;
         std::cout << "failed to initialize library: SDL_ttf" << std::endl;
 
-        SetErrorState(game_error_code::GFX_INITIALIZATION_FAILED, TTF_GetError());
+        // SetErrorState(game_error_code::GFX_INITIALIZATION_FAILED, TTF_GetError());
 
         return false;
     }
 
-    Window = SDL_CreateWindow("Asteroids", SDL_WINDOWPOS_UNDEFINED, 
-                                            SDL_WINDOWPOS_UNDEFINED, 
-                                            1024, 768, SDL_WINDOW_SHOWN);
+    Game->Window = SDL_CreateWindow("Asteroids", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 
+                                    1024, 768, SDL_WINDOW_SHOWN);
     
-    if(!Window)
+    if(!Game->Window)
     {
         std::cout << "Error Message: " << SDL_GetError() << std::endl;
         std::cout << "failed to make game window."       << std::endl;
 
-        SetErrorState(game_error_code::GFX_FAILED_TO_CREATE_WINDOW, SDL_GetError());
+        // SetErrorState(game_error_code::GFX_FAILED_TO_CREATE_WINDOW, SDL_GetError());
 
         return false;
     }
 
-    Renderer = SDL_CreateRenderer(Window, -1, SDL_RENDERER_ACCELERATED);
+    Game->Renderer = SDL_CreateRenderer(Game->Window, -1, SDL_RENDERER_ACCELERATED);
 
-    if(!Renderer)
+    if(!Game->Renderer)
     {
         std::cout << "Error Message: " << SDL_GetError() << std::endl;
         std::cout << "failed to make game renderer."     << std::endl;
 
-        SetErrorState(game_error_code::GFX_FAILED_TO_CREATE_RENDERER, SDL_GetError());
+        // SetErrorState(game_error_code::GFX_FAILED_TO_CREATE_RENDERER, SDL_GetError());
 
         return false;
     }
@@ -95,35 +70,50 @@ bool game::InitGfx()
     return true;
 }
 
-/* ASSET LOADING / MGMT METHODS */
-bool game::LoadTexture(uint32_t AssetID, std::string AssetPath)
+void AddAsset(std::unordered_map<std::string, game_asset*>& Assets, std::string Key, game_asset* Asset)
 {
-    if(!AssetPath.empty())
+    if(!Key.empty())
+    {
+        auto Entry = Assets.find(Key);
+
+        if(Asset && Entry == std::end(Assets))
+        {
+            Assets[Key] = Asset;
+        }
+    }
+}
+
+bool LoadTexture(game* Game, std::string Key, std::string Path)
+{
+    if(!Path.empty())
     {
         SDL_Surface* Surface = nullptr;
 
-        Surface = IMG_Load(AssetPath.c_str());
+        Surface = IMG_Load(Path.c_str());
 
         if(Surface)
         {
             SDL_Texture* TextureData = nullptr;
 
-            TextureData = CreateTexture(Surface);
+            TextureData = CreateTexture(Game->Renderer, Surface);
 
             if(!TextureData)
             {
-                std::cout << "failed to load texture: " << AssetPath << std::endl;;
+                std::cout << "failed to load texture: " << Path << std::endl;;
                 std::cout << "IMG_GetError(): " << IMG_GetError() << std::endl;
 
                 return false;
             }
 
-            game_texture* Texture = new game_texture(AssetID, 
-                                                     AssetPath,
-                                                     TextureData, 
-                                                     Surface->w, 
-                                                     Surface->h);
-            AssetMap.Add(AssetID, Texture);                
+            game_asset* Asset = new game_asset { };
+            game_texture* Texture = new game_texture { };
+
+            Asset->Data.Texture = Texture;
+
+            Asset->ID = ++AssetID;
+            Asset->Path = Path;
+
+            AddAsset(Game->Assets, Key, Asset);
 
             SDL_FreeSurface(Surface);
             Surface = nullptr;
@@ -135,27 +125,30 @@ bool game::LoadTexture(uint32_t AssetID, std::string AssetPath)
     return false;
 }
 
-bool game::LoadFont(uint32_t AssetID, std::string AssetPath, int FontSize)
+bool LoadFont(game* Game, std::string Key, std::string Path, int FontSize)
 {
-    if(!AssetPath.empty() && FontSize > 0)
+    if(!Path.empty() && FontSize > 0)
     {
         TTF_Font* FontData = nullptr;
 
-        FontData = TTF_OpenFont(AssetPath.c_str(), FontSize);
+        FontData = TTF_OpenFont(Path.c_str(), FontSize);
 
         if(!FontData)
         {
-            std::cout << "failed to load font: " << AssetPath << std::endl;;
+            std::cout << "failed to load font: " << Path << std::endl;;
             std::cout << "TTF_GetError(): " << TTF_GetError() << std::endl;
 
             return false;
         }
 
-        game_font* Font = new game_font(AssetID, 
-                                        AssetPath, 
-                                        FontData, 
-                                        FontSize);
-        AssetMap.Add(AssetID, Font);
+        game_asset* Asset = new game_asset { };
+        game_font* Font = new game_font { };
+
+        Asset->Data.Font = Font;
+        Asset->ID = ++AssetID;
+        Asset->Path = Path;
+
+        AddAsset(Game->Assets, Key, Asset);
 
         return true;
     }
@@ -163,278 +156,169 @@ bool game::LoadFont(uint32_t AssetID, std::string AssetPath, int FontSize)
     return false;
 }
 
-void game::LoadAssets()
+void LoadAssets(game* Game)
 {
-    LoadFont(font_id::PressStart2P_Regular_9, "/home/nathan/Documents/code/asteroids/assets/fonts/PressStart2P-Regular.ttf", 9);
-    LoadFont(font_id::PressStart2P_Regular_12, "/home/nathan/Documents/code/asteroids/assets/fonts/PressStart2P-Regular.ttf", 12);
-    LoadFont(font_id::PressStart2P_Regular_24, "/home/nathan/Documents/code/asteroids/assets/fonts/PressStart2P-Regular.ttf", 24);
+    LoadFont(Game, "", "/home/nathan/Documents/code/asteroids/assets/fonts/PressStart2P-Regular.ttf", 9);
+    LoadFont(Game, "", "/home/nathan/Documents/code/asteroids/assets/fonts/PressStart2P-Regular.ttf", 12);
+    LoadFont(Game, "", "/home/nathan/Documents/code/asteroids/assets/fonts/PressStart2P-Regular.ttf", 24);
 
-    LoadTexture(texture_id::Space, "/home/nathan/Documents/code/asteroids/assets/textures/space.png");
-    LoadTexture(texture_id::AsteroidGrey1, "/home/nathan/Documents/code/asteroids/assets/textures/asteroid1_grey.png");
-    LoadTexture(texture_id::AsteroidGrey2, "/home/nathan/Documents/code/asteroids/assets/textures/asteroid2_grey.png");
-    LoadTexture(texture_id::AsteroidBrown1, "/home/nathan/Documents/code/asteroids/assets/textures/asteroid1_brown.png");
-    LoadTexture(texture_id::AsteroidBrown2, "/home/nathan/Documents/code/asteroids/assets/textures/asteroid2_brown.png");
-    LoadTexture(texture_id::FlagLight, "/home/nathan/Documents/code/asteroids/assets/textures/flag.png");
-    LoadTexture(texture_id::FlagDark, "/home/nathan/Documents/code/asteroids/assets/textures/flagdark.png");
-    LoadTexture(texture_id::Projectile1, "/home/nathan/Documents/code/asteroids/assets/textures/projectile1.png");
-    LoadTexture(texture_id::Projectile2, "/home/nathan/Documents/code/asteroids/assets/textures/projectile2.png");
-    LoadTexture(texture_id::Starship, "/home/nathan/Documents/code/asteroids/assets/textures/starship.png");
-    LoadTexture(texture_id::UFO, "/home/nathan/Documents/code/asteroids/assets/textures/ufodark.png");
+    LoadTexture(Game, "", "/home/nathan/Documents/code/asteroids/assets/textures/space.png");
+    LoadTexture(Game, "", "/home/nathan/Documents/code/asteroids/assets/textures/asteroid1_grey.png");
+    LoadTexture(Game, "", "/home/nathan/Documents/code/asteroids/assets/textures/asteroid2_grey.png");
+    LoadTexture(Game, "", "/home/nathan/Documents/code/asteroids/assets/textures/asteroid1_brown.png");
+    LoadTexture(Game, "", "/home/nathan/Documents/code/asteroids/assets/textures/asteroid2_brown.png");
+    LoadTexture(Game, "", "/home/nathan/Documents/code/asteroids/assets/textures/flag.png");
+    LoadTexture(Game, "", "/home/nathan/Documents/code/asteroids/assets/textures/flagdark.png");
+    LoadTexture(Game, "", "/home/nathan/Documents/code/asteroids/assets/textures/projectile1.png");
+    LoadTexture(Game, "", "/home/nathan/Documents/code/asteroids/assets/textures/projectile2.png");
+    LoadTexture(Game, "", "/home/nathan/Documents/code/asteroids/assets/textures/starship.png");
+    LoadTexture(Game, "", "/home/nathan/Documents/code/asteroids/assets/textures/ufodark.png");
 }
 
-/* ERROR STATE MGMT METHODS */
-void game::SetErrorState(game_error_code GameLastErrorCode, 
-                         std::string GameLastErrorMessage)
+void OnConstruct(game* Game)
 {
-    LastErrorCode    = GameLastErrorCode;
-    LastErrorMessage = GameLastErrorMessage;
+    Game->Window = nullptr;
+    Game->Renderer = nullptr;
+
+    Game->WindowW = 0;
+    Game->WindowH = 0;
 }
 
-bool game::HasErrorState() const
+void OnInit(game* Game)
 {
-    return LastErrorCode != game_error_code::NONE;
+    LoadAssets(Game);
 }
 
-/* INITIALIZATION AND 
-   DESTRUCTION METHODS */
-
-void game::SetGameState(game_state_id NextState)
+void MakePauseMenu(game* Game)
 {
-    State = NextState;
+    DestroyMenu(PauseMenu);
+
+    PauseMenu         = new game_menu();
+    PauseMenu->MenuID = ++MenuID;
+
+    uint32_t MenuOptionCount = 4;
+
+    std::pair<std::string, on_click_handler> MenuOptions[]
+    {
+        { "Resume", &OnStart },
+        { "Save",   &OnSave  },
+        { "Quit",   &OnQuit  },
+        { "Exit",   &OnExit  }
+    };
+
+    MakeMenu(PauseMenu, MenuOptions, MenuOptionCount); 
 }
 
-bool game::Init()
+void MakeMainMenu(game* Game)
 {
-    if(!InitGfx())
+    DestroyMenu(MainMenu);
+
+    MainMenu         = new game_menu();
+    MainMenu->MenuID = ++MenuID;
+
+    uint32_t MenuOptionCount = 4;
+
+    std::pair<std::string, on_click_handler> MenuOptions[]
+    {
+        { "Start Game", &OnStart    },
+        { "Load Game",  &OnLoad     },
+        { "Settings",   &OnSettings },
+        { "Exit",       &OnExit     }
+    };
+
+    MakeMenu(MainMenu, MenuOptions, MenuOptionCount); 
+}
+
+bool InitGame(game* Game)
+{
+    if(!InitGfx(Game))
     {
         std::cout << "gfx initialization failed..." << std::endl;
 
         return false;
     }
 
-    OnInit();
-
-    MakeBackground();
-    MakePlayer();
-
-    SetGameState(game_state_id::AT_START_MENU);
+    OnInit(Game);
 
     return true;
 }
 
-void game::Destroy()
+void DestroyGame(game* Game)
 {
-    DestroyBackground();
-    DestroyPlayer();
+    // DestroyBackground();
+    // DestroyPlayer();
+    // ObjectMap.Destroy();
+    // AssetMap.Destroy();
 
-    ObjectMap.Destroy();
-    AssetMap.Destroy();
+    if(Game->Renderer)
+    {
+        SDL_DestroyRenderer(Game->Renderer);
+
+        Game->Renderer = nullptr;
+    }
+
+    if(Game->Window)
+    {
+        SDL_DestroyWindow(Game->Window);
+
+        Game->Window = nullptr;
+    }
+
+    TTF_Quit();
+    IMG_Quit();
+    SDL_Quit();
 }
 
-int game::Run()
+int Run(game* Game)
 {
-    if(!Init())
+    if(!InitGame(Game))
     {
         std::cout << "game initialization failed..." << std::endl;
 
-        return (int) LastErrorCode;
+        return -1;
     }
 
-    Play();
+    PlayGame(Game);
 
     return EXIT_SUCCESS;
 }
 
 /* DRAWING METHODS */
-void game::DrawShip(ship* Ship)
+void DrawShip(ship* Ship) { }
+void DrawBackground() { }
+void DrawMenu(game_menu* Menu) { }
+void DrawPlayer() { }
+void DrawObjects() { }
+
+void AddBackground(game* Game, uint32_t TextureID, int TileW, int TileH, int XOffset, int YOffset)
 {
-    game_texture* Texture = (game_texture*) AssetMap.Get(Ship->GetAssetID());
+    game_background* Background = new game_background();
 
-    RenderTexture(Texture, Ship);
-}
-
-void game::DrawBackground()
-{
-    // game_texture* Texture = Background.Texture;
-
-    // int ColCount = WindowW / Background.Width;
-    // int RowCount = WindowH / Background.Height;
-
-    // for(uint32_t RowIdx = 0; RowIdx < RowCount; RowIdx++)
-    // {
-    //     int Y = Background.Height * RowIdx;
-
-    //     for(uint32_t ColIdx = 0; ColIdx < ColCount; ColIdx++)
-    //     {
-    //         int X = Background.Width * ColIdx;
-
-    //         SDL_Rect Dest 
-    //         {
-    //             X, Y,
-
-    //             Background.Width,
-    //             Background.Height
-    //         };
-
-    //         RenderTexture(Texture->GetData(), Dest);
-    //     }
-    // }
-}
-
-void game::DrawMenu(game_menu* Menu)
-{
-    uint32_t Count = Menu->Options.size();
-
-    for(uint32_t Index = 0; Index < Count; Index++)
+    if(!Background)
     {
-        Menu->Options[Index].
+        // logging, failed to alloc 
+        // memory for player object
+    }
+    else
+    {
+        // Background->Texture = GetTexture(TextureID)
 
+        Background->Size.W = TileW;
+        Background->Size.H = TileH;
+
+        Background->XOffset = XOffset;
+        Background->YOffset = YOffset;
+
+        Game->Backgrounds.push_back(Background);
     }
 }
 
-void game::DrawPlayer()
+void AddPlayer(game* Game, int XPos, int YPos, 
+               int Width, int Height,
+               float BaseSpeed,
+               float MaxSpeed)
 {
-    DrawShip(Player->GetShip());
-}
-
-void game::DrawObjects()
-{ }
-
-/* CREATIONAL & DELETE METHODS */
-void game::DestroyBackground()
-{
-    if(Background)
-    {
-        delete Background;
-
-        Background = nullptr;
-    }
-}
-
-void game::DestroyPlayer()
-{
-    if(Player)
-    {
-        delete Player;
-
-        Player = nullptr;
-    }
-}
-
-void game::DestroyMenu(game_menu*& Menu)
-{
-    if(Menu)
-    {
-        uint32_t OptionCount = Menu->Options.size();
-
-        for(uint32_t Index = 0; Index < OptionCount; Index++)
-        {
-            delete Menu->Options[Index];
-
-            Menu->Options[Index] = nullptr;
-        }
-
-        delete Menu;
-
-        Menu = nullptr;
-    }
-}
-
-void game::MakeMenu(game_menu* Menu, std::pair<std::string, on_click_handler>* MenuOptions, uint32_t MenuOptionCount)
-{
-    for(uint32_t OptionIndex = 0; 
-        OptionIndex < MenuOptionCount; 
-        OptionIndex++)
-    {
-        CreateTexture(nullptr, MenuOptions[OptionIndex].first);
-
-        AddMenuOption(MainMenu, 
-                      OptionIndex, 
-                      MenuOptions[OptionIndex].first, 
-                      MenuOptions[OptionIndex].second);
-    }
-}
-
-void game::AddMenuOption(game_menu* Menu, uint32_t OptionIndex, std::string OptionText, on_click_handler OnClickHandler)
-{
-    SDL_Texture* Texture = nullptr;
-
-    Texture = CreateTexture(Menu->Font, OptionText);
-
-    if(Texture)
-    {
-        game_menu_option* MenuOption = new game_menu_option { };
-
-        MenuOption->Texture = Texture;
-        MenuOption->Index   = OptionIndex;
-        MenuOption->Text    = std::move(OptionText);
-        MenuOption->Handler = OnClickHandler;
-
-        Menu->Options.push_back(MenuOption);
-    }
-}
-
-void game::MakePauseMenu()
-{
-    DestroyMenu(PauseMenu);
-
-    PauseMenu         = new game_menu();
-    PauseMenu->MenuID = ++game::GlobalMenuID;
-
-    uint32_t MenuOptionCount = 4;
-
-    std::pair<std::string, on_click_handler> MenuOptions[]
-    {
-        { "Resume", &game::OnStart },
-        { "Save",   &game::OnSave  },
-        { "Quit",   &game::OnQuit  },
-        { "Exit",   &game::OnExit  }
-    };
-
-    MakeMenu(PauseMenu, MenuOptions, MenuOptionCount); 
-}
-
-void game::MakeMainMenu()
-{
-    DestroyMenu(MainMenu);
-
-    MainMenu         = new game_menu();
-    MainMenu->MenuID = ++game::GlobalMenuID;
-
-    uint32_t MenuOptionCount = 4;
-
-    std::pair<std::string, on_click_handler> MenuOptions[]
-    {
-        { "Start Game", &game::OnStart    },
-        { "Load Game",  &game::OnLoad     },
-        { "Settings",   &game::OnSettings },
-        { "Exit",       &game::OnExit     }
-    };
-
-    MakeMenu(MainMenu, MenuOptions, MenuOptionCount); 
-}
-
-void game::MakeBackground()
-{
-    DestroyBackground();
-
-    Background = new game_background();
-
-    Background->Size.W = 128;
-    Background->Size.H = 128;
-
-    Background->XOffset = 0;
-    Background->YOffset = 0;
-
-    uint32_t AssetID = texture_id::Space;
-    Background->Texture = (game_texture*) AssetMap.Get(AssetID);
-}
-
-void game::MakePlayer()
-{
-    DestroyPlayer();
-
-    Player = new player();
+    player* Player = new player();
 
     if(!Player)
     {
@@ -464,91 +348,21 @@ void game::MakePlayer()
         }
 
         Player->UseShip(PlayerShip);
+
+        Game->Players.push_back(Player);
     }
 }
 
-ship* game::MakeShip(uint32_t AssetID, 
-                     int ShipX, int ShipY,
-                     int ShipW, int ShipH,
-                     float BaseSpeed,
-                     float MaxSpeed,
-                     bool Save)
-{
-    ship* Ship = ship::Make(AssetID, ShipX, ShipY,
-                            ShipW, ShipH, BaseSpeed, 
-                            MaxSpeed);
-    if(Save)
-    {
-        uint32_t WorldID = SaveObject(Ship);
+void OnSettings() { }
+void OnQuit() { }
+void OnSave() { }
+void OnLoad() { }
+void OnExit() { }
+void OnStart() { }
+void OnPause() { }
+void OnStop() { }
 
-        Ship->SetWorldID(WorldID);
-    }
-
-    return Ship;
-}
-
-/* OBJECT MGMT METHODS */
-uint32_t game::SaveObject(game_object* Object)
-{
-    uint32_t WorldID = ObjectMap.Add(Object);
-
-    return WorldID;
-}
-
-/* EVENT HANDLING Methods */
-void game::OnConstruct()
-{
-    Window = nullptr;
-    Renderer = nullptr;
-
-    WindowW = 0;
-    WindowH = 0;
-
-    Background = nullptr;
-    Player = nullptr;
-
-    GameKeyCount = 0;
-    GameKeys = nullptr;
-
-    LastErrorCode = game_error_code::NONE;
-    LastErrorMessage = "";
-
-    // std::chrono::time_point<std::chrono::system_clock> DtNow;
-    // std::chrono::time_point<std::chrono::system_clock> DtLast;
-    // std::chrono::duration<float>                       Dt;
-}
-
-void game::OnInit()
-{
-    LoadAssets();
-}
-
-void game::OnSettings()
-{ }
-
-void game::OnQuit()
-{ }
-
-void game::OnSave()
-{ }
-
-void game::OnLoad()
-{ }
-
-void game::OnExit()
-{ }
-
-void game::OnStart()
-{ }
-
-void game::OnPause()
-{ }
-
-void game::OnStop()
-{ }
-
-/* EVENT MGMT METHODS */
-void game::HandleEvents()
+void HandleEvents(game* Game)
 {
     SDL_Event Evt { };
 
@@ -591,8 +405,7 @@ void game::HandleEvents()
     }
 }
 
-/* PER FRAME UPDATE METHODS */
-void game::UpdateTimer()
+void UpdateTimer(game* Game)
 {
     // We assign the current timestamp
     // to DtNow, and then using this information
@@ -600,152 +413,91 @@ void game::UpdateTimer()
     // because DtNow is Now and DtLast is the timestamp for the
     // start of the last frame
     // therefore DtNow - DtLast is delta time, or the time between frames
-    DtNow  = std::chrono::system_clock::now(); // start of frame
-    Dt     = DtNow - DtLast; // time elapsed between start of this frame and the last
+    Game->DtNow  = std::chrono::system_clock::now(); // start of frame
+    Game->Dt     = Game->DtNow - Game->DtLast; // time elapsed between start of this frame and the last
 
     // now that we've calculated Dt, we can save the start of this frame
     // by assigning DtNow to DtLast
-    DtLast = DtNow; // start of last frame gets assigned
+    Game->DtLast = Game->DtNow; // start of last frame gets assigned
 }
 
-void game::UpdateWindowSize()
+void UpdateWindowSize(game* Game)
 {
-    SDL_GetWindowSize(Window, 
-                      &WindowW, 
-                      &WindowH);
+    SDL_GetWindowSize(Game->Window, 
+                      &Game->WindowW, 
+                      &Game->WindowH);
 }
 
-void game::UpdateKeyState()
-{
-    GameKeys = SDL_GetKeyboardState(&GameKeyCount);
-}
-
-void game::Update(float Dt)
+void Update(game* Game, float Dt)
 {
     UpdateWindowSize();
     UpdateKeyState();
 
-    bool LeftKeyPressed  = GameKeys[SDL_SCANCODE_LEFT]  > 0;
-    bool RightKeyPressed = GameKeys[SDL_SCANCODE_RIGHT] > 0;
-    bool UpKeyPressed    = GameKeys[SDL_SCANCODE_UP]    > 0;
+    // bool LeftKeyPressed  = GameKeys[SDL_SCANCODE_LEFT]  > 0;
+    // bool RightKeyPressed = GameKeys[SDL_SCANCODE_RIGHT] > 0;
+    // bool UpKeyPressed    = GameKeys[SDL_SCANCODE_UP]    > 0;
 
     if(LeftKeyPressed) 
     {
-        Player->GetShip()->Rotate(TO_RADIANS(1.0f));
+        // Player->GetShip()
+        //       ->Rotate(TO_RADIANS(1.0f));
     }
     else if(RightKeyPressed) 
     {
-        Player->GetShip()->Rotate(TO_RADIANS(-1.0f));
+        // Player->GetShip()
+        //       ->Rotate(TO_RADIANS(-1.0f));
     }
 
     if(UpKeyPressed)
     {
-        Player->GetShip()->Move(Dt);
+        // Player->GetShip()
+        //       ->Move(Dt);
     }
 }
 
-/* RENDERING METHODS */
-SDL_Texture* game::CreateTexture(SDL_Surface* Surface)
+void ClearScreen(game* Game)
 {
-    SDL_Texture* Texture = SDL_CreateTextureFromSurface(Renderer, Surface);
-
-    return Texture;
+    SDL_SetRenderDrawColor(Game->Renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
+    SDL_RenderClear(Game->Renderer);
 }
 
-SDL_Texture* game::CreateTexture(game_font* Font, std::string Text)
+void SwapBuffers(game* Game)
 {
-    SDL_Texture* Texture = nullptr;
-
-    TTF_Font* Data = Font->Data;
-    SDL_Color Color = Font->Color;
-
-    SDL_Surface* Surface = TTF_RenderText_Solid(Data, Text.c_str(), Color);
-
-    if(!Surface)
-    {
-        // log occurrence, 
-        // report or notify user
-        return nullptr;
-    }
-
-    Texture = CreateTexture(Surface);
-
-    return Texture;
+    SDL_RenderPresent(Game->Renderer);
 }
 
-void game::RenderTexture(SDL_Texture* Texture, game_object* Object)
-{
-    float Angle = Object->Rotation();
-    
-    SDL_Rect Dest 
-    {
-        Object->X(),
-        Object->Y(),
-        Object->W(),
-        Object->H()
-    };
-
-    RenderTexture(Texture, Dest, Angle);
-}
-
-void game::RenderTexture(SDL_Texture* Texture, SDL_Rect Dest, float Angle)
-{
-    SDL_RenderCopyEx(Renderer, Texture, nullptr, 
-                     &Dest, Angle, nullptr, 
-                     SDL_FLIP_NONE);
-}
-
-void game::RenderTexture(game_texture* Texture, game_object* Object)
-{
-    RenderTexture(Texture->GetData(), Object);
-}
-
-void game::ClearScreen()
-{
-    SDL_SetRenderDrawColor(Renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
-    SDL_RenderClear(Renderer);
-}
-
-void game::SwapBuffers()
-{
-    SDL_RenderPresent(Renderer);
-}
-
-/* MAIN GAME LOOP */
-int game::Play()
+int Play(game* Game)
 {
     UpdateTimer();
 
     while(true)
     {
-        UpdateTimer();
-        HandleEvents();
-        ClearScreen();
+        UpdateTimer(Game);
+        HandleEvents(Game);
 
-        DrawBackground();
+        // ClearScreen();
 
         if(!true)
         {
             if(!true)
             {
-                Update(Dt.count());
+                Update(Game, Game->Dt.count());
 
                 DrawPlayer();
             }
-            else
-            {
-                DrawMenu(PauseMenu);
-            }
-        }
-        else
-        {
-            DrawMenu(MainMenu);
         }
 
         SwapBuffers();
     }
 
-    Destroy();
+    DestroyGame(Game);
 
     return EXIT_SUCCESS;
+}
+
+uint32_t SaveObject(game* Game, game_object* Object)
+{
+    uint32_t WorldID = Game->ObjectMap.Add(Object);
+
+    return WorldID;
 }

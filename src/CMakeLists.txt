@@ -1,4 +1,3 @@
-add_subdirectory(collections)
 add_subdirectory(game)
 
 set(SRC 

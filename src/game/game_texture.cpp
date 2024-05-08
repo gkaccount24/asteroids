@@ -1,27 +1,14 @@
 #include "game_texture.h"
 
-game_texture::game_texture(uint32_t TextureID, 
-                           std::string TexturePath, 
-                           SDL_Texture* TextureData, 
-                           int TextureWidth, 
-                           int TextureHeight):
-    Data(TextureData),
-    Width(TextureWidth),
-    Height(TextureHeight),
-
-    // base class constructor call
-    asset(TextureID, TexturePath)
-{ }
-
-game_texture::~game_texture()
+void DestroyTextureData(game_texture* Texture)
 {
-    if(Data)
+    if(Texture && Texture->Data)
     {
-        SDL_DestroyTexture(Data);
+        SDL_DestroyTexture(Texture->Data);
 
-        Data = nullptr;
+        Texture->Data = nullptr;
     }
 
-    Width = 0;
-    Height = 0;
+    Texture->Width = 0;
+    Texture->Height = 0;
 }

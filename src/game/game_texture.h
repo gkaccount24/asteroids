@@ -1,32 +1,23 @@
-#ifndef game_texture_H
-#define game_texture_H
-
-#include "asset.h"
+#ifndef GAME_TEXTURE_H
+#define GAME_TEXTURE_H
 
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_image.h>
+#include <SDL2/SDL_ttf.h>
+
 #include <string>
 #include <cstdint>
 
-class game_texture: public asset
+struct game_texture
 {
-
-public:
-    game_texture(uint32_t TextureID, 
-                 std::string TexturePath, 
-                 SDL_Texture* TextureData, 
-                 int Width, int Height);
-
-    virtual ~game_texture();
-
-public:
-    inline SDL_Texture* GetData() const { return Data;   }
-    inline int W()                const { return Width;  }
-    inline int H()                const { return Height; }
-
-private:
     SDL_Texture* Data;
-    int          Width;
-    int          Height;
+
+    int XOffset;
+    int YOffset;
+    int Width;
+    int Height;
 };
+
+void DestroyTexture(game_texture* Texture);
 
 #endif

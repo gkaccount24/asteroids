@@ -1,26 +1,20 @@
-#ifndef gfont_H
-#define gfont_H
+#ifndef GAME_FONT_H
+#define GAME_FONT_H
 
-#include "asset.h"
-
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_image.h>
 #include <SDL2/SDL_ttf.h>
+
 #include <string>
 
-class game_font: public asset
+struct game_font
 {
-
-public:
-    game_font(uint32_t FontID, 
-              std::string FontPath, 
-              TTF_Font* FontData, 
-              int FontSize);
-
-    virtual ~game_font();
-
-public:
     TTF_Font*   Data;
+
     SDL_Color   Color;
     int         Size;
 };
+
+void DestroyFont(game_font* Font);
 
 #endif

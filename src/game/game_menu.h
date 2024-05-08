@@ -13,17 +13,19 @@ typedef void(*on_click_handler)(game_state_vars* StateVars);
 
 struct game_menu_option 
 {
-    SDL_Texture* Texture;
-    uint32_t Index;
-    std::string Text;
+    uint32_t         Index;
+    SDL_Texture*     Texture;
     on_click_handler Handler;
 };
 
 struct game_menu
 {
+    uint32_t                       MenuID;
+    game_font*                     Font;
     std::vector<game_menu_option*> Options;
-    uint32_t MenuID;
-    game_font* Font;
 };
+
+void MakeMenu(game_menu* Menu, std::pair<std::string, on_click_handler>* MenuOptions, uint32_t MenuOptionCount);
+void AddMenuOption(game_menu* Menu, std::string OptionText, on_click_handler Handler);
 
 #endif

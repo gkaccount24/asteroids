@@ -1,23 +1,14 @@
 #include "game_font.h"
 
-game_font::game_font(uint32_t FontID, 
-                     std::string FontPath, 
-                     TTF_Font* FontData, 
-                     int FontSize):
-    Data(FontData),
-    Size(FontSize),
-
-    // base class constructor call
-    asset(FontID, FontPath)
-{ }
-
-game_font::~game_font()
+void DestroyFont(game_font* Font)
 {
-    if(Data)
+    if(Font && Font->Data)
     {
-        TTF_CloseFont(Data);
-        Data = nullptr;
+        TTF_CloseFont(Font->Data);
+
+        Font->Data = nullptr;
     }
 
-    Size = 0;
+    Font->Color = SDL_Color { 0, 0, 0, 0 };
+    Font->Size = 0;
 }

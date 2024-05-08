@@ -1,98 +1,125 @@
 #include "game_object.h"
 
-game_object::game_object()
+ship* MakeShip(game_texture* Texture,
+               int ShipX, int ShipY,
+               int ShipW, int ShipH,
+               float BaseSpeed, 
+               float MaxSpeed)
 {
-    Reset();
+    game_object* Object = new game_object { };
+    ship* Ship =  nullptr;
+
+    if(Object)
+    {
+        Ship = new ship { };
+
+        if(!Ship)
+        {
+            // logging, failed to alloc
+            // memory for a ship;
+
+            return nullptr;
+        }
+
+        Object->Data.Ship = Ship;
+
+        AssignType(Object, game_object_type_id::SHIP);
+        AssignTexture(Object, Texture);
+
+        SetPosition(Object, ShipX, ShipY);
+        SetSize(Object, ShipW, ShipH);
+        SetVelocityParams(Object, BaseSpeed, MaxSpeed);
+    }
+
+    return Ship;
 }
 
-game_object::~game_object()
+void Reset(game_object* Object)
 {
-    Reset();
+    Object->WorldID = 0; // invalid world id, all id's must be non zero
+    Object->Texture = nullptr; // invalid asset id, all id's must be non zero
+
+    Object->Position.X = 0;
+    Object->Position.Y = 0;
+    Object->Size.W = 0;
+    Object->Size.H = 0;
+
+    Object->Speed.Base    = 0.0f;
+    Object->Speed.Current = 0.0f;
+    Object->Speed.Max     = 0.0f;
+
+    Object->Angle = 0.0f;
 }
 
-void game_object::Reset()
+void SetWorldID(game_object* Object, uint32_t WorldID)
 {
-    WorldID = 0; // invalid world id, all id's must be non zero
-    AssetID = 0; // invalid asset id, all id's must be non zero
-
-    Position.X = 0;
-    Position.Y = 0;
-    Size.W = 0;
-    Size.H = 0;
-
-    Speed.Base    = 0.0f;
-    Speed.Current = 0.0f;
-    Speed.Max     = 0.0f;
-
-    Angle = 0.0f;
-}
-
-void game_object::SetWorldID(uint32_t ObjectWorldID)
-{
-    if(ObjectWorldID == 0)
+    if(WorldID == 0)
     {
         // logging, invalid world id
         // assigned
     }
 
-    WorldID = ObjectWorldID;
+    Object->WorldID = WorldID;
 }
 
-void game_object::SetAssetID(uint32_t ObjectAssetID)
+void AssignType(game_object* Object, game_object_type_id TypeID)
 {
-    if(ObjectAssetID == 0)
+    Object->TypeID = TypeID;
+}
+
+void AssignTexture(game_object* Object, game_texture* Texture)
+{
+    if(Texture)
     {
-        // logging, invalid texture id
-        // assigned
-    }
-
-    AssetID = ObjectAssetID;
-}
-
-void game_object::SetSize(int ObjectW, int ObjectH)
-{
-    Size.W = ObjectW;
-    Size.H = ObjectH;
-}
-
-void game_object::SetPosition(float ObjectX, float ObjectY)
-{
-    Position.X = ObjectX;
-    Position.Y = ObjectY;
-}
-
-void game_object::SetVelocityParams(float ObjectBaseSpeed,
-                                    float ObjectMaxSpeed)
-{
-    Speed.Base    = ObjectBaseSpeed;
-    Speed.Current = ObjectBaseSpeed;
-    Speed.Max     = ObjectMaxSpeed;
-}
-
-void game_object::Rotate(float Value)
-{
-    Angle = Angle - Value;
-
-    if(Angle <= 0.0f)
-    {
-        Angle = 360.0f;
-    }
-    else if(Angle >= 360.0f)
-    {
-        Angle = 0.0f;
+        Object->Texture = Texture;
     }
 }
 
-void game_object::Accelerate(float Dt) 
+void SetSize(game_object* Object, int ObjectW, int ObjectH)
 {
-    if(Speed.Current < Speed.Max)
+    Object->Size.W = ObjectW;
+    Object->Size.H = ObjectH;
+}
+
+void SetPosition(game_object* Object, float ObjectX, float ObjectY)
+{
+    Object->Position.X = ObjectX;
+    Object->Position.Y = ObjectY;
+}
+
+void SetVelocityParams(game_object* Object, 
+                       float BaseSpeed, 
+                       float MaxSpeed)
+{
+    Object->Speed.Base    = BaseSpeed;
+    Object->Speed.Current = BaseSpeed;
+    Object->Speed.Max     = MaxSpeed;
+}
+
+void Rotate(game_object* Object, float Value)
+{
+    Object->Angle = Object->Angle - Value;
+
+    if(Object->Angle <= 0.0f)
     {
-        Speed.Current += Speed.Base * Dt;
+        Object->Angle = 360.0f;
+    }
+    else if(Object->Angle >= 360.0f)
+    {
+        Object->Angle = 0.0f;
+    }
+}
+
+void Accelerate(game_object* Object, float Dt) 
+{
+    if(Object->Speed.Current < Object->Speed.Max)
+    {
+        Object->Speed.Current += Object->Speed.Base * Dt;
     }
 } 
 
-void game_object::Move(float Dt) 
+void Move(game_object* Object, float Dt) 
 {
-    Position.X += Speed.Current * cosf(TO_RADIANS(Angle)) * Dt;
-    Position.Y += Speed.Current * sinf(TO_RADIANS(Angle)) * Dt;
+    Object->Position.X += Object->Speed.Current * cosf(TO_RADIANS(Object->Angle)) * Dt;
+    Object->Position.Y += Object->Speed.Current * sinf(TO_RADIANS(Object->Angle)) * Dt;
 }
