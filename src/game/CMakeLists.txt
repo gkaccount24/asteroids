@@ -19,8 +19,8 @@ set(SRC ${SRC}
     ${CMAKE_CURRENT_SOURCE_DIR}/game_object.h
     ${CMAKE_CURRENT_SOURCE_DIR}/game_object.cpp
 
-    ${CMAKE_CURRENT_SOURCE_DIR}/player.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/player.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/game_player.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/game_player.cpp
     
     ${CMAKE_CURRENT_SOURCE_DIR}/game_state_vars.h
     ${CMAKE_CURRENT_SOURCE_DIR}/game_state_vars.cpp

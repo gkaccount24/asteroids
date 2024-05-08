@@ -15,7 +15,7 @@ SDL_Texture* RenderText(SDL_Renderer* Renderer, TTF_Font* Font, SDL_Color Color,
 
     if(Surface)
     {
-        Texture = CreateTexture(Surface);
+        Texture = CreateTexture(Renderer, Surface);
 
         if(!Texture)
         {
@@ -29,4 +29,15 @@ SDL_Texture* RenderText(SDL_Renderer* Renderer, TTF_Font* Font, SDL_Color Color,
     }
 
     return Texture;
+}
+
+void ClearScreen(SDL_Renderer* Renderer, SDL_Color Color)
+{
+    SDL_SetRenderDrawColor(Renderer, Color.r, Color.g, Color.b, Color.a);
+    SDL_RenderClear(Renderer);
+}
+
+void SwapBuffers(SDL_Renderer* Renderer)
+{
+    SDL_RenderPresent(Renderer);
 }

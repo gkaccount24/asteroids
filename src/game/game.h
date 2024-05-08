@@ -54,6 +54,8 @@ struct game
     int WindowW;
     int WindowH;
 
+    game_state_vars State;
+
     std::unordered_map<std::string, game_asset*> Assets;
     game_object_map ObjectMap;
 

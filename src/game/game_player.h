@@ -9,10 +9,10 @@
 struct game_player
 {
     std::string Name;
-    ship*       Ship;
+    game_object* Ship;
 };
 
-void UseShip(ship* PlayerShip);
+void AssignShip(game_player* Player, game_object* PlayerShip);
 void DestroyPlayer(game_player* Player);
 
 #endif

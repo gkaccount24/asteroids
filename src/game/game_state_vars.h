@@ -1,6 +1,12 @@
 #ifndef GAME_STATE_VARS_H
 #define GAME_STATE_VARS_H
 
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_image.h>
+#include <SDL2/SDL_ttf.h>
+
+#include <string>
+
 enum class game_state_id
 {
     /* primary playing states */
@@ -33,7 +39,5 @@ struct game_state_vars
     int          GameKeyCount;
     const Uint8* GameKeys;
 };
-
-void UpdateKeyState(game_state_vars* GameStateVars);
 
 #endif

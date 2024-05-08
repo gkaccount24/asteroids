@@ -8,5 +8,5 @@ int main()
 {
     game Asteroids { };
 
-    return Asteroids.Run();
+    return RunGame(&Asteroids);
 }

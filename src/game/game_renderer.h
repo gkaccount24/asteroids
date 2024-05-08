@@ -7,7 +7,10 @@
 
 #include <string>
 
-SDL_Texture* CreateTexture(SDL_Surface* Surface);
-SDL_Texture* CreateTexture(TTF_Font* Font, std::string Text);
+SDL_Texture* CreateTexture(SDL_Renderer* Renderer, SDL_Surface* Surface);
+SDL_Texture* RenderText(SDL_Renderer* Renderer, TTF_Font* Font, SDL_Color Color, std::string Text);
+
+void ClearScreen(SDL_Renderer* Renderer, SDL_Color Color);
+void SwapBuffers(SDL_Renderer* Renderer);
 
 #endif

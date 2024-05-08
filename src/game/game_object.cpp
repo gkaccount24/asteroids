@@ -1,13 +1,12 @@
 #include "game_object.h"
 
-ship* MakeShip(std::unordered_map<std::string, game_asset*>& Assets, vec2d Position, size Size, speed Speed)
+game_object* MakeShip(std::unordered_map<std::string, game_asset*>& Assets, vec2d Position, size Size, speed Speed)
 {
     game_object* Object = new game_object { };
-    ship* Ship = nullptr;
 
     if(Object)
     {
-        Ship = new ship { };
+        ship* Ship = new ship { };
 
         if(!Ship)
         {
@@ -20,20 +19,22 @@ ship* MakeShip(std::unordered_map<std::string, game_asset*>& Assets, vec2d Posit
         Object->Data.Ship = Ship;
 
         AssignType(Object, game_object_type_id::SHIP);
+
+        game_texture* Texture = GetTexture(Assets, "Texture_Starship");
         AssignTexture(Object, Texture);
 
-        SetPosition(Object, ShipX, ShipY);
-        SetSize(Object, ShipW, ShipH);
-        SetVelocityParams(Object, BaseSpeed, MaxSpeed);
+        SetVelocityParams(Object, Speed);
+        SetPosition(Object, Position);
+        SetSize(Object, Size);
     }
 
-    return Ship;
+    return Object;
 }
 
-ufo* MakeUFO(std::unordered_map<std::string, game_asset*>& Assets, vec2d Position, size Size, speed Speed) { return nullptr; }
-asteroid* MakeAsteroid(std::unordered_map<std::string, game_asset*>& Assets, vec2d Position, size Size, speed Speed) { return nullptr; }
-projectile* MakeProjectile(std::unordered_map<std::string, game_asset*>& Assets, vec2d Position, size Size, speed Speed) { return nullptr; }
-flag* MakeFlag(std::unordered_map<std::string, game_asset*>& Assets, vec2d Position, size Size, speed Speed) { return nullptr; }
+// game_object* MakeUFO(std::unordered_map<std::string, game_asset*>& Assets, vec2d Position, size Size, speed Speed) { return nullptr; }
+// game_object* MakeAsteroid(std::unordered_map<std::string, game_asset*>& Assets, vec2d Position, size Size, speed Speed) { return nullptr; }
+// game_object* MakeProjectile(std::unordered_map<std::string, game_asset*>& Assets, vec2d Position, size Size, speed Speed) { return nullptr; }
+// game_object* MakeFlag(std::unordered_map<std::string, game_asset*>& Assets, vec2d Position, size Size, speed Speed) { return nullptr; }
 
 void Reset(game_object* Object)
 {
@@ -45,9 +46,9 @@ void Reset(game_object* Object)
     Object->Size.W = 0;
     Object->Size.H = 0;
 
-    Object->Speed.Base    = 0.0f;
+    Object->Speed.Base = 0.0f;
     Object->Speed.Current = 0.0f;
-    Object->Speed.Max     = 0.0f;
+    Object->Speed.Max = 0.0f;
 
     Object->Angle = 0.0f;
 }
@@ -76,25 +77,23 @@ void AssignTexture(game_object* Object, game_texture* Texture)
     }
 }
 
-void SetSize(game_object* Object, int ObjectW, int ObjectH)
+void SetSize(game_object* Object, size Size)
 {
-    Object->Size.W = ObjectW;
-    Object->Size.H = ObjectH;
+    Object->Size.W = Size.W;
+    Object->Size.H = Size.H;
 }
 
-void SetPosition(game_object* Object, float ObjectX, float ObjectY)
+void SetPosition(game_object* Object, vec2d Position)
 {
-    Object->Position.X = ObjectX;
-    Object->Position.Y = ObjectY;
+    Object->Position.X = Position.X;
+    Object->Position.Y = Position.Y;
 }
 
-void SetVelocityParams(game_object* Object, 
-                       float BaseSpeed, 
-                       float MaxSpeed)
+void SetVelocityParams(game_object* Object, speed Speed)
 {
-    Object->Speed.Base    = BaseSpeed;
-    Object->Speed.Current = BaseSpeed;
-    Object->Speed.Max     = MaxSpeed;
+    Object->Speed.Base    = Speed.Base;
+    Object->Speed.Current = Speed.Base;
+    Object->Speed.Max     = Speed.Max;
 }
 
 void Rotate(game_object* Object, float Value)

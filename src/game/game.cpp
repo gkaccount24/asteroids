@@ -159,21 +159,21 @@ bool LoadFont(game* Game, std::string Key, std::string Path, int FontSize)
 
 void LoadAssets(game* Game)
 {
-    LoadFont(Game, "", "/home/nathan/Documents/code/asteroids/assets/fonts/PressStart2P-Regular.ttf", 9);
-    LoadFont(Game, "", "/home/nathan/Documents/code/asteroids/assets/fonts/PressStart2P-Regular.ttf", 12);
-    LoadFont(Game, "", "/home/nathan/Documents/code/asteroids/assets/fonts/PressStart2P-Regular.ttf", 24);
+    LoadFont(Game, "Font_PressStart2P_Regular_9", "/home/nathan/Documents/code/asteroids/assets/fonts/PressStart2P-Regular.ttf", 9);
+    LoadFont(Game, "Font_PressStart2P_Regular_12", "/home/nathan/Documents/code/asteroids/assets/fonts/PressStart2P-Regular.ttf", 12);
+    LoadFont(Game, "Font_PressStart2P_Regular_24", "/home/nathan/Documents/code/asteroids/assets/fonts/PressStart2P-Regular.ttf", 24);
 
-    LoadTexture(Game, "", "/home/nathan/Documents/code/asteroids/assets/textures/space.png");
-    LoadTexture(Game, "", "/home/nathan/Documents/code/asteroids/assets/textures/asteroid1_grey.png");
-    LoadTexture(Game, "", "/home/nathan/Documents/code/asteroids/assets/textures/asteroid2_grey.png");
-    LoadTexture(Game, "", "/home/nathan/Documents/code/asteroids/assets/textures/asteroid1_brown.png");
-    LoadTexture(Game, "", "/home/nathan/Documents/code/asteroids/assets/textures/asteroid2_brown.png");
-    LoadTexture(Game, "", "/home/nathan/Documents/code/asteroids/assets/textures/flag.png");
-    LoadTexture(Game, "", "/home/nathan/Documents/code/asteroids/assets/textures/flagdark.png");
-    LoadTexture(Game, "", "/home/nathan/Documents/code/asteroids/assets/textures/projectile1.png");
-    LoadTexture(Game, "", "/home/nathan/Documents/code/asteroids/assets/textures/projectile2.png");
-    LoadTexture(Game, "", "/home/nathan/Documents/code/asteroids/assets/textures/starship.png");
-    LoadTexture(Game, "", "/home/nathan/Documents/code/asteroids/assets/textures/ufodark.png");
+    LoadTexture(Game, "Texture_Space", "/home/nathan/Documents/code/asteroids/assets/textures/space.png");
+    LoadTexture(Game, "Texture_Asteroid1_Grey", "/home/nathan/Documents/code/asteroids/assets/textures/asteroid1_grey.png");
+    LoadTexture(Game, "Texture_Asteroid2_Grey", "/home/nathan/Documents/code/asteroids/assets/textures/asteroid2_grey.png");
+    LoadTexture(Game, "Texture_Asteroid1_Brown", "/home/nathan/Documents/code/asteroids/assets/textures/asteroid1_brown.png");
+    LoadTexture(Game, "Texture_Asteroid2_Brown", "/home/nathan/Documents/code/asteroids/assets/textures/asteroid2_brown.png");
+    LoadTexture(Game, "Texture_Flag", "/home/nathan/Documents/code/asteroids/assets/textures/flag.png");
+    LoadTexture(Game, "Texture_Flag_Dark", "/home/nathan/Documents/code/asteroids/assets/textures/flagdark.png");
+    LoadTexture(Game, "Texture_Projectile1", "/home/nathan/Documents/code/asteroids/assets/textures/projectile1.png");
+    LoadTexture(Game, "Texture_Projectile2", "/home/nathan/Documents/code/asteroids/assets/textures/projectile2.png");
+    LoadTexture(Game, "Texture_Starship", "/home/nathan/Documents/code/asteroids/assets/textures/starship.png");
+    LoadTexture(Game, "Texture_UFO_Dark", "/home/nathan/Documents/code/asteroids/assets/textures/ufodark.png");
 }
 
 void OnConstruct(game* Game)
@@ -190,50 +190,45 @@ void OnInit(game* Game)
     LoadAssets(Game);
 }
 
-void MakePauseMenu(game* Game)
-{
-    DestroyMenu(PauseMenu);
-
-    PauseMenu         = new game_menu();
-    PauseMenu->MenuID = ++MenuID;
-
-    uint32_t MenuOptionCount = 4;
-
-    std::pair<std::string, on_click_handler> MenuOptions[]
-    {
-        { "Resume", &OnStart },
-        { "Save",   &OnSave  },
-        { "Quit",   &OnQuit  },
-        { "Exit",   &OnExit  }
-    };
-
-    MakeMenu(PauseMenu, MenuOptions, MenuOptionCount); 
-}
-
-void MakeMainMenu(game* Game)
-{
-    DestroyMenu(MainMenu);
-
-    MainMenu         = new game_menu();
-    MainMenu->MenuID = ++MenuID;
-
-    uint32_t MenuOptionCount = 4;
-
-    std::pair<std::string, on_click_handler> MenuOptions[]
-    {
-        { "Start Game", &OnStart    },
-        { "Load Game",  &OnLoad     },
-        { "Settings",   &OnSettings },
-        { "Exit",       &OnExit     }
-    };
-
-    MakeMenu(MainMenu, MenuOptions, MenuOptionCount); 
-}
-
-void OccupyObjectEntry()
-{
-
-}
+// void MakePauseMenu(game* Game)
+// {
+//     DestroyMenu(PauseMenu);
+// 
+//     PauseMenu         = new game_menu();
+//     PauseMenu->MenuID = ++MenuID;
+// 
+//     uint32_t MenuOptionCount = 4;
+// 
+//     std::pair<std::string, on_click_handler> MenuOptions[]
+//     {
+//         { "Resume", &OnStart },
+//         { "Save",   &OnSave  },
+//         { "Quit",   &OnQuit  },
+//         { "Exit",   &OnExit  }
+//     };
+// 
+//     MakeMenu(PauseMenu, MenuOptions, MenuOptionCount); 
+// }
+// 
+// void MakeMainMenu(game* Game)
+// {
+//     DestroyMenu(MainMenu);
+// 
+//     MainMenu         = new game_menu();
+//     MainMenu->MenuID = ++MenuID;
+// 
+//     uint32_t MenuOptionCount = 4;
+// 
+//     std::pair<std::string, on_click_handler> MenuOptions[]
+//     {
+//         { "Start Game", &OnStart    },
+//         { "Load Game",  &OnLoad     },
+//         { "Settings",   &OnSettings },
+//         { "Exit",       &OnExit     }
+//     };
+// 
+//     MakeMenu(MainMenu, MenuOptions, MenuOptionCount); 
+// }
 
 uint32_t AddObject(game_object_map* Map, game_object* Object)
 {
@@ -241,7 +236,14 @@ uint32_t AddObject(game_object_map* Map, game_object* Object)
     {
         auto Entry = Map->Entries.at(Map->FreeObjectEntries.back());
 
-        OccupyObjectEntry();
+        if(Entry)
+        {
+            delete Entry;
+
+            Entry = nullptr;
+        }
+
+        Entry = Object;
 
         Map->FreeObjectEntries.pop_back();
 
@@ -349,10 +351,7 @@ void AddBackground(game* Game, uint32_t TextureID, int TileW, int TileH, int XOf
     }
 }
 
-void AddPlayer(game* Game, int XPos, int YPos, 
-               int Width, int Height,
-               float BaseSpeed,
-               float MaxSpeed)
+void AddPlayer(game* Game, vec2d Position, size Size, speed Speed)
 {
     game_player* Player = new game_player { };
 
@@ -363,27 +362,17 @@ void AddPlayer(game* Game, int XPos, int YPos,
     }
     else
     {
-        int ShipX        = XPos;
-        int ShipY        = YPos;
-        int ShipW        = Width;
-        int ShipH        = Height;
+        game_object* Ship = MakeShip(Game->Assets, Position, Size, Speed);
 
-        float BaseSpeed  = BaseSpeed;
-        float MaxSpeed   = MaxSpeed;
+        if(!Ship)
+        {
+            // logging, failed to alloc 
+            // memory for player ship object
+        }
 
-        // ship* PlayerShip = MakeShip(AssetID, ShipX, ShipY, 
-        //                             ShipW, ShipH, BaseSpeed, 
-        //                             MaxSpeed, false);
+        AssignShip(Player, Ship);
 
-        // if(!PlayerShip)
-        // {
-        //     // logging, failed to alloc 
-        //     // memory for player ship object
-        // }
-
-        // AddObject(Game->ObjectMap);
-        // Player->UseShip(PlayerShip);
-        // Game->Players.push_back(Player);
+        Game->Players.push_back(Player);
     }
 }
 
@@ -462,54 +451,48 @@ void UpdateWindowSize(game* Game)
                       &Game->WindowH);
 }
 
+void UpdateKeyState(game* Game)
+{
+    Game->State.GameKeys = SDL_GetKeyboardState(&Game->State.GameKeyCount);
+}
+
 void Update(game* Game, float Dt)
 {
-    UpdateWindowSize();
-    UpdateKeyState();
+    UpdateWindowSize(Game);
+    UpdateKeyState(Game);
 
     // bool LeftKeyPressed  = GameKeys[SDL_SCANCODE_LEFT]  > 0;
     // bool RightKeyPressed = GameKeys[SDL_SCANCODE_RIGHT] > 0;
     // bool UpKeyPressed    = GameKeys[SDL_SCANCODE_UP]    > 0;
 
-    if(LeftKeyPressed) 
-    {
-        // Player->GetShip()
-        //       ->Rotate(TO_RADIANS(1.0f));
-    }
-    else if(RightKeyPressed) 
-    {
-        // Player->GetShip()
-        //       ->Rotate(TO_RADIANS(-1.0f));
-    }
+    // if(LeftKeyPressed) 
+    // {
+    //     // Player->GetShip()
+    //     //       ->Rotate(TO_RADIANS(1.0f));
+    // }
+    // else if(RightKeyPressed) 
+    // {
+    //     // Player->GetShip()
+    //     //       ->Rotate(TO_RADIANS(-1.0f));
+    // }
 
-    if(UpKeyPressed)
-    {
-        // Player->GetShip()
-        //       ->Move(Dt);
-    }
+    // if(UpKeyPressed)
+    // {
+    //     // Player->GetShip()
+    //     //       ->Move(Dt);
+    // }
 }
 
-void ClearScreen(game* Game)
+int PlayGame(game* Game)
 {
-    SDL_SetRenderDrawColor(Game->Renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
-    SDL_RenderClear(Game->Renderer);
-}
-
-void SwapBuffers(game* Game)
-{
-    SDL_RenderPresent(Game->Renderer);
-}
-
-int Play(game* Game)
-{
-    UpdateTimer();
+    UpdateTimer(Game);
 
     while(true)
     {
         UpdateTimer(Game);
         HandleEvents(Game);
 
-        // ClearScreen();
+        ClearScreen(Game->Renderer, SDL_Color { 0, 0, 0, SDL_ALPHA_OPAQUE });
 
         if(!true)
         {
@@ -521,7 +504,7 @@ int Play(game* Game)
             }
         }
 
-        SwapBuffers();
+        SwapBuffers(Game->Renderer);
     }
 
     DestroyGame(Game);
