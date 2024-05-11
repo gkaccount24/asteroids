@@ -1,6 +1,5 @@
 #include "game.h"
 
-static uint32_t AssetID;
 static uint32_t ObjectID;
 
 bool InitGfx(game* Game) 
@@ -87,129 +86,49 @@ void AddAsset(std::unordered_map<std::string, game_asset*>& Assets, std::string 
     }
 }
 
-bool LoadTexture(game* Game, std::string Key, std::string Path)
+bool LoadAssets(game* Game)
 {
-    if(!Path.empty())
+    std::vector<asset_load*> AssetsToLoad
     {
-        SDL_Surface* Surface = nullptr;
+        new asset_load { "Orbitron_Font",       "/home/nathan/Documents/asteroids/assets/Orbitron-Regular.ttf",                  game_asset_type::FONT, asset_load::font { 12, TTF_STYLE_NORMAL } },
+        new asset_load { "UI_Textures",         "/home/nathan/Documents/asteroids/assets/SpaceShooterAssetPack_IU.png",          game_asset_type::TEXTURE },
+        new asset_load { "Ship_Textures",       "/home/nathan/Documents/asteroids/assets/SpaceShooterAssetPack_Ships.png",       game_asset_type::TEXTURE },
+        new asset_load { "Character_Textures",  "/home/nathan/Documents/asteroids/assets/SpaceShooterAssetPack_Characters.png",  game_asset_type::TEXTURE },
+        new asset_load { "Background_Textures", "/home/nathan/Documents/asteroids/assets/SpaceShooterAssetPack_BackGrounds.png", game_asset_type::TEXTURE },
+        new asset_load { "Projectile_Textures", "/home/nathan/Documents/asteroids/assets/SpaceShooterAssetPack_Projectiles.png", game_asset_type::TEXTURE }
+    };
 
-        Surface = IMG_Load(Path.c_str());
+    std::size_t AssetCount = AssetsToLoad.size();
 
-        if(!Surface)
+    for(std::size_t Index = 0; Index < AssetCount; Index++)
+    {
+        game_asset* Asset = nullptr;
+
+        std::string Key = AssetsToLoad[Index]->Key;
+        std::string Path = AssetsToLoad[Index]->Path;
+
+        if(AssetsToLoad[Index]->Type == game_asset_type::FONT)
         {
-            std::cout << "failed to load image: " << Path << std::endl;;
-            std::cout << "IMG_GetError(): " << IMG_GetError() << std::endl;
+            int FontStyle = AssetsToLoad[Index]->ForFont.Style;
+            int FontSize = AssetsToLoad[Index]->ForFont.Size;
 
-            return false;
+            Asset = LoadFont(FontStyle, FontSize, Path);
+        }
+        else if(AssetsToLoad[Index]->Type == game_asset_type::TEXTURE)
+        {
+            Asset = LoadTexture(Game->Renderer, Path);
         }
 
-        SDL_Texture* TextureData = nullptr;
-
-        TextureData = CreateTexture(Game->Renderer, Surface);
-
-        if(!TextureData)
+        if(!Asset)
         {
-            std::cout << "failed to load texture: " << Path << std::endl;;
-            std::cout << "IMG_GetError(): " << IMG_GetError() << std::endl;
+            std::cout << "Failed to load asset: " << Key  << std::endl;
+            std::cout << "Asset path: "           << Path << std::endl;
 
-            return false;
+            break;
         }
-
-        game_asset* Asset = new game_asset { };
-        game_texture* Texture = new game_texture { };
-
-        Texture->Position.X = 0;
-        Texture->Position.Y = 0;
-        Texture->Size.Width = Surface->w;
-        Texture->Size.Height = Surface->h;
-        Texture->Data = TextureData;
-
-        Asset->Type = game_asset_type_id::TEXTURE;
-        Asset->Data.Texture = Texture;
-        Asset->ID = ++AssetID;
-        Asset->Path = Path;
 
         AddAsset(Game->Assets, Key, Asset);
-
-        SDL_DestroySurface(Surface);
-        Surface = nullptr;
-
-        return true;
     }
-
-    return false;
-}
-
-bool LoadFont(game* Game, std::string Key, std::string Path, int FontSize, SDL_Color ForegroundColor, SDL_Color BackgroundColor, SDL_Color HoverColor)
-{
-    if(!Path.empty() && FontSize > 0)
-    {
-        TTF_Font* FontData = nullptr;
-        FontData = TTF_OpenFont(Path.c_str(), FontSize);
-
-        if(!FontData)
-        {
-            std::cout << "failed to load font: " << Path << std::endl;;
-            std::cout << "TTF_GetError(): " << TTF_GetError() << std::endl;
-
-            return false;
-        }
-
-        game_asset* Asset = new game_asset { };
-
-        game_font* Font = new game_font { };
-        Font->Data = FontData;
-
-        SetRegularFontStyle(Font, FontSize, ForegroundColor, BackgroundColor, HoverColor);
-
-        Asset->Type = game_asset_type_id::FONT;
-        Asset->Data.Font = Font;
-        Asset->ID = ++AssetID;
-        Asset->Path = Path;
-
-        AddAsset(Game->Assets, Key, Asset);
-
-        return true;
-    }
-
-    return false;
-}
-
-void LoadAssets(game* Game)
-{
-    SDL_Color FontForegroundColor = SDL_Color { 0, 128, 0, SDL_ALPHA_OPAQUE    };
-    SDL_Color FontBackgroundColor = SDL_Color { 0, 0, 0, SDL_ALPHA_TRANSPARENT };
-    SDL_Color FontHoverColor      = SDL_Color { 0, 128, 128, SDL_ALPHA_OPAQUE  };
-
-    LoadFont(Game, "Orbitron_Black_Font_12", "/home/nathan/Documents/asteroids/assets/Orbitron-Black.ttf", 12, FontForegroundColor, FontBackgroundColor, FontHoverColor);
-    LoadFont(Game, "Orbitron_Black_Font_18", "/home/nathan/Documents/asteroids/assets/Orbitron-Black.ttf", 18, FontForegroundColor, FontBackgroundColor, FontHoverColor);
-    LoadFont(Game, "Orbitron_Black_Font_24", "/home/nathan/Documents/asteroids/assets/Orbitron-Black.ttf", 24, FontForegroundColor, FontBackgroundColor, FontHoverColor);
-
-    LoadFont(Game, "Orbitron_Regular_Font_12", "/home/nathan/Documents/asteroids/assets/Orbitron-Regular.ttf", 12, FontForegroundColor, FontBackgroundColor, FontHoverColor);
-    LoadFont(Game, "Orbitron_Regular_Font_18", "/home/nathan/Documents/asteroids/assets/Orbitron-Regular.ttf", 18, FontForegroundColor, FontBackgroundColor, FontHoverColor);
-    LoadFont(Game, "Orbitron_Regular_Font_24", "/home/nathan/Documents/asteroids/assets/Orbitron-Regular.ttf", 24, FontForegroundColor, FontBackgroundColor, FontHoverColor);
-
-    LoadFont(Game, "Orbitron_Medium_Font_12", "/home/nathan/Documents/asteroids/assets/Orbitron-Medium.ttf", 12, FontForegroundColor, FontBackgroundColor, FontHoverColor);
-    LoadFont(Game, "Orbitron_Medium_Font_18", "/home/nathan/Documents/asteroids/assets/Orbitron-Medium.ttf", 18, FontForegroundColor, FontBackgroundColor, FontHoverColor);
-    LoadFont(Game, "Orbitron_Medium_Font_24", "/home/nathan/Documents/asteroids/assets/Orbitron-Medium.ttf", 24, FontForegroundColor, FontBackgroundColor, FontHoverColor);
-
-    LoadFont(Game, "Orbitron_SemiBold_Font_12", "/home/nathan/Documents/asteroids/assets/Orbitron-SemiBold.ttf", 12, FontForegroundColor, FontBackgroundColor, FontHoverColor);
-    LoadFont(Game, "Orbitron_SemiBold_Font_18", "/home/nathan/Documents/asteroids/assets/Orbitron-SemiBold.ttf", 18, FontForegroundColor, FontBackgroundColor, FontHoverColor);
-    LoadFont(Game, "Orbitron_SemiBold_Font_24", "/home/nathan/Documents/asteroids/assets/Orbitron-SemiBold.ttf", 24, FontForegroundColor, FontBackgroundColor, FontHoverColor);
-
-    LoadFont(Game, "Orbitron_Bold_Font_12", "/home/nathan/Documents/asteroids/assets/Orbitron-Bold.ttf", 12, FontForegroundColor, FontBackgroundColor, FontHoverColor);
-    LoadFont(Game, "Orbitron_Bold_Font_18", "/home/nathan/Documents/asteroids/assets/Orbitron-Bold.ttf", 18, FontForegroundColor, FontBackgroundColor, FontHoverColor);
-    LoadFont(Game, "Orbitron_Bold_Font_24", "/home/nathan/Documents/asteroids/assets/Orbitron-Bold.ttf", 24, FontForegroundColor, FontBackgroundColor, FontHoverColor);
-
-    LoadFont(Game, "Orbitron_ExtraBold_Font_12", "/home/nathan/Documents/asteroids/assets/Orbitron-ExtraBold.ttf", 12, FontForegroundColor, FontBackgroundColor, FontHoverColor);
-    LoadFont(Game, "Orbitron_ExtraBold_Font_18", "/home/nathan/Documents/asteroids/assets/Orbitron-ExtraBold.ttf", 18, FontForegroundColor, FontBackgroundColor, FontHoverColor);
-    LoadFont(Game, "Orbitron_ExtraBold_Font_24", "/home/nathan/Documents/asteroids/assets/Orbitron-ExtraBold.ttf", 24, FontForegroundColor, FontBackgroundColor, FontHoverColor);
-
-    LoadTexture(Game, "UI_Textures", "/home/nathan/Documents/asteroids/assets/SpaceShooterAssetPack_IU.png");
-    LoadTexture(Game, "Ship_Textures", "/home/nathan/Documents/asteroids/assets/SpaceShooterAssetPack_Ships.png");
-    LoadTexture(Game, "Character_Textures", "/home/nathan/Documents/asteroids/assets/SpaceShooterAssetPack_Characters.png");
-    LoadTexture(Game, "Background_Textures", "/home/nathan/Documents/asteroids/assets/SpaceShooterAssetPack_BackGrounds.png");
-    LoadTexture(Game, "Projectile_Textures", "/home/nathan/Documents/asteroids/assets/SpaceShooterAssetPack_Projectiles.png");
 }
 
 void DestroyAssets(game* Game)
@@ -221,13 +140,13 @@ void DestroyAssets(game* Game)
     {
         if(Iter->second)
         {
-            if(Iter->second->Type == game_asset_type_id::TEXTURE)
+            if(Iter->second->Type == game_asset_type::TEXTURE)
             {
                 DestroyTexture(Iter->second->Data.Texture);
 
                 Iter->second->Data.Texture = nullptr;
             }
-            else if(Iter->second->Type == game_asset_type_id::FONT)
+            else if(Iter->second->Type == game_asset_type::FONT)
             {
                 DestroyFont(Iter->second->Data.Font);
 
@@ -330,10 +249,6 @@ uint32_t SaveObject(game* Game, game_object* Object)
     return WorldID;
 }
 
-void OnSettings(game_state* GameState) { }
-void OnSave(game_state* GameState) { }
-void OnLoad(game_state* GameState) { }
-
 void OnStart(game_state* GameState) 
 {
     if(GameState->StateID == game_state_id::AT_START_MENU)
@@ -384,54 +299,52 @@ void OnKeyDown(game_state* GameState)
     GameState->KeyUp = false;
 }
 
+void OnSettings(game_state* GameState) { }
+void OnSave(game_state* GameState) { }
+void OnLoad(game_state* GameState) { }
+
 void DestroyMenus(game* Game)
 {
     uint32_t Count = Game->Menus.size();
 
     for(uint32_t Index = 0; Index < Count; Index++)
     {
-        DestroyMenu(Game->Menus[Index]);
+        game_menu*& Menu = Game->Menus[Index];
+
+        DestroyMenu(Menu);
     }
 }
 
-void MakeMenus(game* Game)
+void CreateMenus(game* Game)
 {
-    game_font* Font = GetFont(Game->Assets, "Orbitron_Regular_Font_18");
-    game_menu* Menu = nullptr;
-
-    std::vector<std::pair<std::string, on_click_handler>> MainMenuOptions 
-    {
-        { "Start Game", &OnStart },
-        { "Load Game",  &OnLoad },
-        { "Settings",   &OnSettings },
-        { "Exit",       &OnStop }
-    };
-
-    Menu = MakeMenu(Game->Renderer, Font, MainMenuOptions);
-
-    if(Menu)
-    {
-        Game->Menus.push_back(Menu);
-
-        Menu = nullptr;
-    }
-
-    std::vector<std::pair<std::string, on_click_handler>> PauseMenuOptions 
-    {
-        { "Resume", &OnStart },
-        { "Save",   &OnSave },
-        { "Quit",   &OnQuit },
-        { "Exit",   &OnStop }
-    };
-
-    Menu = MakeMenu(Game->Renderer, Font, PauseMenuOptions);
-
-    if(Menu)
-    {
-        Game->Menus.push_back(Menu); 
-
-        Menu = nullptr;
-    }
+    // game_font* Font = GetFont(Game->Assets, "Orbitron_Regular_Font_18");
+    // game_menu* Menu = nullptr;
+    // std::vector<std::pair<std::string, on_click_handler>> MainMenuOptions 
+    // {
+    //     { "Start Game", &OnStart },
+    //     { "Load Game",  &OnLoad },
+    //     { "Settings",   &OnSettings },
+    //     { "Exit",       &OnStop }
+    // };
+    // Menu = MakeMenu(Game->Renderer, Font, MainMenuOptions);
+    // if(Menu)
+    // {
+    //     Game->Menus.push_back(Menu);
+    //     Menu = nullptr;
+    // }
+    // std::vector<std::pair<std::string, on_click_handler>> PauseMenuOptions 
+    // {
+    //     { "Resume", &OnStart },
+    //     { "Save",   &OnSave },
+    //     { "Quit",   &OnQuit },
+    //     { "Exit",   &OnStop }
+    // };
+    // Menu = MakeMenu(Game->Renderer, Font, PauseMenuOptions);
+    // if(Menu)
+    // {
+    //     Game->Menus.push_back(Menu); 
+    //     Menu = nullptr;
+    // }
 }
 
 void AddBackground(game* Game, uint32_t TextureID, int TileWidth, int TileHeight, int XOffset, int YOffset)
@@ -470,9 +383,11 @@ bool InitGame(game* Game)
         return false;
     }
 
+    // prepare for initialization
     OnInit(Game);
 
-    MakeMenus(Game);
+    // start initialization
+    CreateMenus(Game);
 
     return true;
 }

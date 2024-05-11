@@ -50,7 +50,7 @@ game_texture* RenderText(SDL_Renderer* Renderer, TTF_Font* Font, SDL_Color Color
 
 game_texture* RenderText(SDL_Renderer* Renderer, game_font* Font, std::string Text)
 {
-    // return RenderText(Renderer, Font->Data, Font->Style.ForegroundColor, Text);
+    // return nullptr;
 
     return nullptr;
 }

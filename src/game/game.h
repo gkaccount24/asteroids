@@ -1,6 +1,7 @@
 #ifndef GAME_H
 #define GAME_H
 
+#include "game_asset_load.h"
 #include "game_asset.h"
 #include "game_texture.h"
 #include "game_font.h"
@@ -61,8 +62,6 @@ struct game
     game_object_map ObjectMap;
 
     std::vector<game_menu*> Menus;
-    game_menu_state_ids ActiveGameMenuID;
-
     std::vector<game_background*> Backgrounds;
     std::vector<game_player*> Players;
 

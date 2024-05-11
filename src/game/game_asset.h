@@ -8,17 +8,19 @@
 #include <string>
 #include <cstdint>
 
-enum class game_asset_type_id
+enum class game_asset_type
 {
-    TEXTURE,
-    FONT
+    SURFACE = 0,
+    TEXTURE = 1,
+    FONT    = 2,
+    AUDIO   = 3
 };
 
 struct game_asset 
 {
-    uint32_t    ID;
-    game_asset_type_id Type;
-    std::string Path;
+    uint32_t        ID;
+    std::string     Path;
+    game_asset_type Type;
 
     union 
     {

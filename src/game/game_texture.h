@@ -12,9 +12,9 @@
 
 struct game_texture
 {
-    SDL_Texture* Data;
-    vec2d Position;
-    size Size;
+    SDL_Texture* Handle;
+    vec2d        Position;
+    size         Size;
 };
 
 void DestroyTexture(game_texture* Texture);

@@ -4,11 +4,17 @@ set(SRC ${SRC}
     ${CMAKE_CURRENT_SOURCE_DIR}/game_asset.h
     ${CMAKE_CURRENT_SOURCE_DIR}/game_asset.cpp
 
+    ${CMAKE_CURRENT_SOURCE_DIR}/game_asset_load.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/game_asset_load.cpp
+
     ${CMAKE_CURRENT_SOURCE_DIR}/game_font.h
     ${CMAKE_CURRENT_SOURCE_DIR}/game_font.cpp
 
     ${CMAKE_CURRENT_SOURCE_DIR}/game_texture.h
     ${CMAKE_CURRENT_SOURCE_DIR}/game_texture.cpp
+
+    ${CMAKE_CURRENT_SOURCE_DIR}/game_text.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/game_text.cpp
 
     ${CMAKE_CURRENT_SOURCE_DIR}/game_renderer.h
     ${CMAKE_CURRENT_SOURCE_DIR}/game_renderer.cpp
