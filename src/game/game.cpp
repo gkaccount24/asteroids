@@ -73,6 +73,48 @@ bool InitGfx(game* Game)
     return true;
 }
 
+void OnStart() 
+{
+    // if(GameState->StateID == game_state_id::AT_START_MENU)
+    // {
+    //     GameState->LastStateID = GameState->StateID;
+    //     GameState->StateID = game_state_id::PLAYING;
+    // }
+}
+
+void OnPause() 
+{
+    // if(GameState->StateID == game_state_id::PLAYING)
+    // {
+    //     GameState->LastStateID = GameState->StateID;
+    //     GameState->StateID = game_state_id::PAUSED;
+    // }
+}
+
+void OnStop() 
+{
+    // if(GameState->StateID == game_state_id::AT_START_MENU ||
+    //    GameState->StateID == game_state_id::PLAYING || 
+    //    GameState->StateID == game_state_id::PAUSED)
+    // {
+    //     GameState->LastStateID = GameState->StateID;
+    //     GameState->StateID = game_state_id::STOPPED;
+    // }
+}
+
+void OnSettings() { }
+void OnSave() { }
+void OnLoad() { }
+
+void OnQuit() 
+{
+    // if(GameState->StateID == game_state_id::PAUSED)
+    // {
+    //     GameState->LastStateID = GameState->StateID;
+    //     GameState->StateID = game_state_id::AT_START_MENU;
+    // }
+}
+
 void AddAsset(std::unordered_map<std::string, game_asset*>& Assets, std::string Key, game_asset* Asset)
 {
     if(!Key.empty())
@@ -86,20 +128,15 @@ void AddAsset(std::unordered_map<std::string, game_asset*>& Assets, std::string 
     }
 }
 
-void PrepareToLoadMenuAssets(game* Game, std::vector<asset_load*>& AssetsToLoad)
+bool PrepareToLoadTextureAssets(game* Game, std::vector<asset_load*>& AssetsToLoad)
 {
-    AssetsToLoad.push_back(new asset_load { "Orbitron_Font", "/home/nathan/Documents/asteroids/assets/Orbitron-Regular.ttf", game_asset_type::FONT, asset_load::font { 12, TTF_STYLE_NORMAL } });
+    AssetsToLoad.push_back(new asset_load { game_asset_type::TEXTURE, "UI_Textures",         "/home/nathan/Documents/asteroids/assets/SpaceShooterAssetPack_IU.png"          });
+    AssetsToLoad.push_back(new asset_load { game_asset_type::TEXTURE, "Ship_Textures",       "/home/nathan/Documents/asteroids/assets/SpaceShooterAssetPack_Ships.png"       });
+    AssetsToLoad.push_back(new asset_load { game_asset_type::TEXTURE, "Character_Textures",  "/home/nathan/Documents/asteroids/assets/SpaceShooterAssetPack_Characters.png"  });
+    AssetsToLoad.push_back(new asset_load { game_asset_type::TEXTURE, "Background_Textures", "/home/nathan/Documents/asteroids/assets/SpaceShooterAssetPack_BackGrounds.png" });
+    AssetsToLoad.push_back(new asset_load { game_asset_type::TEXTURE, "Projectile_Textures", "/home/nathan/Documents/asteroids/assets/SpaceShooterAssetPack_Projectiles.png" });
 
-
-}
-
-void PrepareToLoadTextureAssets(game* Game, std::vector<asset_load*>& AssetsToLoad)
-{
-    AssetsToLoad.push_back(new asset_load { "UI_Textures",         "/home/nathan/Documents/asteroids/assets/SpaceShooterAssetPack_IU.png",          game_asset_type::TEXTURE });
-    AssetsToLoad.push_back(new asset_load { "Ship_Textures",       "/home/nathan/Documents/asteroids/assets/SpaceShooterAssetPack_Ships.png",       game_asset_type::TEXTURE });
-    AssetsToLoad.push_back(new asset_load { "Character_Textures",  "/home/nathan/Documents/asteroids/assets/SpaceShooterAssetPack_Characters.png",  game_asset_type::TEXTURE });
-    AssetsToLoad.push_back(new asset_load { "Background_Textures", "/home/nathan/Documents/asteroids/assets/SpaceShooterAssetPack_BackGrounds.png", game_asset_type::TEXTURE });
-    AssetsToLoad.push_back(new asset_load { "Projectile_Textures", "/home/nathan/Documents/asteroids/assets/SpaceShooterAssetPack_Projectiles.png", game_asset_type::TEXTURE });
+    return true;
 }
 
 void PrepareToLoadSoundAssets(game* Game, std::vector<asset_load*>& AssetsToLoad)
@@ -107,11 +144,89 @@ void PrepareToLoadSoundAssets(game* Game, std::vector<asset_load*>& AssetsToLoad
 
 }
 
+bool PrepareToLoadFontAssetForMenu(game* Game, game_menu* Menu)
+{
+    asset_load* AssetLoad = new asset_load { };
+
+    // AssetLoad->Key  = "Orbitron-Regular_Font";
+    // AssetLoad->Path = "/home/nathan/Documents/asteroids/assets/Orbitron-Regular.ttf";
+
+    AssetsToLoad.push_back(AssetLoad);
+
+    // Game->Menus.push_back(std::make_pair("Orbitron_Font", StartMenu));
+    // game_menu* PauseMenu = CreateMenu(StyleIndex, Styles, StartMenuOptions);
+    // if(!PauseMenu)
+    // {
+    //     std::cout << "failed to create pause menu..." << std::endl;
+    //     return false;
+    // }
+    // Game->Menus.push_back(std::make_pair("Orbitron_Font", PauseMenu));
+
+    return true;
+}
+
+bool PrepareToLoadMenuAssets(game* Game, std::vector<asset_load*>& AssetsToLoad)
+{
+    // typedef std::vector<std::pair<std::string, on_click_handler>> menu_option_list;
+    // typedef std::vector<std::pair<asset_info, menu_option_list&>> menu_list;
+    // menu_option_list StartMenuOptions
+    // {
+    //     { "Start Game", &OnStart    },
+    //     { "Load Game",  &OnLoad     },
+    //     { "Settings",   &OnSettings },
+    //     { "Exit",       &OnStop     }
+    // };
+    // menu_option_list PauseMenuOptions
+    // {
+    //     { "Resume", &OnStart },
+    //     { "Save",   &OnSave  },
+    //     { "Quit",   &OnQuit  },
+    //     { "Exit",   &OnStop  }
+    // };
+    // menu_list Menus;
+
+    text_style_index StyleIndex      = text_style_index::UNHOVERED;
+
+    SDL_Color ForegroundColor        = SDL_Color { 0, 128, 0, SDL_ALPHA_OPAQUE      };
+    SDL_Color BackgroundColor        = SDL_Color { 0,   0, 0, SDL_ALPHA_TRANSPARENT };
+    SDL_Color HoveredForegroundColor = SDL_Color { 0, 128, 0, SDL_ALPHA_OPAQUE      };
+    SDL_Color HoveredBackgroundColor = SDL_Color { 0,   0, 0, SDL_ALPHA_TRANSPARENT };
+
+    int Style = TTF_STYLE_NORMAL;
+    int Size  = 12;
+
+    text_style Styles[TEXT_STYLE_COUNT] 
+    {
+        text_style { ForegroundColor,        BackgroundColor,        Style, Size },
+        text_style { HoveredForegroundColor, HoveredBackgroundColor, Style, Size }
+    };
+
+    std::size_t MenuCount = 0; // Menus.size();
+
+    for(std::size_t Index = 0; Index < MenuCount; Index++)
+    {
+        game_menu* Menu = CreateMenu(StyleIndex, Styles, 0);
+
+        // if(!Menu)
+        // {
+        //     std::cout << "failed to create menu..." << std::endl;
+        //     break;
+        // }
+    }
+}
+
+bool PrepareForAssetLoading(game* Game)
+{
+    // PrepareMenusForAssetLoading(Game);
+
+    return true;
+}
+
 void LoadAssets(game* Game)
 {
     std::vector<asset_load*> AssetsToLoad;
 
-    PrepareToLoadMenuAssets(Game, AssetsToLoad);
+    // PrepareToLoadFontAssets(Game, AssetsToLoad);
     PrepareToLoadTextureAssets(Game, AssetsToLoad);
     PrepareToLoadSoundAssets(Game, AssetsToLoad);
 
@@ -126,10 +241,17 @@ void LoadAssets(game* Game)
 
         if(AssetsToLoad[Index]->Type == game_asset_type::FONT)
         {
-            int FontStyle = AssetsToLoad[Index]->ForFont.Style;
-            int FontSize = AssetsToLoad[Index]->ForFont.Size;
+            int FontStyle = AssetsToLoad[Index]->Font.Style;
+            int FontSize = AssetsToLoad[Index]->Font.Size;
 
-            Asset = LoadFont(FontStyle, FontSize, Path);
+            if(Asset = LoadFont(FontStyle, FontSize, Path))
+            {
+                // do something with this font handle
+                // like create menus or something
+                // if that is the font assets
+                // purpose
+
+            }
         }
         else if(AssetsToLoad[Index]->Type == game_asset_type::TEXTURE)
         {
@@ -145,6 +267,18 @@ void LoadAssets(game* Game)
         }
 
         AddAsset(Game->Assets, Key, Asset);
+    }
+}
+
+void DestroyMenus(game* Game)
+{
+    std::size_t Count = Game->Menus.size();
+
+    for(std::size_t Index = 0; Index < Count; Index++)
+    {
+        game_menu*& Menu = Game->Menus[Index];
+
+        DestroyMenu(Menu);
     }
 }
 
@@ -209,54 +343,54 @@ void OnConstruct(game* Game)
 
 void OnInit(game* Game)
 {
-    // asset_manifest* Manifest =  LoadAssetManifest();
-    // LoadAssets(Game, Manifest);
-
+    PrepareForAssetLoading(Game);
     LoadAssets(Game);
 }
 
 uint32_t AddObject(game_object_map* Map, game_object* Object)
 {
-    if(!Map->FreeObjectEntries.empty())
-    {
-        auto Entry = Map->Entries.at(Map->FreeObjectEntries.back());
+    // if(!Map->FreeObjectEntries.empty())
+    // {
+    //     auto Entry = Map->Entries.at(Map->FreeObjectEntries.back());
 
-        if(Entry)
-        {
-            delete Entry;
+    //     if(Entry)
+    //     {
+    //         delete Entry;
 
-            Entry = nullptr;
-        }
+    //         Entry = nullptr;
+    //     }
 
-        Entry = Object;
+    //     Entry = Object;
 
-        Map->FreeObjectEntries.pop_back();
+    //     Map->FreeObjectEntries.pop_back();
 
-        return Entry->WorldID;
-    }
-    else
-    {
-        auto Entry = Map->Entries[++ObjectID] = Object;
+    //     return Entry->WorldID;
+    // }
+    // else
+    // {
+    //     auto Entry = Map->Entries[++ObjectID] = Object;
 
-        return ObjectID;
-    }
+    //     return ObjectID;
+    // }
+
+    return 0;
 }
 
 void FreeObject(game_object_map* Map, game_object* Object)
 {
-    auto Entry = Map->Entries.find(Object->WorldID);
+    // auto Entry = Map->Entries.find(Object->WorldID);
 
-    if(Entry != std::end(Map->Entries))
-    {
-        Map->FreeObjectEntries.push_back(Object->WorldID);
+    // if(Entry != std::end(Map->Entries))
+    // {
+    //     Map->FreeObjectEntries.push_back(Object->WorldID);
 
-        if(Entry->second)
-        {
-            delete Entry->second;
+    //     if(Entry->second)
+    //     {
+    //         delete Entry->second;
 
-            Entry->second = nullptr;
-        }
-    }
+    //         Entry->second = nullptr;
+    //     }
+    // }
 }
 
 // uint32_t SaveObject(game* Game, game_object* Object)
@@ -266,43 +400,6 @@ void FreeObject(game_object_map* Map, game_object* Object)
 //     return WorldID;
 // }
 
-void OnStart(game_state* GameState) 
-{
-    if(GameState->StateID == game_state_id::AT_START_MENU)
-    {
-        GameState->LastStateID = GameState->StateID;
-        GameState->StateID = game_state_id::PLAYING;
-    }
-}
-
-void OnPause(game_state* GameState) 
-{
-    if(GameState->StateID == game_state_id::PLAYING)
-    {
-        GameState->LastStateID = GameState->StateID;
-        GameState->StateID = game_state_id::PAUSED;
-    }
-}
-
-void OnStop(game_state* GameState) 
-{
-    if(GameState->StateID == game_state_id::AT_START_MENU ||
-       GameState->StateID == game_state_id::PLAYING || 
-       GameState->StateID == game_state_id::PAUSED)
-    {
-        GameState->LastStateID = GameState->StateID;
-        GameState->StateID = game_state_id::STOPPED;
-    }
-}
-
-void OnQuit(game_state* GameState) 
-{
-    if(GameState->StateID == game_state_id::PAUSED)
-    {
-        GameState->LastStateID = GameState->StateID;
-        GameState->StateID = game_state_id::AT_START_MENU;
-    }
-}
 
 void OnKeyUp(game_state* GameState) 
 {
@@ -314,76 +411,6 @@ void OnKeyDown(game_state* GameState)
 {
     GameState->KeyDown = true;
     GameState->KeyUp = false;
-}
-
-void OnSettings(game_state* GameState) { }
-void OnSave(game_state* GameState) { }
-void OnLoad(game_state* GameState) { }
-
-void DestroyMenus(game* Game)
-{
-    // uint32_t Count = Game->Menus.size();
-    // for(uint32_t Index = 0; Index < Count; Index++)
-    // {
-    //     // game_menu*& Menu = Game->Menus[Index];
-    //     // DestroyMenu(Menu);
-    // }
-}
-
-void CreateMenus(game* Game, game_font* Font)
-{
-    text_style_index StyleIndex = text_style_index::UNHOVERED;
-
-    SDL_Color ForegroundColor        = SDL_Color { 0, 128, 0, SDL_ALPHA_OPAQUE      };
-    SDL_Color HoveredForegroundColor = SDL_Color { 0, 128, 0, SDL_ALPHA_OPAQUE      };
-    SDL_Color BackgroundColor        = SDL_Color { 0,   0, 0, SDL_ALPHA_TRANSPARENT };
-
-    int Style = TTF_STYLE_NORMAL;
-    int Size  = 12;
-
-    text_style Styles[TEXT_STYLE_COUNT] 
-    {
-        text_style { ForegroundColor,        BackgroundColor, Style, Size },
-        text_style { HoveredForegroundColor, BackgroundColor, Style, Size }
-    };
-
-    std::vector<std::pair<std::string, on_click_handler>> StartMenuOptions
-    {
-        { "Start Game", &OnStart    },
-        { "Load Game",  &OnLoad     },
-        { "Settings",   &OnSettings },
-        { "Exit",       &OnStop     }
-    };
-
-    game_menu* StartMenu = CreateMenu(Game->Renderer, Font, StyleIndex, Styles, StartMenuOptions);
-
-    if(!StartMenu)
-    {
-        std::cout << "failed to create start menu..." << std::endl;
-
-        return;
-    }
-
-    Game->Menus.push_back(StartMenu);
-
-    std::vector<std::pair<std::string, on_click_handler>> PauseMenuOptions
-    {
-        { "Resume", &OnStart },
-        { "Save",   &OnSave  },
-        { "Quit",   &OnQuit  },
-        { "Exit",   &OnStop  }
-    };
-
-    game_menu* PauseMenu = CreateMenu(Game->Renderer, Font, StyleIndex, Styles, PauseMenuOptions);
-
-    if(!PauseMenu)
-    {
-        std::cout << "failed to create pause menu..." << std::endl;
-
-        return;
-    }
-
-    Game->Menus.push_back(PauseMenu);
 }
 
 void AddPlayer(game* Game, vec2d Position, size Size, speed Speed)
@@ -414,9 +441,6 @@ bool InitGame(game* Game)
 
     // prepare for initialization
     OnInit(Game);
-
-    // start initialization
-    CreateMenus(Game);
 
     return true;
 }
@@ -557,7 +581,7 @@ void HandleEvents(game* Game)
     {
         if(Evt.type == SDL_EVENT_QUIT)
         {
-            OnQuit(&Game->State);
+            // OnQuit(&Game->State);
 
             break;
         }

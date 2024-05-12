@@ -17,18 +17,22 @@
 game_asset* LoadTexture(SDL_Renderer* Renderer, std::string Path);
 game_asset* LoadFont(int FontStyle, int FontSize, std::string Path);
 
+struct asset_info
+{
+    std::string Key;
+    std::string Path;
+};
+
 struct asset_load 
 {
-    std::string     Key;
-    std::string     Path;
     game_asset_type Type;
+    asset_info      Info;
 
-    struct font
+    union
     {
-        int Size;
-        int Style;
-
-    } ForFont;
+        // menu_load* MenuLoad;
+        
+    } Details;
 };
 
 #endif

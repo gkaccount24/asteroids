@@ -7,12 +7,12 @@ SDL_Texture* CreateTexture(SDL_Renderer* Renderer, SDL_Surface* Surface)
     return Texture;
 }
 
-game_texture* RenderText(SDL_Renderer* Renderer, game_font* Font, text_style_index StyleIndex, text_style (&Styles)[TEXT_STYLE_COUNT], std::string Text)
+game_texture* RenderText(SDL_Renderer* Renderer, game_font* Font, text_style* Style, std::string Text)
 {
-    SDL_Color ForegroundColor = Styles[static_cast<uint32_t>(StyleIndex)].ForegroundColor;
-    SDL_Color BackgroundColor = Styles[static_cast<uint32_t>(StyleIndex)].BackgroundColor;
-    int FontStyle             = Styles[static_cast<uint32_t>(StyleIndex)].Style;
-    int FontSize              = Styles[static_cast<uint32_t>(StyleIndex)].Size;
+    SDL_Color ForegroundColor = Style->ForegroundColor;
+    SDL_Color BackgroundColor = Style->BackgroundColor;
+    int FontStyle             = Style->Style;
+    int FontSize              = Style->Size;
 
     TTF_SetFontStyle(Font->Handle, FontStyle);
     TTF_SetFontSize(Font->Handle, FontSize);
@@ -38,13 +38,13 @@ game_texture* RenderText(SDL_Renderer* Renderer, game_font* Font, text_style_ind
         return nullptr;
     }
 
-    game_texture* Texture = new game_texture();
+    game_texture* Texture = new game_texture { };
 
-    Texture->Position.X = 0.0f;
-    Texture->Position.Y = 0.0f;
-    Texture->Size.Width = Surface->w;
+    Texture->Position.X  = 0.0f;
+    Texture->Position.Y  = 0.0f;
+    Texture->Size.Width  = Surface->w;
     Texture->Size.Height = Surface->h;
-    Texture->Handle = Handle;
+    Texture->Handle      = Handle;
 
     SDL_DestroySurface(Surface);
     Surface = nullptr;

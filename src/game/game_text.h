@@ -20,7 +20,6 @@ struct text_style
 {
     SDL_Color ForegroundColor;
     SDL_Color BackgroundColor;
-
     int Style;
     int Size;
 };
@@ -28,7 +27,7 @@ struct text_style
 struct game_text
 {
     game_texture*    Texture;
-    text_style       Style[TEXT_STYLE_COUNT];
+    text_style       Styles[TEXT_STYLE_COUNT];
     text_style_index StyleIndex;
 
     // actual text, position, & 
@@ -37,5 +36,7 @@ struct game_text
     vec2d       Position;
     size        Size;
 };
+
+void DestroyText(game_text*& Text);
 
 #endif

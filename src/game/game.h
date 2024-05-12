@@ -37,14 +37,13 @@
 struct game_object_map
 {
     std::unordered_map<uint32_t, game_object*> Entries;
-    std::vector<uint32_t> FreeObjectEntries;
+    std::vector<uint32_t>                      EmptyEntries;
 };
 
 struct game
 {
     SDL_Window* Window;
     SDL_Renderer* Renderer;
-
     int WindowWidth;
     int WindowHeight;
     int WindowFlags;
@@ -52,7 +51,6 @@ struct game
     game_state State;
 
     std::unordered_map<std::string, game_asset*> Assets;
-
     std::vector<game_menu*> Menus;
     std::vector<game_player*> Players;
 

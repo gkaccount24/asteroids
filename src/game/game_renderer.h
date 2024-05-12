@@ -13,7 +13,7 @@
 #include <iostream>
 
 SDL_Texture* CreateTexture(SDL_Renderer* Renderer, SDL_Surface* Surface);
-game_texture* RenderText(SDL_Renderer* Renderer, game_font* Font, text_style_index StyleIndex, text_style (&Styles)[TEXT_STYLE_COUNT], std::string Text);
+game_texture* RenderText(SDL_Renderer* Renderer, game_font* Font, text_style* Style, std::string Text);
 
 void ClearScreen(SDL_Renderer* Renderer, SDL_Color Color);
 void SwapBuffers(SDL_Renderer* Renderer);

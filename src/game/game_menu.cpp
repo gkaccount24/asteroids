@@ -2,13 +2,15 @@
 
 static int MenuID;
 
-game_menu* CreateMenu(SDL_Renderer* Renderer, game_font* Font, text_style_index StyleIndex, text_style(& Styles)[TEXT_STYLE_COUNT], std::vector<std::pair<std::string, on_click_handler>>& Options)
+game_menu* CreateMenu(text_style_index StyleIndex, text_style (&Styles)[TEXT_STYLE_COUNT], std::vector<std::pair<std::string, on_click_handler>>& Options)
 {
-    uint32_t Count = Options.size();
+    game_menu* Menu = nullptr;
 
-    if(Count > 0)
+    if(!Options.empty())
     {
-        game_menu* Menu = new game_menu { };
+        std::size_t Count = Options.size();
+
+        Menu = new game_menu { };
 
         if(!Menu)
         {
@@ -18,28 +20,10 @@ game_menu* CreateMenu(SDL_Renderer* Renderer, game_font* Font, text_style_index 
         }
 
         Menu->MenuID = ++MenuID;
-        Menu->Font   = Font;
 
         for(uint32_t Index = 0; Index < Count; Index++)
         {
-            game_texture* Texture = RenderText(Renderer, Font, StyleIndex, Styles, Options[Index].first);
-
-            if(!Texture)
-            {
-                std::cout << "Failed to render menu option text..." << std::endl;
-
-                DestroyMenu(Menu);
-                
-                break;
-            }
-
             game_menu_option* Option = new game_menu_option { };
-
-            // struct game_menu_option 
-            // {
-            //     game_text*       Text;
-            //     on_click_handler OnClick;
-            // };
 
             if(!Option)
             {
@@ -50,18 +34,25 @@ game_menu* CreateMenu(SDL_Renderer* Renderer, game_font* Font, text_style_index 
 
             Option->Text = new game_text { };
 
-            Option->Text->Style[static_cast<uint32_t>(text_style_index::UNHOVERED)].BackgroundColor = Styles[static_cast<uint32_t>(text_style_index::UNHOVERED)].BackgroundColor;
-            Option->Text->Style[static_cast<uint32_t>(text_style_index::UNHOVERED)].ForegroundColor = Styles[static_cast<uint32_t>(text_style_index::UNHOVERED)].ForegroundColor;
-            Option->Text->Style[static_cast<uint32_t>(text_style_index::UNHOVERED)].Style           = Styles[static_cast<uint32_t>(text_style_index::UNHOVERED)].Style;
-            Option->Text->Style[static_cast<uint32_t>(text_style_index::UNHOVERED)].Size            = Styles[static_cast<uint32_t>(text_style_index::UNHOVERED)].Size;
+            if(!Option->Text)
+            {
+                DestroyMenu(Menu);
 
-            Option->Text->Style[static_cast<uint32_t>(text_style_index::HOVERED)].BackgroundColor = Styles[static_cast<uint32_t>(text_style_index::HOVERED)].BackgroundColor;
-            Option->Text->Style[static_cast<uint32_t>(text_style_index::HOVERED)].ForegroundColor = Styles[static_cast<uint32_t>(text_style_index::HOVERED)].ForegroundColor;
-            Option->Text->Style[static_cast<uint32_t>(text_style_index::HOVERED)].Style           = Styles[static_cast<uint32_t>(text_style_index::HOVERED)].Style;
-            Option->Text->Style[static_cast<uint32_t>(text_style_index::HOVERED)].Size            = Styles[static_cast<uint32_t>(text_style_index::HOVERED)].Size;
+                break;
+            }
 
             Option->Text->StyleIndex  = StyleIndex;
-            Option->Text->Texture     = Texture;
+
+            Option->Text->Styles[static_cast<std::size_t>(text_style_index::UNHOVERED)].BackgroundColor = Styles[static_cast<std::size_t>(text_style_index::UNHOVERED)].BackgroundColor;
+            Option->Text->Styles[static_cast<std::size_t>(text_style_index::UNHOVERED)].ForegroundColor = Styles[static_cast<std::size_t>(text_style_index::UNHOVERED)].ForegroundColor;
+            Option->Text->Styles[static_cast<std::size_t>(text_style_index::UNHOVERED)].Style           = Styles[static_cast<std::size_t>(text_style_index::UNHOVERED)].Style;
+            Option->Text->Styles[static_cast<std::size_t>(text_style_index::UNHOVERED)].Size            = Styles[static_cast<std::size_t>(text_style_index::UNHOVERED)].Size;
+
+            Option->Text->Styles[static_cast<std::size_t>(text_style_index::HOVERED)].BackgroundColor = Styles[static_cast<std::size_t>(text_style_index::HOVERED)].BackgroundColor;
+            Option->Text->Styles[static_cast<std::size_t>(text_style_index::HOVERED)].ForegroundColor = Styles[static_cast<std::size_t>(text_style_index::HOVERED)].ForegroundColor;
+            Option->Text->Styles[static_cast<std::size_t>(text_style_index::HOVERED)].Style           = Styles[static_cast<std::size_t>(text_style_index::HOVERED)].Style;
+            Option->Text->Styles[static_cast<std::size_t>(text_style_index::HOVERED)].Size            = Styles[static_cast<std::size_t>(text_style_index::HOVERED)].Size;
+
             Option->Text->StringData  = Options[Index].first;
             Option->Text->Position.X  = 0.0f;
             Option->Text->Position.Y  = 0.0f;
@@ -70,11 +61,20 @@ game_menu* CreateMenu(SDL_Renderer* Renderer, game_font* Font, text_style_index 
 
             Menu->Options.push_back(Option);
         }
-
-        return Menu;
     }
 
-    return nullptr;
+    return Menu;
+}
+
+void DestroyMenuOption(game_menu_option*& Option)
+{
+    if(Option)
+    {
+        DestroyText(Option->Text);
+
+        delete Option;
+        Option = nullptr;
+    }
 }
 
 void DestroyMenu(game_menu*& Menu)
@@ -85,11 +85,7 @@ void DestroyMenu(game_menu*& Menu)
 
         for(uint32_t Index = 0; Index < Count; Index++)
         {
-            if(Menu->Options[Index])
-            {
-                delete Menu->Options[Index];
-                Menu->Options[Index] = nullptr;
-            }
+            DestroyMenuOption(Menu->Options[Index]);
         }
 
         delete Menu;

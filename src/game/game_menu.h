@@ -24,12 +24,12 @@ struct game_menu
     std::vector<game_menu_option*> Options;
 
     // font applies to all menu options
-    game_font* Font;
-    vec2d      Position;
-    size       Size;
+    game_font*  Font;
+    vec2d       Position;
+    size        Size;
 };
 
-game_menu* CreateMenu(SDL_Renderer* Renderer, game_font* Font, text_style_index StyleIndex, text_style(&Styles)[TEXT_STYLE_COUNT], std::vector<std::pair<std::string, on_click_handler>>& Options);
+game_menu* CreateMenu(text_style_index StyleIndex, text_style (&Styles)[TEXT_STYLE_COUNT], std::vector<std::pair<std::string, on_click_handler>>& Options);
 void DestroyMenu(game_menu*&);
 
 #endif

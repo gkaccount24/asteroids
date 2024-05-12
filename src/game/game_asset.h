@@ -13,12 +13,14 @@ enum class game_asset_type
     SURFACE = 0,
     TEXTURE = 1,
     FONT    = 2,
-    AUDIO   = 3
+    AUDIO   = 3,
+    MENU    = 4
 };
 
 struct game_asset 
 {
     uint32_t        ID;
+    std::string     Key;
     std::string     Path;
     game_asset_type Type;
 

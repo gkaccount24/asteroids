@@ -6,6 +6,7 @@
 #include <SDL3_ttf/SDL_ttf.h>
 
 #include <vector>
+#include <string>
 
 struct game_font
 {
