@@ -6,7 +6,7 @@
 
 int main() 
 {
-    game Asteroids { };
+    game Asteroids;
 
-    return RunGame(&Asteroids);
+    // return RunGame(&Asteroids);
 }

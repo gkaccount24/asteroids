@@ -28,7 +28,7 @@ struct game_object
 {
     uint32_t            WorldID;
     game_object_type_id TypeID;
-    game_texture*       Texture;
+    // game_texture*       Texture;
 
     vec2d Position;
     size  Size;
@@ -47,17 +47,17 @@ struct game_object
     } Data;
 };
 
-void Rotate(game_object* Object, float Value = 1.0f);
-void Accelerate(game_object* Object, float Dt);
-void Move(game_object* Object, float Dt);
-
-void SetWorldID(game_object* Object, uint32_t ObjectWorldID);
-void AssignType(game_object* Object, game_object_type_id TypeID);
-void AssignTexture(game_object* Object, game_texture* Texture);
-void SetSize(game_object* Object, size Size);
-void SetPosition(game_object* Object, vec2d Position);
-void SetVelocityParams(game_object* Object, speed Speed);
-void Reset(game_object* Object);
+// void Rotate(game_object* Object, float Value = 1.0f);
+// void Accelerate(game_object* Object, float Dt);
+// void Move(game_object* Object, float Dt);
+// 
+// void SetWorldID(game_object* Object, uint32_t ObjectWorldID);
+// void AssignType(game_object* Object, game_object_type_id TypeID);
+// void AssignTexture(game_object* Object, game_texture* Texture);
+// void SetSize(game_object* Object, size Size);
+// void SetPosition(game_object* Object, vec2d Position);
+// void SetVelocityParams(game_object* Object, speed Speed);
+// void Reset(game_object* Object);
 
 game_object* MakeShip(std::unordered_map<std::string, game_asset*>& Assets, vec2d Position, size Size, speed Speed);
 // game_object* MakeUFO(std::unordered_map<std::string, game_asset*>& Assets, vec2d Position, size Size, speed Speed);

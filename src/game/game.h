@@ -1,17 +1,11 @@
 #ifndef GAME_H
 #define GAME_H
 
-#include "game_asset_load.h"
 #include "game_asset.h"
-#include "game_text.h"
+#include "game_sound.h"
 #include "game_texture.h"
 #include "game_font.h"
-
-#include "game_renderer.h"
 #include "game_menu.h"
-#include "game_object.h"
-#include "game_player.h"
-#include "game_state.h"
 
 #include <SDL3/SDL.h>
 #include <SDL3_image/SDL_image.h>
@@ -34,25 +28,46 @@
 /* HELPER MACROS FOR SDL FUNCTION RETURN CODES */
 #define IsGood(Result)((Result) == 0)
 
-struct game_object_map
-{
-    std::unordered_map<uint32_t, game_object*> Entries;
-    std::vector<uint32_t>                      EmptyEntries;
-};
+// struct game_object_map
+// {
+//     std::unordered_map<uint32_t, game_object*> Entries;
+//     std::vector<uint32_t>                      EmptyEntries;
+// };
 
-struct game
+class game 
 {
+public:
+     game();
+    ~game();
+
+public:
+    bool Init();
+    
+private:
+    bool InitGfx();
+    void Destroy();
+
+private:
+    game_sound*   CreateSound(std::string Path);
+    game_texture* CreateTexture(std::string Path);
+    game_font*    CreateFont(std::string Path, int FontStyle, int FontSize);
+    game_menu* CreateMenu(game_font* Font);
+    bool       CreateMenus();
+
+private:
+    void LoadAssets();
+
+private:
+    void OnInit();
+
+private:
     SDL_Window* Window;
     SDL_Renderer* Renderer;
     int WindowWidth;
     int WindowHeight;
     int WindowFlags;
 
-    game_state State;
-
     std::unordered_map<std::string, game_asset*> Assets;
-    std::vector<game_menu*> Menus;
-    std::vector<game_player*> Players;
 
     /* GLOBAL TIMER DATA MEMBERS */
     std::chrono::time_point<std::chrono::system_clock> DtNow;
@@ -60,9 +75,9 @@ struct game
     std::chrono::duration<float> Dt;
 };
 
-bool InitGame(game* Game);
-void DestroyGame(game* Game);
-int PlayGame(game* Game);
-int RunGame(game* Game);
+// bool InitGame(game* Game);
+// void DestroyGame(game* Game);
+// int PlayGame(game* Game);
+// int RunGame(game* Game);
 
 #endif

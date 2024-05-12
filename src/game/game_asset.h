@@ -1,14 +1,14 @@
 #ifndef GAME_ASSET_H
 #define GAME_ASSET_H
 
-#include "game_texture.h"
-#include "game_font.h"
+#include <SDL3/SDL.h>
+#include <SDL3_image/SDL_image.h>
+#include <SDL3_ttf/SDL_ttf.h>
 
-#include <unordered_map>
 #include <string>
 #include <cstdint>
 
-enum class game_asset_type
+enum class game_asset_type 
 {
     SURFACE = 0,
     TEXTURE = 1,
@@ -17,22 +17,25 @@ enum class game_asset_type
     MENU    = 4
 };
 
-struct game_asset 
+class game_asset
 {
-    uint32_t        ID;
-    std::string     Key;
-    std::string     Path;
+protected:
+             game_asset();
+    virtual ~game_asset();
+
+public:
+    virtual bool Load(std::string Path, SDL_Renderer* Renderer = nullptr) = 0;
+    virtual void Destroy()                                                = 0;
+
+public:
+    inline void            SetType(game_asset_type AssetType) { Type = AssetType; }
+    inline game_asset_type GetType() const                    { return Type;      }
+    inline void        SetPath(std::string AssetPath) { Path = AssetPath; }
+    inline std::string GetPath() const                { return Path;      }
+
+protected:
     game_asset_type Type;
-
-    union 
-    {
-        game_texture* Texture;
-        game_font*    Font;
-
-    } Data;
+    std::string     Path;
 };
-
-game_texture* GetTexture(std::unordered_map<std::string, game_asset*>& Assets, std::string Key);
-game_font* GetFont(std::unordered_map<std::string, game_asset*>& Assets, std::string Key);
 
 #endif

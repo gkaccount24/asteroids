@@ -1,35 +1,35 @@
 #include "game_object.h"
 
-game_object* MakeShip(std::unordered_map<std::string, game_asset*>& Assets, vec2d Position, size Size, speed Speed)
-{
-    game_object* Object = new game_object { };
-
-    if(Object)
-    {
-        ship* Ship = new ship { };
-
-        if(!Ship)
-        {
-            // logging, failed to alloc
-            // memory for a ship;
-
-            return nullptr;
-        }
-
-        Object->Data.Ship = Ship;
-
-        AssignType(Object, game_object_type_id::SHIP);
-
-        game_texture* Texture = GetTexture(Assets, "Texture_Starship");
-        AssignTexture(Object, Texture);
-
-        SetVelocityParams(Object, Speed);
-        SetPosition(Object, Position);
-        SetSize(Object, Size);
-    }
-
-    return Object;
-}
+// game_object* MakeShip(std::unordered_map<std::string, game_asset*>& Assets, vec2d Position, size Size, speed Speed)
+// {
+//     game_object* Object = new game_object { };
+// 
+//     if(Object)
+//     {
+//         ship* Ship = new ship { };
+// 
+//         if(!Ship)
+//         {
+//             // logging, failed to alloc
+//             // memory for a ship;
+// 
+//             return nullptr;
+//         }
+// 
+//         Object->Data.Ship = Ship;
+// 
+//         AssignType(Object, game_object_type_id::SHIP);
+// 
+//         game_texture* Texture = GetTexture(Assets, "Texture_Starship");
+//         AssignTexture(Object, Texture);
+// 
+//         SetVelocityParams(Object, Speed);
+//         SetPosition(Object, Position);
+//         SetSize(Object, Size);
+//     }
+// 
+//     return Object;
+// }
 
 // game_object* MakeUFO(std::unordered_map<std::string, game_asset*>& Assets, vec2d Position, size Size, speed Speed) { return nullptr; }
 // game_object* MakeAsteroid(std::unordered_map<std::string, game_asset*>& Assets, vec2d Position, size Size, speed Speed) { return nullptr; }
@@ -39,7 +39,7 @@ game_object* MakeShip(std::unordered_map<std::string, game_asset*>& Assets, vec2
 void Reset(game_object* Object)
 {
     Object->WorldID = 0; // invalid world id, all id's must be non zero
-    Object->Texture = nullptr; // invalid asset id, all id's must be non zero
+    // Object->Texture = nullptr; // invalid asset id, all id's must be non zero
 
     Object->Position.X = 0;
     Object->Position.Y = 0;
@@ -69,13 +69,13 @@ void AssignType(game_object* Object, game_object_type_id TypeID)
     Object->TypeID = TypeID;
 }
 
-void AssignTexture(game_object* Object, game_texture* Texture)
-{
-    if(Texture)
-    {
-        Object->Texture = Texture;
-    }
-}
+// void AssignTexture(game_object* Object, game_texture* Texture)
+// {
+//     if(Texture)
+//     {
+//         Object->Texture = Texture;
+//     }
+// }
 
 void SetSize(game_object* Object, size Size)
 {
