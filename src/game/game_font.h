@@ -7,14 +7,11 @@
 
 #include <vector>
 
-#define FONT_STYLE_COUNT 5
-
 struct game_font
 {
     TTF_Font* Handle;
-
-    int DefaultStyle;
-    int DefaultSize;
+    int       DefaultStyle;
+    int       DefaultSize;
 };
 
 void DestroyFont(game_font* Font);

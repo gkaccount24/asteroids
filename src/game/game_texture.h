@@ -13,6 +13,10 @@
 struct game_texture
 {
     SDL_Texture* Handle;
+
+    // position and size 
+    // relative to texture sheet,
+    // if it is a texture sheet
     vec2d        Position;
     size         Size;
 };

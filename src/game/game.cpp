@@ -86,17 +86,34 @@ void AddAsset(std::unordered_map<std::string, game_asset*>& Assets, std::string 
     }
 }
 
-bool LoadAssets(game* Game)
+void PrepareToLoadMenuAssets(game* Game, std::vector<asset_load*>& AssetsToLoad)
 {
-    std::vector<asset_load*> AssetsToLoad
-    {
-        new asset_load { "Orbitron_Font",       "/home/nathan/Documents/asteroids/assets/Orbitron-Regular.ttf",                  game_asset_type::FONT, asset_load::font { 12, TTF_STYLE_NORMAL } },
-        new asset_load { "UI_Textures",         "/home/nathan/Documents/asteroids/assets/SpaceShooterAssetPack_IU.png",          game_asset_type::TEXTURE },
-        new asset_load { "Ship_Textures",       "/home/nathan/Documents/asteroids/assets/SpaceShooterAssetPack_Ships.png",       game_asset_type::TEXTURE },
-        new asset_load { "Character_Textures",  "/home/nathan/Documents/asteroids/assets/SpaceShooterAssetPack_Characters.png",  game_asset_type::TEXTURE },
-        new asset_load { "Background_Textures", "/home/nathan/Documents/asteroids/assets/SpaceShooterAssetPack_BackGrounds.png", game_asset_type::TEXTURE },
-        new asset_load { "Projectile_Textures", "/home/nathan/Documents/asteroids/assets/SpaceShooterAssetPack_Projectiles.png", game_asset_type::TEXTURE }
-    };
+    AssetsToLoad.push_back(new asset_load { "Orbitron_Font", "/home/nathan/Documents/asteroids/assets/Orbitron-Regular.ttf", game_asset_type::FONT, asset_load::font { 12, TTF_STYLE_NORMAL } });
+
+
+}
+
+void PrepareToLoadTextureAssets(game* Game, std::vector<asset_load*>& AssetsToLoad)
+{
+    AssetsToLoad.push_back(new asset_load { "UI_Textures",         "/home/nathan/Documents/asteroids/assets/SpaceShooterAssetPack_IU.png",          game_asset_type::TEXTURE });
+    AssetsToLoad.push_back(new asset_load { "Ship_Textures",       "/home/nathan/Documents/asteroids/assets/SpaceShooterAssetPack_Ships.png",       game_asset_type::TEXTURE });
+    AssetsToLoad.push_back(new asset_load { "Character_Textures",  "/home/nathan/Documents/asteroids/assets/SpaceShooterAssetPack_Characters.png",  game_asset_type::TEXTURE });
+    AssetsToLoad.push_back(new asset_load { "Background_Textures", "/home/nathan/Documents/asteroids/assets/SpaceShooterAssetPack_BackGrounds.png", game_asset_type::TEXTURE });
+    AssetsToLoad.push_back(new asset_load { "Projectile_Textures", "/home/nathan/Documents/asteroids/assets/SpaceShooterAssetPack_Projectiles.png", game_asset_type::TEXTURE });
+}
+
+void PrepareToLoadSoundAssets(game* Game, std::vector<asset_load*>& AssetsToLoad)
+{
+
+}
+
+void LoadAssets(game* Game)
+{
+    std::vector<asset_load*> AssetsToLoad;
+
+    PrepareToLoadMenuAssets(Game, AssetsToLoad);
+    PrepareToLoadTextureAssets(Game, AssetsToLoad);
+    PrepareToLoadSoundAssets(Game, AssetsToLoad);
 
     std::size_t AssetCount = AssetsToLoad.size();
 
@@ -242,12 +259,12 @@ void FreeObject(game_object_map* Map, game_object* Object)
     }
 }
 
-uint32_t SaveObject(game* Game, game_object* Object)
-{
-    uint32_t WorldID = AddObject(&Game->ObjectMap, Object);
-
-    return WorldID;
-}
+// uint32_t SaveObject(game* Game, game_object* Object)
+// {
+//     uint32_t WorldID = AddObject(&Game->ObjectMap, Object);
+// 
+//     return WorldID;
+// }
 
 void OnStart(game_state* GameState) 
 {
@@ -305,56 +322,68 @@ void OnLoad(game_state* GameState) { }
 
 void DestroyMenus(game* Game)
 {
-    uint32_t Count = Game->Menus.size();
+    // uint32_t Count = Game->Menus.size();
+    // for(uint32_t Index = 0; Index < Count; Index++)
+    // {
+    //     // game_menu*& Menu = Game->Menus[Index];
+    //     // DestroyMenu(Menu);
+    // }
+}
 
-    for(uint32_t Index = 0; Index < Count; Index++)
+void CreateMenus(game* Game, game_font* Font)
+{
+    text_style_index StyleIndex = text_style_index::UNHOVERED;
+
+    SDL_Color ForegroundColor        = SDL_Color { 0, 128, 0, SDL_ALPHA_OPAQUE      };
+    SDL_Color HoveredForegroundColor = SDL_Color { 0, 128, 0, SDL_ALPHA_OPAQUE      };
+    SDL_Color BackgroundColor        = SDL_Color { 0,   0, 0, SDL_ALPHA_TRANSPARENT };
+
+    int Style = TTF_STYLE_NORMAL;
+    int Size  = 12;
+
+    text_style Styles[TEXT_STYLE_COUNT] 
     {
-        game_menu*& Menu = Game->Menus[Index];
+        text_style { ForegroundColor,        BackgroundColor, Style, Size },
+        text_style { HoveredForegroundColor, BackgroundColor, Style, Size }
+    };
 
-        DestroyMenu(Menu);
+    std::vector<std::pair<std::string, on_click_handler>> StartMenuOptions
+    {
+        { "Start Game", &OnStart    },
+        { "Load Game",  &OnLoad     },
+        { "Settings",   &OnSettings },
+        { "Exit",       &OnStop     }
+    };
+
+    game_menu* StartMenu = CreateMenu(Game->Renderer, Font, StyleIndex, Styles, StartMenuOptions);
+
+    if(!StartMenu)
+    {
+        std::cout << "failed to create start menu..." << std::endl;
+
+        return;
     }
-}
 
-void CreateMenus(game* Game)
-{
-    // game_font* Font = GetFont(Game->Assets, "Orbitron_Regular_Font_18");
-    // game_menu* Menu = nullptr;
-    // std::vector<std::pair<std::string, on_click_handler>> MainMenuOptions 
-    // {
-    //     { "Start Game", &OnStart },
-    //     { "Load Game",  &OnLoad },
-    //     { "Settings",   &OnSettings },
-    //     { "Exit",       &OnStop }
-    // };
-    // Menu = MakeMenu(Game->Renderer, Font, MainMenuOptions);
-    // if(Menu)
-    // {
-    //     Game->Menus.push_back(Menu);
-    //     Menu = nullptr;
-    // }
-    // std::vector<std::pair<std::string, on_click_handler>> PauseMenuOptions 
-    // {
-    //     { "Resume", &OnStart },
-    //     { "Save",   &OnSave },
-    //     { "Quit",   &OnQuit },
-    //     { "Exit",   &OnStop }
-    // };
-    // Menu = MakeMenu(Game->Renderer, Font, PauseMenuOptions);
-    // if(Menu)
-    // {
-    //     Game->Menus.push_back(Menu); 
-    //     Menu = nullptr;
-    // }
-}
+    Game->Menus.push_back(StartMenu);
 
-void AddBackground(game* Game, uint32_t TextureID, int TileWidth, int TileHeight, int XOffset, int YOffset)
-{
-    game_background* Background = new game_background();
+    std::vector<std::pair<std::string, on_click_handler>> PauseMenuOptions
+    {
+        { "Resume", &OnStart },
+        { "Save",   &OnSave  },
+        { "Quit",   &OnQuit  },
+        { "Exit",   &OnStop  }
+    };
 
-    Background->Size.Width = TileWidth;
-    Background->Size.Height = TileHeight;
-    Background->XOffset = XOffset;
-    Background->YOffset = YOffset;
+    game_menu* PauseMenu = CreateMenu(Game->Renderer, Font, StyleIndex, Styles, PauseMenuOptions);
+
+    if(!PauseMenu)
+    {
+        std::cout << "failed to create pause menu..." << std::endl;
+
+        return;
+    }
+
+    Game->Menus.push_back(PauseMenu);
 }
 
 void AddPlayer(game* Game, vec2d Position, size Size, speed Speed)
@@ -450,43 +479,42 @@ void UpdateMenu(game_menu* Menu, int WindowWidth, int WindowHeight)
         float MenuWidth = Menu->Size.Width;
         float MenuHeight = Menu->Size.Height;
 
-        float Width = Menu->Options[Index]->Texture->Size.Width;
-        float Height = Menu->Options[Index]->Texture->Size.Height;
+        // float Width = Menu->Options[Index];
+        // float Height = Menu->Options[Index];
 
         float PositionX = Menu->Position.X;
         float PositionY = Menu->Position.Y;
 
-        Menu->Options[Index]->Size.Width = Width;
-        Menu->Options[Index]->Size.Height = Height;
-
-        Menu->Options[Index]->Position.X = ((MenuWidth - Width) / 2.0f) + PositionX;
-        Menu->Options[Index]->Position.Y = Height * Index + PositionY;
+        // Menu->Options[Index]->Size.Width = Width;
+        // Menu->Options[Index]->Size.Height = Height;
+        // Menu->Options[Index]->Position.X = ((MenuWidth - Width) / 2.0f) + PositionX;
+        // Menu->Options[Index]->Position.Y = Height * Index + PositionY;
     }
 }
 
 void DrawMenuOption(SDL_Renderer* Renderer, game_menu_option* MenuOption, SDL_Color Color)
 {
-    SDL_Texture* Texture = MenuOption->Texture->Data;
+    SDL_Texture* Texture = MenuOption->Text->Texture->Handle;
 
     SDL_FRect SourceRECT 
     {
-        MenuOption->Texture->Position.X,
-        MenuOption->Texture->Position.Y,
+        MenuOption->Text->Texture->Position.X,
+        MenuOption->Text->Texture->Position.Y,
 
-        static_cast<float>(MenuOption->Texture->Size.Width),
-        static_cast<float>(MenuOption->Texture->Size.Height)
+        static_cast<float>(MenuOption->Text->Texture->Size.Width),
+        static_cast<float>(MenuOption->Text->Texture->Size.Height)
     };
 
     SDL_FRect DestRECT
     {
-        MenuOption->Position.X,
-        MenuOption->Position.Y,
+        MenuOption->Text->Texture->Position.X,
+        MenuOption->Text->Texture->Position.Y,
 
-        static_cast<float>(MenuOption->Size.Width),
-        static_cast<float>(MenuOption->Size.Height)
+        static_cast<float>(MenuOption->Text->Texture->Size.Width),
+        static_cast<float>(MenuOption->Text->Texture->Size.Height)
     };
 
-    Draw(Renderer, Texture, SourceRECT, DestRECT, 0.0, Color);
+    // Draw(Renderer, Texture, SourceRECT, DestRECT, 0.0, Color);
 }
 
 void DrawMenu(SDL_Renderer* Renderer, game_menu* Menu) 
@@ -496,29 +524,28 @@ void DrawMenu(SDL_Renderer* Renderer, game_menu* Menu)
     for(std::size_t Index = 0; Index < Count; Index++)
     {
         game_menu_option* MenuOption = Menu->Options[Index];
-
-        SDL_Texture* Texture = MenuOption->Texture->Data;
-        SDL_Color Color = Menu->Font->Style.Colors[(int) MenuOption->ColorIndex];
+        SDL_Texture* TextureHandle   = MenuOption->Text->Texture->Handle;
+        SDL_Color Color              = MenuOption->Text->Styles[(int) MenuOption->Text->StyleIndex].ForegroundColor;
 
         SDL_FRect SourceRECT 
         {
-            MenuOption->Texture->Position.X,
-            MenuOption->Texture->Position.Y,
+            0, //MenuOption->Texture->Position.X,
+            0, //MenuOption->Texture->Position.Y,
 
-            static_cast<float>(MenuOption->Texture->Size.Width),
-            static_cast<float>(MenuOption->Texture->Size.Height)
+            0, //static_cast<float>(MenuOption->Texture->Size.Width),
+            0, //static_cast<float>(MenuOption->Texture->Size.Height)
         };
 
         SDL_FRect DestRECT
         {
-            MenuOption->Position.X,
-            MenuOption->Position.Y,
+            0, //MenuOption->Position.X,
+            0, //MenuOption->Position.Y,
 
-            static_cast<float>(MenuOption->Size.Width),
-            static_cast<float>(MenuOption->Size.Height)
+            0, //static_cast<float>(MenuOption->Size.Width),
+            0, //static_cast<float>(MenuOption->Size.Height)
         };
 
-        Draw(Renderer, Texture, SourceRECT, DestRECT, 0.0, Color);
+        // Draw(Renderer, Texture, SourceRECT, DestRECT, 0.0, Color);
     }
 }
 
@@ -539,13 +566,13 @@ void HandleEvents(game* Game)
         {
             if(Game->State.StateID == game_state_id::AT_START_MENU) 
             {
-                game_menu* Menu = Game->Menus[(int) game_menu_state_ids::AT_START_MENU];
+                game_menu* Menu = Game->Menus[0];
 
-                int MenuEndX = Menu->Position.X + Menu->Size.Width;
-                int MenuEndY = Menu->Position.Y + Menu->Size.Height;
+                int MenuEndX = 0; // Menu->Position.X + Menu->Size.Width;
+                int MenuEndY = 0; // Menu->Position.Y + Menu->Size.Height;
 
-                int MenuStartX = Menu->Position.X;
-                int MenuStartY = Menu->Position.Y;
+                int MenuStartX = 0; // Menu->Position.X;
+                int MenuStartY = 0; // Menu->Position.Y;
 
                 if(Evt.motion.x >= MenuStartX && Evt.motion.x <= MenuEndX &&
                    Evt.motion.y >= MenuStartY && Evt.motion.y <= MenuEndY)
@@ -554,22 +581,22 @@ void HandleEvents(game* Game)
 
                     for(std::size_t Index = 0; Index < OptionCount; Index++)
                     {
-                        MenuEndX = Menu->Options[Index]->Position.X + Menu->Options[Index]->Size.Width;
-                        MenuEndY = Menu->Options[Index]->Position.Y + Menu->Options[Index]->Size.Height;
+                        // MenuEndX = Menu->Options[Index]->Position.X + Menu->Options[Index]->Size.Width;
+                        // MenuEndY = Menu->Options[Index]->Position.Y + Menu->Options[Index]->Size.Height;
 
-                        MenuStartX = Menu->Options[Index]->Position.X;
-                        MenuStartY = Menu->Options[Index]->Position.Y;
+                        // MenuStartX = Menu->Options[Index]->Position.X;
+                        // MenuStartY = Menu->Options[Index]->Position.Y;
 
                         if(Evt.motion.x >= MenuStartX && Evt.motion.x <= MenuEndX &&
                            Evt.motion.y >= MenuStartY && Evt.motion.y <= MenuEndY)
                         {
-                            Menu->Options[Index]->ColorIndex = font_color_index::HOVERED;
+                            // Menu->Options[Index]->ColorIndex = font_color_index::HOVERED;
 
                             break;
                         }
                         else
                         {
-                            Menu->Options[Index]->ColorIndex = font_color_index::FOREGROUND;
+                            // Menu->Options[Index]->ColorIndex = font_color_index::FOREGROUND;
                         }
                     }
                 }
@@ -692,14 +719,14 @@ int PlayGame(game* Game)
 
         if(Game->State.StateID == game_state_id::AT_START_MENU)
         {
-            game_menu* Menu = Game->Menus[(int) game_menu_state_ids::AT_START_MENU];
+            game_menu* Menu = Game->Menus[0];
 
             UpdateMenu(Menu, Game->WindowWidth, Game->WindowHeight);
             DrawMenu(Game->Renderer, Menu);
         }
         else if(Game->State.StateID == game_state_id::PAUSED)
         {
-            game_menu* Menu = Game->Menus[(int) game_menu_state_ids::PAUSED];
+            game_menu* Menu = Game->Menus[1];
 
             UpdateMenu(Menu, Game->WindowWidth, Game->WindowHeight);
             DrawMenu(Game->Renderer, Menu);

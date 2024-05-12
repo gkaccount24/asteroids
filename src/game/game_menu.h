@@ -10,7 +10,7 @@
 #include <vector>
 #include <cstdint>
 
-typedef void(*on_click_handler)(game_state* GameState);
+typedef void(*on_click_handler)();
 
 struct game_menu_option 
 {
@@ -22,9 +22,14 @@ struct game_menu
 {
     uint32_t                       MenuID;
     std::vector<game_menu_option*> Options;
+
+    // font applies to all menu options
+    game_font* Font;
+    vec2d      Position;
+    size       Size;
 };
 
-void DestroyMenu(game_menu*& Menu);
-game_menu* MakeMenu(SDL_Renderer* Renderer, game_font* Font, std::vector<std::pair<std::string, on_click_handler>>& Options);
+game_menu* CreateMenu(SDL_Renderer* Renderer, game_font* Font, text_style_index StyleIndex, text_style(&Styles)[TEXT_STYLE_COUNT], std::vector<std::pair<std::string, on_click_handler>>& Options);
+void DestroyMenu(game_menu*&);
 
 #endif

@@ -3,6 +3,7 @@
 
 #include "game_asset_load.h"
 #include "game_asset.h"
+#include "game_text.h"
 #include "game_texture.h"
 #include "game_font.h"
 
@@ -33,14 +34,6 @@
 /* HELPER MACROS FOR SDL FUNCTION RETURN CODES */
 #define IsGood(Result)((Result) == 0)
 
-struct game_background
-{
-    game_texture* Texture;
-    int XOffset;
-    int YOffset;
-    size Size;
-};
-
 struct game_object_map
 {
     std::unordered_map<uint32_t, game_object*> Entries;
@@ -59,10 +52,8 @@ struct game
     game_state State;
 
     std::unordered_map<std::string, game_asset*> Assets;
-    game_object_map ObjectMap;
 
     std::vector<game_menu*> Menus;
-    std::vector<game_background*> Backgrounds;
     std::vector<game_player*> Players;
 
     /* GLOBAL TIMER DATA MEMBERS */

@@ -67,8 +67,8 @@ game_asset* LoadFont(int FontStyle, int FontSize, std::string Path)
         return nullptr;
     }
 
-    game_asset* AssetLoaded = new game_asset();
-    AssetLoaded->Data.Font  = new game_font();
+    game_asset* AssetLoaded = new game_asset { };
+    AssetLoaded->Data.Font  = new game_font  { };
 
     AssetLoaded->Data.Font->DefaultSize  = FontSize;
     AssetLoaded->Data.Font->DefaultStyle = FontStyle;
