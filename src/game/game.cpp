@@ -358,9 +358,6 @@ bool game::CreateMenus()
 {
     game_menu_file MenuFile { };
 
-    MenuFile.Fonts.push_back(std::make_pair("", ""));
-    MenuFile.Fonts.push_back(std::make_pair("", ""));
-
     std::vector<std::pair<std::string, on_click_handler>> StartMenu 
     {
         std::make_pair("Start Game", Ok),
@@ -369,6 +366,7 @@ bool game::CreateMenus()
         std::make_pair("Exit Game", Ok)
     };
 
+    MenuFile.Fonts.push_back(std::make_pair("Orbitron-Bold",    "/home/nathan/Documents/asteroids/fonts/Orbitron-Bold.ttf"));
     MenuFile.Menus.push_back(StartMenu);
 
     std::vector<std::pair<std::string, on_click_handler>> PauseMenu 
@@ -379,6 +377,7 @@ bool game::CreateMenus()
         std::make_pair("Exit Game", Ok)
     };
 
+    MenuFile.Fonts.push_back(std::make_pair("Orbitron-Regular", "/home/nathan/Documents/asteroids/fonts/Orbitron-Regular.ttf"));
     MenuFile.Menus.push_back(PauseMenu);
 }
 
