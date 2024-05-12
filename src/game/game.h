@@ -34,6 +34,17 @@
 //     std::vector<uint32_t>                      EmptyEntries;
 // };
 
+using menu_option_list = std::vector<std::pair<std::string, on_click_handler>>;
+using menu_list = std::vector<menu_option_list>;
+using menu_font_list = std::vector<std::pair<std::string, std::string>>;
+
+struct game_menu_file
+{
+    // THESE VECTORS MUST MATCH IN SIZE
+    menu_font_list Fonts;
+    menu_list      Menus;
+};
+
 class game 
 {
 public:
@@ -48,13 +59,14 @@ private:
     void Destroy();
 
 private:
-    game_sound*   CreateSound(std::string Path);
-    game_texture* CreateTexture(std::string Path);
-    game_font*    CreateFont(std::string Path, int FontStyle, int FontSize);
-    game_menu* CreateMenu(game_font* Font);
-    bool       CreateMenus();
+    game_sound*   CreateSound(std::string Key, std::string Path);
+    game_texture* CreateTexture(std::string Key, std::string Path);
+    game_font*    CreateFont(std::string Key, std::string Path, int FontStyle, int FontSize);
+    game_menu*    CreateMenu(game_font* Font);
 
 private:
+    bool LoadMenus(game_menu_file* MenuFile);
+    void PrepareForAssetLoad();
     void LoadAssets();
 
 private:
@@ -66,6 +78,8 @@ private:
     int WindowWidth;
     int WindowHeight;
     int WindowFlags;
+
+    std::vector<game_menu*> Menus;
 
     std::unordered_map<std::string, game_asset*> Assets;
 

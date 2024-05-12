@@ -185,7 +185,7 @@ game::~game()
 
 void game::OnInit()
 {
-
+    PrepareForAssetLoad();
     LoadAssets();
 }
 
@@ -299,24 +299,25 @@ void game::Destroy()
     SDL_Quit();
 }
 
-game_sound* game::CreateSound(std::string Path) 
+game_sound* game::CreateSound(std::string Key, std::string Path) 
 {
     game_sound* Sound = new game_sound();
 
     return Sound;
 }
 
-game_texture* game::CreateTexture(std::string Path) 
+game_texture* game::CreateTexture(std::string Key, std::string Path) 
 {
     game_texture* Texture = new game_texture();
 
     Texture->SetType(game_asset_type::TEXTURE);
+    Texture->SetKey(Key);
     Texture->SetPath(Path);
 
     return Texture;
 }
 
-game_font* game::CreateFont(std::string Path, int FontStyle, int FontSize)
+game_font* game::CreateFont(std::string Key, std::string Path, int FontStyle, int FontSize)
 {
     game_font* Font = new game_font();
 
@@ -324,6 +325,7 @@ game_font* game::CreateFont(std::string Path, int FontStyle, int FontSize)
     Font->SetSize(FontSize);
 
     Font->SetType(game_asset_type::FONT);
+    Font->SetKey(Key);
     Font->SetPath(Path);
 
     return Font;
@@ -343,21 +345,8 @@ void Ok()
 
 }
 
-using menu_option_list = std::vector<std::pair<std::string, on_click_handler>>;
-using menu_list = std::vector<menu_option_list>;
-using menu_font_list = std::vector<std::pair<std::string, std::string>>;
-
-struct game_menu_file
+bool game::LoadMenus(game_menu_file* MenuFile)
 {
-    // THESE VECTORS MUST MATCH IN SIZE
-    menu_font_list Fonts;
-    menu_list      Menus;
-};
-
-bool game::CreateMenus()
-{
-    game_menu_file MenuFile { };
-
     std::vector<std::pair<std::string, on_click_handler>> StartMenu 
     {
         std::make_pair("Start Game", Ok),
@@ -366,8 +355,8 @@ bool game::CreateMenus()
         std::make_pair("Exit Game", Ok)
     };
 
-    MenuFile.Fonts.push_back(std::make_pair("Orbitron-Bold",    "/home/nathan/Documents/asteroids/fonts/Orbitron-Bold.ttf"));
-    MenuFile.Menus.push_back(StartMenu);
+    MenuFile->Fonts.push_back(std::make_pair("Orbitron-Bold", "/home/nathan/Documents/asteroids/fonts/Orbitron-Bold.ttf"));
+    MenuFile->Menus.push_back(StartMenu);
 
     std::vector<std::pair<std::string, on_click_handler>> PauseMenu 
     {
@@ -377,14 +366,44 @@ bool game::CreateMenus()
         std::make_pair("Exit Game", Ok)
     };
 
-    MenuFile.Fonts.push_back(std::make_pair("Orbitron-Regular", "/home/nathan/Documents/asteroids/fonts/Orbitron-Regular.ttf"));
-    MenuFile.Menus.push_back(PauseMenu);
+    MenuFile->Fonts.push_back(std::make_pair("Orbitron-Regular", "/home/nathan/Documents/asteroids/fonts/Orbitron-Regular.ttf"));
+    MenuFile->Menus.push_back(PauseMenu);
+
+    return true;
+}
+
+void game::PrepareForAssetLoad()
+{
+    game_menu_file MenuFile { };
+
+    if(LoadMenus(&MenuFile))
+    {
+        std::size_t FontCount = MenuFile.Fonts.size();
+        std::size_t MenuCount = MenuFile.Menus.size();
+
+        if(FontCount != MenuCount)
+        {
+            std::cout << "PrepareForAssetLoad failed...";
+
+            return;
+        }
+
+        for(std::size_t Index = 0; Index < MenuCount; Index++)
+        {
+            std::string FontKey = MenuFile.Fonts[Index].first;
+            std::string FontPath = MenuFile.Fonts[Index].second;
+
+            game_font* Font = CreateFont(FontKey, FontPath, 0, 0);
+            game_menu* Menu = CreateMenu(Font);
+
+            Menus.push_back(Menu);
+        }
+    }
 }
 
 void game::LoadAssets()
 {
-    // asset_manager AssetManager;
-    // std::string PathToManifest;
+
 }
 
 // void AddPlayer(game* Game, vec2d Position, size Size, speed Speed)
@@ -398,22 +417,6 @@ void game::LoadAssets()
 //     }
 //     AssignShip(Player, Ship);
 //     Game->Players.push_back(Player);
-// }
-
-// int RunGame(game* Game)
-// {
-//     OnConstruct(Game);
-// 
-//     if(!InitGame(Game))
-//     {
-//         std::cout << "game initialization failed..." << std::endl;
-// 
-//         return -1;
-//     }
-// 
-//     PlayGame(Game);
-// 
-//     return EXIT_SUCCESS;
 // }
 
 // void UpdateMenu(game_menu* Menu, int WindowWidth, int WindowHeight)

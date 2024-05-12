@@ -13,13 +13,13 @@ typedef void(*on_click_handler)();
 
 #define TEXT_STYLE_COUNT 2
 
-enum class text_style_index
+enum class menu_text_style_index
 {
     UNHOVERED = 0,
     HOVERED   = 1
 };
 
-struct text_style 
+struct menu_text_style 
 {
     SDL_Color ForegroundColor;
     SDL_Color BackgroundColor;
@@ -37,9 +37,9 @@ public:
     void Destroy();
 
 private:
-    text_style       Styles[TEXT_STYLE_COUNT];
-    text_style_index StyleIndex;
-    game_texture*    Texture;
+    menu_text_style       Styles[TEXT_STYLE_COUNT];
+    menu_text_style_index StyleIndex;
+    game_texture*         Texture;
 
     // display text & action handler
     std::string      Text;

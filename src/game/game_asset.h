@@ -30,11 +30,14 @@ public:
 public:
     inline void            SetType(game_asset_type AssetType) { Type = AssetType; }
     inline game_asset_type GetType() const                    { return Type;      }
+    inline void        SetKey(std::string AssetKey) { Key = AssetKey; }
+    inline std::string GetKey() const               { return Key;     }
     inline void        SetPath(std::string AssetPath) { Path = AssetPath; }
     inline std::string GetPath() const                { return Path;      }
 
 protected:
     game_asset_type Type;
+    std::string     Key;
     std::string     Path;
 };
 
