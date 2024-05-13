@@ -331,13 +331,25 @@ game_font* game::CreateFont(std::string Key, std::string Path, int FontStyle, in
     return Font;
 }
 
-game_menu* game::CreateMenu(game_font* Font)
+game_menu* game::CreateMenu(game_font* Font, menu_option_list& Options)
 {
     game_menu* Menu = new game_menu();
 
     Menu->SetFont(Font);
 
+    std::size_t Count = Options.size();
+
+    for(std::size_t Index = 0; Index < Count; Index++)
+    {
+        Menu->AddOption(Options[Index].first, Options[Index].second);
+    }
+
     return Menu;
+}
+
+game_texture* game::RenderText(game_font* Font, std::string Text)
+{
+    return nullptr;
 }
 
 void Ok()
@@ -394,7 +406,7 @@ void game::PrepareForAssetLoad()
             std::string FontPath = MenuFile.Fonts[Index].second;
 
             game_font* Font = CreateFont(FontKey, FontPath, 0, 0);
-            game_menu* Menu = CreateMenu(Font);
+            game_menu* Menu = CreateMenu(Font, MenuFile.Menus[Index]);
 
             Menus.push_back(Menu);
         }

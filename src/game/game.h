@@ -62,7 +62,10 @@ private:
     game_sound*   CreateSound(std::string Key, std::string Path);
     game_texture* CreateTexture(std::string Key, std::string Path);
     game_font*    CreateFont(std::string Key, std::string Path, int FontStyle, int FontSize);
-    game_menu*    CreateMenu(game_font* Font);
+    game_menu*    CreateMenu(game_font* Font, menu_option_list& Options);
+
+private:
+    game_texture* RenderText(game_font* Font, std::string Text);
 
 private:
     bool LoadMenus(game_menu_file* MenuFile);

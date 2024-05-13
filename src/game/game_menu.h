@@ -36,6 +36,16 @@ public:
 public:
     void Destroy();
 
+public:
+    inline void SetText(std::string OptionText) { Text = OptionText; }
+    inline std::string GetText() const { return Text; }
+    inline void SetClickHandler(on_click_handler ClickHandler) { OnClick = ClickHandler; }
+    inline void RunClickHandler() const { OnClick(); }
+    inline void SetPosition(float X, float Y) { Position.X = X; Position.Y = Y; }
+    inline vec2d GetPosition() const { return Position; }
+    inline void SetSize(int Width, int Height) { Size.Width = Width; Size.Height = Height; }
+    inline size GetSize() const { return Size; }
+ 
 private:
     menu_text_style       Styles[TEXT_STYLE_COUNT];
     menu_text_style_index StyleIndex;
@@ -60,6 +70,9 @@ public:
     void Destroy();
 
 public:
+    void AddOption(std::string OptionText, on_click_handler Handler);
+
+public:
     inline void SetPosition(float X, float Y) { Position.X = X; Position.Y = Y; }
     inline vec2d GetPosition() const          { return Position;                }
     inline void SetSize(int Width, int Height) { Size.Width = Width; Size.Height = Height; }
@@ -74,8 +87,5 @@ private:
     vec2d      Position;
     size       Size;
 };
-
-// game_menu* CreateMenu(std::string FontKey, std::string FontPath, text_style_index StyleIndex, text_style (&Styles)[TEXT_STYLE_COUNT], std::vector<game_menu_option*>& Options);
-// void DestroyMenu(game_menu*&);
 
 #endif

@@ -1,7 +1,5 @@
 #include "game_menu.h"
 
-static int MenuID;
-
 game_menu_option::game_menu_option() 
 {
     Texture = nullptr;
@@ -53,41 +51,14 @@ void game_menu::Destroy()
     }
 }
 
-// game_menu_option* NewGameMenuOption(game_menu*& Menu)
-// {
-//     game_menu_option* Option = new game_menu_option { };
-// 
-//     if(!Option)
-//     {
-//         std::cout << "memory allocation failed..." << std::endl;
-//         std::cout << "destroying menu..." << std::endl;
-// 
-//         DestroyMenu(Menu);
-// 
-//         return nullptr;
-//     }
-// 
-//     return Option;
-// }
-// 
-// game_menu* NewGameMenu(std::string FontKey, std::string FontPath)
-// {
-//     game_menu* Menu = new game_menu { };
-// 
-//     if(!Menu)
-//     {
-//         std::cout << "memory allocation failed..." << std::endl;
-// 
-//         return nullptr;
-//     }
-// 
-//     Menu->MenuID   = ++MenuID;
-//     Menu->FontKey  = FontKey;
-//     Menu->FontPath = FontPath;
-// 
-//     return Menu;
-// }
-// 
+void game_menu::AddOption(std::string OptionText, on_click_handler Handler)
+{
+    game_menu_option* NewOption = new game_menu_option();
+
+    NewOption->
+
+}
+
 // game_menu* CreateMenu(std::string FontKey, std::string FontPath, text_style_index StyleIndex, text_style (&Styles)[TEXT_STYLE_COUNT], std::vector<std::pair<std::string, on_click_handler>>& Options)
 // {
 //     game_menu* Menu = nullptr;
