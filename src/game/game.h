@@ -40,6 +40,7 @@ using menu_font_list = std::vector<std::pair<std::string, std::string>>;
 
 struct game_menu_file
 {
+    menu_text_style_index StyleIndex;
     menu_text_style Styles[2];
     // THESE VECTORS MUST MATCH IN SIZE
     menu_font_list Fonts;
@@ -60,13 +61,13 @@ private:
     void Destroy();
 
 private:
-    game_sound*   CreateSound(std::string Key, std::string Path);
+    game_sound* CreateSound(std::string Key, std::string Path);
     game_texture* CreateTexture(std::string Key, std::string Path);
-    game_font*    CreateFont(std::string Key, std::string Path, int FontStyle, int FontSize);
-    game_menu*    CreateMenu(game_font* Font, menu_option_list& Options);
+    game_font* CreateFont(std::string Key, std::string Path, int FontStyle, int FontSize);
+    game_menu* CreateMenu(game_font* Font, menu_text_style_index StyleIndex, menu_text_style(& Styles)[2], menu_option_list& Options);
 
 private:
-    game_texture* RenderText(game_font* Font, std::string Text);
+    game_texture* RenderMenuText(game_font* Font, std::string Text);
 
 private:
     bool LoadMenus(game_menu_file* MenuFile);

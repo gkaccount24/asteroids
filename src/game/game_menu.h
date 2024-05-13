@@ -73,7 +73,7 @@ public:
     void Destroy();
 
 public:
-    void AddOption(std::string OptionText, on_click_handler Handler);
+    void AddOption(menu_text_style_index StyleIndex, menu_text_style(& Styles)[2], std::string OptionText, on_click_handler ClickHandler);
 
 public:
     inline void SetPosition(float X, float Y) { Position.X = X; Position.Y = Y; }

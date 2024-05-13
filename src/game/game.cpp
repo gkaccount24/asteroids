@@ -153,6 +153,11 @@
 //     GameState->KeyUp = false;
 // }
 
+void Ok()
+{
+
+}
+
 game::game()  
 {
     Window = nullptr;
@@ -331,7 +336,7 @@ game_font* game::CreateFont(std::string Key, std::string Path, int FontStyle, in
     return Font;
 }
 
-game_menu* game::CreateMenu(game_font* Font, menu_option_list& Options)
+game_menu* game::CreateMenu(game_font* Font, menu_text_style_index StyleIndex, menu_text_style(& Styles)[2], menu_option_list& Options)
 {
     game_menu* Menu = new game_menu();
 
@@ -341,20 +346,55 @@ game_menu* game::CreateMenu(game_font* Font, menu_option_list& Options)
 
     for(std::size_t Index = 0; Index < Count; Index++)
     {
-        Menu->AddOption(Options[Index].first, Options[Index].second);
+        Menu->AddOption(StyleIndex, Styles, 
+                        Options[Index].first, 
+                        Options[Index].second);
     }
 
     return Menu;
 }
 
-game_texture* game::RenderText(game_font* Font, std::string Text)
+game_texture* game::RenderMenuText(game_font* Font, std::string Text)
 {
+    SDL_Color ForegroundColor = Style->ForegroundColor;
+    SDL_Color BackgroundColor = Style->BackgroundColor;
+    int FontStyle             = Style->Style;
+    int FontSize              = Style->Size;
+
+    // TTF_SetFontStyle(Font->Handle, FontStyle);
+    // TTF_SetFontSize(Font->Handle, FontSize);
+
+    SDL_Surface* Surface = nullptr; // TTF_RenderText_Solid(Font->Handle, Text.c_str(), ForegroundColor);
+
+    if(!Surface)
+    {
+        std::cout << "Render error: " << SDL_GetError() << std::endl;
+
+        return nullptr;
+    }
+
+    SDL_Texture* Texture = SDL_CreateTextureFromSurface(Renderer, Surface);
+
+    if(!Texture)
+    {
+        std::cout << "Render error: " << SDL_GetError() << std::endl;
+
+        SDL_DestroySurface(Surface);
+        Surface = nullptr;
+
+        return nullptr;
+    }
+
+    // Texture->Position.X  = 0.0f;
+    // Texture->Position.Y  = 0.0f;
+    // Texture->Size.Width  = Surface->w;
+    // Texture->Size.Height = Surface->h;
+    // Texture->Handle      = Handle;
+
+    SDL_DestroySurface(Surface);
+    Surface = nullptr;
+
     return nullptr;
-}
-
-void Ok()
-{
-
 }
 
 bool game::LoadMenus(game_menu_file* MenuFile)
@@ -415,9 +455,14 @@ void game::PrepareForAssetLoad()
             std::string FontKey = MenuFile.Fonts[Index].first;
             std::string FontPath = MenuFile.Fonts[Index].second;
 
-            game_font* Font = CreateFont(FontKey, FontPath, 0, 0);
-            game_menu* Menu = CreateMenu(Font, MenuFile.Menus[Index]);
+            int FontStyle = MenuFile.Styles[static_cast<std::size_t>(MenuFile.StyleIndex)].Style;
+            int FontSize = MenuFile.Styles[static_cast<std::size_t>(MenuFile.StyleIndex)].Size;
 
+            game_font* Font = CreateFont(FontKey, FontPath, FontStyle, FontSize);
+            game_menu* Menu = CreateMenu(Font, 
+                                         MenuFile.StyleIndex, 
+                                         MenuFile.Styles, 
+                                         MenuFile.Menus[Index]);
             Menus.push_back(Menu);
         }
     }
