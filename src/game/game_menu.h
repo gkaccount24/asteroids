@@ -36,6 +36,9 @@ public:
 public:
     void Destroy();
 
+public: 
+    void SetStyle(menu_text_style_index OptionStyleIndex, menu_text_style(& OptionStyles)[2]);
+
 public:
     inline void SetText(std::string OptionText) { Text = OptionText; }
     inline std::string GetText() const { return Text; }
@@ -47,7 +50,7 @@ public:
     inline size GetSize() const { return Size; }
  
 private:
-    menu_text_style       Styles[TEXT_STYLE_COUNT];
+    menu_text_style       Styles[2];
     menu_text_style_index StyleIndex;
     game_texture*         Texture;
 

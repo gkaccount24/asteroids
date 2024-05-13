@@ -1,9 +1,6 @@
 set(SRC ${SRC}
     ${CMAKE_CURRENT_SOURCE_DIR}/common.h
 
-    ${CMAKE_CURRENT_SOURCE_DIR}/game_asset_manager.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/game_asset_manager.cpp
-
     ${CMAKE_CURRENT_SOURCE_DIR}/game_asset.h
     ${CMAKE_CURRENT_SOURCE_DIR}/game_asset.cpp
 

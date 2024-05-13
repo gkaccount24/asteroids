@@ -359,6 +359,16 @@ void Ok()
 
 bool game::LoadMenus(game_menu_file* MenuFile)
 {
+    MenuFile->Styles[static_cast<std::size_t>(menu_text_style_index::UNHOVERED)].ForegroundColor = SDL_Color { 0, 128, 0, SDL_ALPHA_OPAQUE      };
+    MenuFile->Styles[static_cast<std::size_t>(menu_text_style_index::UNHOVERED)].BackgroundColor = SDL_Color { 0,   0, 0, SDL_ALPHA_TRANSPARENT };
+    MenuFile->Styles[static_cast<std::size_t>(menu_text_style_index::UNHOVERED)].Style           = TTF_STYLE_NORMAL;
+    MenuFile->Styles[static_cast<std::size_t>(menu_text_style_index::UNHOVERED)].Size            = 12;
+
+    MenuFile->Styles[static_cast<std::size_t>(menu_text_style_index::HOVERED)].ForegroundColor   = SDL_Color { 0, 128, 0, SDL_ALPHA_OPAQUE      };
+    MenuFile->Styles[static_cast<std::size_t>(menu_text_style_index::HOVERED)].BackgroundColor   = SDL_Color { 0,   0, 0, SDL_ALPHA_TRANSPARENT };
+    MenuFile->Styles[static_cast<std::size_t>(menu_text_style_index::HOVERED)].Style             = TTF_STYLE_NORMAL;
+    MenuFile->Styles[static_cast<std::size_t>(menu_text_style_index::HOVERED)].Size              = 12;
+
     std::vector<std::pair<std::string, on_click_handler>> StartMenu 
     {
         std::make_pair("Start Game", Ok),

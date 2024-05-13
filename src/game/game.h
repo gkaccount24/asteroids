@@ -40,6 +40,7 @@ using menu_font_list = std::vector<std::pair<std::string, std::string>>;
 
 struct game_menu_file
 {
+    menu_text_style Styles[2];
     // THESE VECTORS MUST MATCH IN SIZE
     menu_font_list Fonts;
     menu_list      Menus;

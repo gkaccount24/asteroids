@@ -24,6 +24,21 @@ void game_menu_option::Destroy()
     Texture = nullptr;
 }
 
+void game_menu_option::SetStyle(menu_text_style_index OptionStyleIndex, menu_text_style(& OptionStyles)[2])
+{
+    StyleIndex = OptionStyleIndex;
+
+    Styles[static_cast<std::size_t>(menu_text_style_index::UNHOVERED)].ForegroundColor = OptionStyles[static_cast<std::size_t>(menu_text_style_index::UNHOVERED)].ForegroundColor;
+    Styles[static_cast<std::size_t>(menu_text_style_index::UNHOVERED)].BackgroundColor = OptionStyles[static_cast<std::size_t>(menu_text_style_index::UNHOVERED)].BackgroundColor;
+    Styles[static_cast<std::size_t>(menu_text_style_index::UNHOVERED)].Style           = OptionStyles[static_cast<std::size_t>(menu_text_style_index::UNHOVERED)].Style;
+    Styles[static_cast<std::size_t>(menu_text_style_index::UNHOVERED)].Size            = OptionStyles[static_cast<std::size_t>(menu_text_style_index::UNHOVERED)].Size;
+
+    Styles[static_cast<std::size_t>(menu_text_style_index::HOVERED)].ForegroundColor = OptionStyles[static_cast<std::size_t>(menu_text_style_index::HOVERED)].ForegroundColor;
+    Styles[static_cast<std::size_t>(menu_text_style_index::HOVERED)].BackgroundColor = OptionStyles[static_cast<std::size_t>(menu_text_style_index::HOVERED)].BackgroundColor;
+    Styles[static_cast<std::size_t>(menu_text_style_index::HOVERED)].Style           = OptionStyles[static_cast<std::size_t>(menu_text_style_index::HOVERED)].Style;
+    Styles[static_cast<std::size_t>(menu_text_style_index::HOVERED)].Size            = OptionStyles[static_cast<std::size_t>(menu_text_style_index::HOVERED)].Size;
+}
+
 game_menu::game_menu()
 {
     Font = nullptr;
@@ -51,11 +66,12 @@ void game_menu::Destroy()
     }
 }
 
-void game_menu::AddOption(std::string OptionText, on_click_handler Handler)
+void game_menu::AddOption(std::string OptionText, on_click_handler ClickHandler)
 {
     game_menu_option* NewOption = new game_menu_option();
 
-    NewOption->
+    NewOption->SetText(OptionText);
+    NewOption->SetClickHandler(ClickHandler);
 
 }
 
